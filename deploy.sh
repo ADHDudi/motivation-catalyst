@@ -16,7 +16,12 @@ firebase deploy
 # 3. Git Sync
 echo "📦 Syncing with Git..."
 git add .
-git commit -m "Auto-deploy: $(date '+%Y-%m-%d %H:%M:%S')"
-git push
+# Check if there are changes to commit
+if [[ -n $(git status -s) ]]; then
+  git commit -m "Auto-deploy: $(date '+%Y-%m-%d %H:%M:%S')"
+  git push
+else
+  echo "⚠️  No changes to commit to Git."
+fi
 
 echo "✅ Deployment complete!"
