@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Stop on error
+set -e
+
+echo "🚀 Starting automated deployment..."
+
+# 1. Build the project
+echo "🛠️  Building project..."
+npm run build
+
+# 2. Deploy to Firebase
+echo "🔥 Deploying to Firebase..."
+firebase deploy
+
+# 3. Git Sync
+echo "📦 Syncing with Git..."
+git add .
+git commit -m "Auto-deploy: $(date '+%Y-%m-%d %H:%M:%S')"
+git push
+
+echo "✅ Deployment complete!"
