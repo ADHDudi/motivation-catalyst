@@ -1,6 +1,19 @@
 export type Language = 'he' | 'en';
 export type CategoryKey = 'autonomy' | 'competence' | 'relatedness';
 
+declare global {
+  interface Window {
+    firebase: any;
+  }
+}
+
+export interface FeedbackData {
+  rating: number; // 1 for thumbs down, 5 for thumbs up (or boolean, but user asked for "option to use this feedback")
+  comment: string;
+  timestamp: any; // Firestore timestamp
+  results: Results;
+}
+
 export interface LocalizedText {
   he: string;
   en: string;
