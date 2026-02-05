@@ -25,3 +25,7 @@ else
 fi
 
 echo "✅ Deployment complete!"
+
+# 4. Open the App
+echo "🌍 Opening app..."
+open "https://motivation-catalyst-david.web.app"
