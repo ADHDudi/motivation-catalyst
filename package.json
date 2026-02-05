@@ -7,14 +7,17 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "./deploy.sh"
+    "deploy": "./deploy.sh",
+    "test:acceptance": "playwright test",
+    "report": "playwright show-report"
   },
   "dependencies": {
+    "lucide-react": "^0.563.0",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "lucide-react": "^0.563.0"
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.1",
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
