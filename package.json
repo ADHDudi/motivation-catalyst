@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "./deploy.sh",
-    "test:acceptance": "playwright test",
+    "test": "playwright test",
     "report": "playwright show-report"
   },
   "dependencies": {
