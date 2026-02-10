@@ -139,3 +139,113 @@ export const generateInsights = onCall(
         }
     }
 );
+
+// --- Motivation Catalyst Analysis ---
+
+const motivationSchema: Schema = {
+    type: Type.OBJECT,
+    properties: {
+        autonomy: {
+            type: Type.OBJECT,
+            properties: {
+                analysis: { type: Type.STRING, description: "Analysis of the user's need for autonomy based on their specific answers." },
+                tip: { type: Type.STRING, description: "A specific, actionable tip to improve or maintain autonomy." }
+            },
+            required: ["analysis", "tip"]
+        },
+        competence: {
+            type: Type.OBJECT,
+            properties: {
+                analysis: { type: Type.STRING, description: "Analysis of the user's need for competence." },
+                tip: { type: Type.STRING, description: "A specific, actionable tip to improve or maintain competence." }
+            },
+            required: ["analysis", "tip"]
+        },
+        relatedness: {
+            type: Type.OBJECT,
+            properties: {
+                analysis: { type: Type.STRING, description: "Analysis of the user's need for relatedness." },
+                tip: { type: Type.STRING, description: "A specific, actionable tip to improve or maintain relatedness." }
+            },
+            required: ["analysis", "tip"]
+        }
+    },
+    required: ["autonomy", "competence", "relatedness"]
+};
+
+interface QuestionResponse {
+    id: number;
+    text: string;
+    score: number;
+    category: string;
+}
+
+interface GenerateMotivationAnalysisRequest {
+    responses: QuestionResponse[];
+    employeeName: string;
+    managerName?: string;
+    lang?: "en" | "he";
+}
+
+export const generateMotivationAnalysis = onCall(
+    async (request: CallableRequest<GenerateMotivationAnalysisRequest>) => {
+        const { responses, employeeName, managerName, lang = "en" } = request.data;
+
+        if (!responses || !Array.isArray(responses) || responses.length === 0) {
+            throw new HttpsError(
+                "invalid-argument",
+                "Missing required field: responses"
+            );
+        }
+
+        try {
+            const ai = getAI();
+
+            const prompt = `
+                You are an expert Organizational Psychologist specializing in Self-Determination Theory (SDT).
+                
+                **Objective:** Analyze the motivation profile of ${employeeName} based on their specific answers to the SDT assessment.
+                
+                **Data:**
+                ${responses.map(r => `- [${r.category.toUpperCase()}] "${r.text}": ${r.score}/5`).join("\n")}
+                
+                **Manager Context:** ${managerName ? `The user's manager is named ${managerName}.` : "No manager specified."}
+
+                **Instructions:**
+                1. **Analyze:** specific answers to understand the nuance of their motivation. Don't just look at the average.
+                2. **Identify Patterns:** Are they high in competence but low in autonomy? Do they feel isolated (relatedness)?
+                3. **Generate Insights:** For EACH category (Autonomy, Competence, Relatedness), provide:
+                   - **Analysis:** A brief, direct insight about their state.
+                   - **Tip:** A highly specific, actionable recommendation to improve their situation.
+                
+                **Language Requirement:**
+                ***IMPORTANT: Respond entirely in ${lang === "he" ? "HEBREW" : "ENGLISH"}.***
+
+                **Tone:** Professional, empathetic, yet action-oriented.
+            `;
+
+            const response = await ai.models.generateContent({
+                model: "gemini-2.5-flash-preview-09-2025",
+                contents: prompt,
+                config: {
+                    responseMimeType: "application/json",
+                    responseSchema: motivationSchema,
+                    systemInstruction: `You are an expert Organizational Psychologist. Return strictly valid JSON matching the schema. Write all content in ${lang === "he" ? "Hebrew" : "English"}.`,
+                },
+            });
+
+            const text = response.text;
+            if (!text) {
+                throw new HttpsError("internal", "No response from AI");
+            }
+
+            return JSON.parse(text);
+        } catch (error) {
+            logger.error("Gemini API Error (Motivation):", error);
+            throw new HttpsError(
+                "internal",
+                `Failed to generate analysis: ${error instanceof Error ? error.message : "Unknown error"}`
+            );
+        }
+    }
+);

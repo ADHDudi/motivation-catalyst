@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { generateMotivationAnalysis } from '../services/geminiService';
+import { MotivationAnalysisResult, Answers, FormData } from '../types';
+import { QUESTIONS } from '../constants';
 import { UserCheck, ShieldCheck, RefreshCw, Copy, BrainCircuit, Sparkles, CheckCircle2, AlertCircle, ThumbsUp, ThumbsDown, Clipboard, Linkedin, Youtube, Facebook, Send } from 'lucide-react';
 import Logo from '../components/Logo';
 import ResultPolarChart from '../components/ResultPolarChart';
@@ -18,6 +21,8 @@ interface AnalysisViewProps {
   generateFullReportText: () => string;
   statusMsg: string;
   onSocialClick?: (platform: string) => void;
+  answers: Answers;
+  formData: FormData;
 }
 
 interface CategoryInsightProps {
@@ -80,11 +85,48 @@ const AnalysisSection: React.FC<AnalysisSectionProps> = ({ title, icon: Icon, ch
   );
 };
 
-const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, onReset, copyToClipboard, generateFullReportText, statusMsg, onSocialClick }) => {
+const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, onReset, copyToClipboard, generateFullReportText, statusMsg, onSocialClick, answers, formData }) => {
   const [feedbackState, setFeedbackState] = useState<'idle' | 'commenting' | 'submitted'>('idle');
   const [comment, setComment] = useState('');
-
   const [rating, setRating] = useState<number>(0);
+
+  // AI Insights State
+  const [aiInsights, setAiInsights] = useState<MotivationAnalysisResult | null>(null);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
+
+  useEffect(() => {
+    const fetchAIInsights = async () => {
+      // Only fetch if we have results and haven't fetched yet (or if lang changes, maybe? usually insights are generated once)
+      // Actually, if language changes, we might want to re-fetch or just let the user see the generated language. 
+      // For now, let's fetch on mount if results exist.
+      if (!results || aiInsights) return;
+
+      setIsLoadingAI(true);
+      try {
+        const responses = QUESTIONS.map(q => ({
+          id: q.id,
+          text: q.text[lang], // Use current language text
+          score: answers[q.id] || 3,
+          category: q.category
+        }));
+
+        const analysis = await generateMotivationAnalysis(
+          responses,
+          formData.employeeName,
+          formData.managerName,
+          lang
+        );
+
+        setAiInsights(analysis);
+      } catch (e) {
+        console.warn("Failed to generate AI insights", e);
+      } finally {
+        setIsLoadingAI(false);
+      }
+    };
+
+    fetchAIInsights();
+  }, [results, lang, answers, formData, aiInsights]); // Depend on lang to regenerate if language switches? Maybe expensive. Let's keep it.
 
   const handleThumbClick = (selectedRating: number) => {
     setRating(selectedRating);
@@ -147,14 +189,24 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
           <div className="space-y-6 relative z-10">
             {(['autonomy', 'competence', 'relatedness'] as CategoryKey[]).map(cat => {
               const scoreVal = parseFloat(results[cat]);
-              const data = t.deepAnalysis[cat].employee[scoreVal < 3.5 ? 'low' : 'high'];
+              // Fallback to static text if AI is loading or failed
+              const staticData = t.deepAnalysis[cat].employee[scoreVal < 3.5 ? 'low' : 'high'];
+
+              const aiTip = aiInsights ? aiInsights[cat].tip : null;
+              const displayTip = aiTip || staticData.aiTips;
+              const isDynamic = !!aiTip;
+
               return (
-                <div key={cat} className="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-white shadow-sm">
+                <div key={cat} className="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-white shadow-sm transition-all hover:shadow-md">
                   <h4 className="font-black text-[#324FA2] mb-2 flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[cat].hex }}></div>
                     {t.categories[cat]}
+                    {isLoadingAI && <span className="text-xs font-normal text-slate-400 flex items-center gap-1 animate-pulse">(Generating personalized insights...)</span>}
+                    {isDynamic && <span className="text-[10px] bg-[#324FA2]/10 text-[#324FA2] px-2 py-0.5 rounded-full">AI Personalized</span>}
                   </h4>
-                  <p className="text-sm text-slate-600 font-bold leading-relaxed">{data.aiTips}</p>
+                  <p className="text-sm text-slate-600 font-bold leading-relaxed">
+                    {displayTip}
+                  </p>
                 </div>
               );
             })}

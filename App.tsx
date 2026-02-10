@@ -78,7 +78,7 @@ const App = () => {
       const key = k as CategoryKey;
       final[key] = (cats[key] / counts[key]).toFixed(1);
     });
-    
+
     const calculatedResults = final as Results;
     setResults(calculatedResults);
     setStep('analysis');
@@ -124,7 +124,7 @@ const App = () => {
     document.body.removeChild(el);
     setStatusMsg(t.copied);
     setTimeout(() => setStatusMsg(''), 3000);
-    
+
     syncData('interaction', { action: 'copy_report', length: text.length });
   };
 
@@ -145,13 +145,13 @@ const App = () => {
       const score = results[cat];
       const scoreNum = parseFloat(score);
       const isLow = scoreNum < 3.5;
-      
+
       const empData = t.deepAnalysis[cat].employee[isLow ? 'low' : 'high'];
       const mgrData = t.deepAnalysis[cat].manager[isLow ? 'low' : 'high'];
 
       text += `💠 ${t.categories[cat].toUpperCase()} (${score}/5.0)\n`;
       text += `-------------------------------\n`;
-      
+
       // Personal Section
       text += `👤 ${labels.selfTitle}:\n`;
       text += `   • ${labels.analysis}: ${empData.analysis}\n`;
@@ -167,7 +167,7 @@ const App = () => {
         text += `✨ ${labels.aiTips}:\n`;
         text += `   ${empData.aiTips}\n\n`;
       }
-      
+
       text += `\n`;
     });
 
@@ -200,37 +200,39 @@ const App = () => {
   return (
     <div className="min-h-screen bg-[#F1F5F9] md:py-12 md:px-6 font-sans text-slate-900 selection:bg-[#78A9D6]/30">
       {step === 'welcome' && (
-        <WelcomeView 
-          t={t} 
-          lang={lang} 
-          setLang={setLang} 
-          formData={formData} 
-          setFormData={setFormData} 
-          onStart={handleStart} 
-          onDemo={handleDemo} 
+        <WelcomeView
+          t={t}
+          lang={lang}
+          setLang={setLang}
+          formData={formData}
+          setFormData={setFormData}
+          onStart={handleStart}
+          onDemo={handleDemo}
         />
       )}
       {step === 'assessment' && (
-        <AssessmentView 
-          t={t} 
-          lang={lang} 
-          currentQuestionIndex={currentQuestionIndex} 
-          answers={answers} 
-          onAnswer={handleAnswer} 
-          onBack={handleBack} 
+        <AssessmentView
+          t={t}
+          lang={lang}
+          currentQuestionIndex={currentQuestionIndex}
+          answers={answers}
+          onAnswer={handleAnswer}
+          onBack={handleBack}
         />
       )}
       {step === 'analysis' && results && (
-        <AnalysisView 
-          t={t} 
-          lang={lang} 
+        <AnalysisView
+          t={t}
+          lang={lang}
           setLang={setLang}
-          results={results} 
-          onReset={handleReset} 
-          copyToClipboard={copyToClipboard} 
-          generateFullReportText={generateFullReportText} 
+          results={results}
+          onReset={handleReset}
+          copyToClipboard={copyToClipboard}
+          generateFullReportText={generateFullReportText}
           statusMsg={statusMsg}
           onSocialClick={handleSocialClick}
+          answers={answers}
+          formData={formData}
         />
       )}
     </div>
