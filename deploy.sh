@@ -39,25 +39,44 @@ echo "⬆️  Pushing to GitHub..."
 BRANCH=$(git branch --show-current)
 git push -u origin "$BRANCH" || echo "⚠️  Git push failed. Check your remote configuration."
 
-# 2. Sync and Build Functions
-echo "⚙️  Syncing function dependencies..."
-cd functions
-npm install --cache .npm-local-cache --package-lock-only
-# Note: Full local npm install might fail due to EPERM, but we need to at least try to build if possible 
-# or rely on Firebase's remote build with the synced lock file.
-echo "🛠️  Building functions..."
-npm run build || echo "⚠️  Local function build failed (possibly due to EPERM). Relying on remote build during deploy."
-cd ..
+# 2. Setup Isolated Build Environment
+echo "🏗️  Setting up isolated build environment..."
+DEPLOY_DIR="/tmp/motivation-deploy-auto"
+mkdir -p "$DEPLOY_DIR"
+rsync -av --exclude node_modules --exclude .git --exclude dist . "$DEPLOY_DIR/"
 
-# 3. Build the frontend
+# 3. Build & Deploy from Isolated Environment
+echo "⚙️  Building and Deploying from $DEPLOY_DIR..."
+cd "$DEPLOY_DIR"
+
+# Force dependency sync and local cache to avoid EPERM
+export FIREBASE_CHECK_UPDATES=false
+export XDG_CONFIG_HOME="$DEPLOY_DIR/.config"
+mkdir -p "$XDG_CONFIG_HOME"
+
+echo "📥 Installing frontend dependencies..."
+npm install --cache .npm-local-cache --silent
+
 echo "🛠️  Building frontend..."
 npm run build
 
-# 4. Deploy to Firebase
+echo "⚙️  Preparing functions..."
+cd functions
+npm install --cache ../.npm-local-cache --package-lock-only --silent
+cd ..
+
 echo "🔥 Deploying to Firebase..."
-firebase deploy
+# Use local firebase if possible, otherwise rely on globally installed
+if [ -f "./node_modules/.bin/firebase" ]; then
+  ./node_modules/.bin/firebase deploy
+else
+  firebase deploy
+fi
 
 echo "✅ Deployment complete!"
+
+# 4. Cleanup (optional, but good for security/space)
+# rm -rf "$DEPLOY_DIR"
 
 # 5. Open the App
 echo "🌍 Opening app..."
