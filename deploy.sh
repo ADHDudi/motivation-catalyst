@@ -53,7 +53,9 @@ cd "$DEPLOY_DIR"
 # Force dependency sync and local cache to avoid EPERM
 export FIREBASE_CHECK_UPDATES=false
 export XDG_CONFIG_HOME="$DEPLOY_DIR/.config"
+export TMPDIR="$DEPLOY_DIR/tmp"
 mkdir -p "$XDG_CONFIG_HOME/configstore"
+mkdir -p "$TMPDIR"
 
 # Copy existing firebase auth if available to the isolated environment
 if [ -f "$HOME/.config/configstore/firebase-tools.json" ]; then
