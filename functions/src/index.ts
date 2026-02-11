@@ -115,7 +115,7 @@ export const generateInsights = onCall(
     `;
 
             const response = await ai.models.generateContent({
-                model: "gemini-2.5-flash-preview-09-2025",
+                model: "gemini-1.5-flash",
                 contents: prompt,
                 config: {
                     responseMimeType: "application/json",
@@ -233,7 +233,7 @@ export const generateMotivationAnalysis = onCall(
             `;
 
             const response = await ai.models.generateContent({
-                model: "gemini-2.5-flash-preview-09-2025",
+                model: "gemini-1.5-flash",
                 contents: prompt,
                 config: {
                     responseMimeType: "application/json",

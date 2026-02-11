@@ -54,8 +54,13 @@ test.describe('Motivation Catalyst Acceptance Tests', () => {
             await page.waitForTimeout(150);
         }
 
-        // Verify Analysis View loads
-        await expect(page.getByText('אוטונומיה', { exact: false }).or(page.getByText('Autonomy'))).toBeVisible();
+        // Verify Analysis View loads - look specifically for the AI Insights section heading
+        const aiSectionHeading = page.getByRole('heading', { name: /ניתוח AI מעמיק/i }).or(page.getByRole('heading', { name: /AI Deep Analysis/i }));
+        await expect(aiSectionHeading).toBeVisible({ timeout: 45000 });
+
+        // Verify ADHD Tip is visible (wait for it to appear specifically)
+        const adhdTipHeading = page.getByText('טיפ מותאם קשב (ADHD)').or(page.getByText('ADHD Focus Tip'));
+        await expect(adhdTipHeading.first()).toBeVisible({ timeout: 15000 });
     });
 
     test('English/Hebrew Alignment', async ({ page }) => {
