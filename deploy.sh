@@ -53,7 +53,12 @@ cd "$DEPLOY_DIR"
 # Force dependency sync and local cache to avoid EPERM
 export FIREBASE_CHECK_UPDATES=false
 export XDG_CONFIG_HOME="$DEPLOY_DIR/.config"
-mkdir -p "$XDG_CONFIG_HOME"
+mkdir -p "$XDG_CONFIG_HOME/configstore"
+
+# Copy existing firebase auth if available to the isolated environment
+if [ -f "$HOME/.config/configstore/firebase-tools.json" ]; then
+  cp "$HOME/.config/configstore/firebase-tools.json" "$XDG_CONFIG_HOME/configstore/"
+fi
 
 echo "📥 Installing frontend dependencies..."
 npm install --cache .npm-local-cache --silent
