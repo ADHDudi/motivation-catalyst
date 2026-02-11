@@ -34,20 +34,31 @@ else
   echo "⚠️  No new changes to commit."
 fi
 
-# Push to GitHub (start background push but wait if needed)
+# Push to GitHub (handle missing upstream)
 echo "⬆️  Pushing to GitHub..."
-git push || echo "⚠️  Git push failed. Check your remote configuration."
+BRANCH=$(git branch --show-current)
+git push -u origin "$BRANCH" || echo "⚠️  Git push failed. Check your remote configuration."
 
-# 2. Build the project
-echo "🛠️  Building project..."
+# 2. Sync and Build Functions
+echo "⚙️  Syncing function dependencies..."
+cd functions
+npm install --cache .npm-local-cache --package-lock-only
+# Note: Full local npm install might fail due to EPERM, but we need to at least try to build if possible 
+# or rely on Firebase's remote build with the synced lock file.
+echo "🛠️  Building functions..."
+npm run build || echo "⚠️  Local function build failed (possibly due to EPERM). Relying on remote build during deploy."
+cd ..
+
+# 3. Build the frontend
+echo "🛠️  Building frontend..."
 npm run build
 
-# 3. Deploy to Firebase
+# 4. Deploy to Firebase
 echo "🔥 Deploying to Firebase..."
 firebase deploy
 
 echo "✅ Deployment complete!"
 
-# 4. Open the App
+# 5. Open the App
 echo "🌍 Opening app..."
 open "https://motivation-catalyst-david.web.app"
