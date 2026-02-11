@@ -193,6 +193,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
               const staticData = t.deepAnalysis[cat].employee[scoreVal < 3.5 ? 'low' : 'high'];
 
               const aiTip = aiInsights ? aiInsights[cat].tip : null;
+              const adhdTip = aiInsights && aiInsights[cat].adhd_tip ? aiInsights[cat].adhd_tip : null;
               const displayTip = aiTip || staticData.aiTips;
               const isDynamic = !!aiTip;
 
@@ -207,6 +208,19 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
                   <p className="text-sm text-slate-600 font-bold leading-relaxed">
                     {displayTip}
                   </p>
+
+                  {adhdTip && (
+                    <div className="mt-4 pt-4 border-t border-slate-100">
+                      <h5 className="font-extrabold text-[#E46B3F] text-xs uppercase tracking-wider mb-2 flex items-center gap-1">
+                        <BrainCircuit size={14} />
+                        {lang === 'he' ? 'טיפ מותאם קשב (ADHD)' : 'ADHD Focus Tip'}
+                      </h5>
+                      <p className="text-sm text-slate-600 font-medium leading-relaxed bg-white p-3 rounded-xl border border-[#E46B3F]/20 shadow-sm relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-[#E46B3F]"></div>
+                        {adhdTip}
+                      </p>
+                    </div>
+                  )}
                 </div>
               );
             })}

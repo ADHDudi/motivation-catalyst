@@ -149,25 +149,28 @@ const motivationSchema: Schema = {
             type: Type.OBJECT,
             properties: {
                 analysis: { type: Type.STRING, description: "Analysis of the user's need for autonomy based on their specific answers." },
-                tip: { type: Type.STRING, description: "A specific, actionable tip to improve or maintain autonomy." }
+                tip: { type: Type.STRING, description: "A specific, actionable tip to improve or maintain autonomy." },
+                adhd_tip: { type: Type.STRING, description: "An ADHD-friendly version of the tip, focusing on executive function support, clear steps, and overcoming distraction/procrastination." }
             },
-            required: ["analysis", "tip"]
+            required: ["analysis", "tip", "adhd_tip"]
         },
         competence: {
             type: Type.OBJECT,
             properties: {
                 analysis: { type: Type.STRING, description: "Analysis of the user's need for competence." },
-                tip: { type: Type.STRING, description: "A specific, actionable tip to improve or maintain competence." }
+                tip: { type: Type.STRING, description: "A specific, actionable tip to improve or maintain competence." },
+                adhd_tip: { type: Type.STRING, description: "An ADHD-friendly version of the tip, focusing on executive function support, clear steps, and overcoming distraction/procrastination." }
             },
-            required: ["analysis", "tip"]
+            required: ["analysis", "tip", "adhd_tip"]
         },
         relatedness: {
             type: Type.OBJECT,
             properties: {
                 analysis: { type: Type.STRING, description: "Analysis of the user's need for relatedness." },
-                tip: { type: Type.STRING, description: "A specific, actionable tip to improve or maintain relatedness." }
+                tip: { type: Type.STRING, description: "A specific, actionable tip to improve or maintain relatedness." },
+                adhd_tip: { type: Type.STRING, description: "An ADHD-friendly version of the tip, focusing on executive function support, clear steps, and overcoming distraction/procrastination." }
             },
-            required: ["analysis", "tip"]
+            required: ["analysis", "tip", "adhd_tip"]
         }
     },
     required: ["autonomy", "competence", "relatedness"]
@@ -217,6 +220,11 @@ export const generateMotivationAnalysis = onCall(
                 3. **Generate Insights:** For EACH category (Autonomy, Competence, Relatedness), provide:
                    - **Analysis:** A brief, direct insight about their state.
                    - **Tip:** A highly specific, actionable recommendation to improve their situation.
+                   - **ADHD Tip:** A specialized version of the tip designed for someone with ADHD. Focus on:
+                       - Breaking tasks into micro-steps.
+                       - Using visual cues or gamification.
+                       - Addressing executive dysfunction (initiation, sustained attention).
+                       - Being "dopamine-friendly" (reward-based).
                 
                 **Language Requirement:**
                 ***IMPORTANT: Respond entirely in ${lang === "he" ? "HEBREW" : "ENGLISH"}.***

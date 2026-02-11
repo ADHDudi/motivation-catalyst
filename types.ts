@@ -138,7 +138,7 @@ export type Answers = Record<number, number>;
 export type Results = Record<CategoryKey, string>;
 
 export interface MotivationAnalysisResult {
-  autonomy: { analysis: string; tip: string };
-  competence: { analysis: string; tip: string };
-  relatedness: { analysis: string; tip: string };
+  autonomy: { analysis: string; tip: string; adhd_tip?: string };
+  competence: { analysis: string; tip: string; adhd_tip?: string };
+  relatedness: { analysis: string; tip: string; adhd_tip?: string };
 }
