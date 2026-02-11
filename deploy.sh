@@ -68,7 +68,9 @@ npm run build
 
 echo "⚙️  Preparing functions..."
 cd functions
-npm install --cache ../.npm-local-cache --package-lock-only --silent
+npm install --cache ../.npm-local-cache --silent
+echo "🛠️  Building functions..."
+npm run build
 cd ..
 
 echo "🔥 Deploying to Firebase..."
