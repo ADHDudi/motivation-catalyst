@@ -93,19 +93,18 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
   // AI Insights State
   const [aiInsights, setAiInsights] = useState<MotivationAnalysisResult | null>(null);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAIInsights = async () => {
-      // Only fetch if we have results and haven't fetched yet (or if lang changes, maybe? usually insights are generated once)
-      // Actually, if language changes, we might want to re-fetch or just let the user see the generated language. 
-      // For now, let's fetch on mount if results exist.
       if (!results || aiInsights) return;
 
       setIsLoadingAI(true);
+      setAiError(null);
       try {
         const responses = QUESTIONS.map(q => ({
           id: q.id,
-          text: q.text[lang], // Use current language text
+          text: q.text[lang],
           score: answers[q.id] || 3,
           category: q.category
         }));
@@ -120,13 +119,15 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
         setAiInsights(analysis);
       } catch (e) {
         console.warn("Failed to generate AI insights", e);
+        setAiError(e instanceof Error ? e.message : String(e));
       } finally {
         setIsLoadingAI(false);
       }
     };
 
     fetchAIInsights();
-  }, [results, lang, answers, formData, aiInsights]); // Depend on lang to regenerate if language switches? Maybe expensive. Let's keep it.
+  }, [results, lang, answers, formData, aiInsights]);
+  // Depend on lang to regenerate if language switches? Maybe expensive. Let's keep it.
 
   const handleThumbClick = (selectedRating: number) => {
     setRating(selectedRating);
@@ -203,6 +204,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[cat].hex }}></div>
                     {t.categories[cat]}
                     {isLoadingAI && <span className="text-xs font-normal text-slate-400 flex items-center gap-1 animate-pulse">(Generating personalized insights...)</span>}
+                    {aiError && <span className="text-[10px] text-red-500 bg-red-50 px-2 py-0.5 rounded-full border border-red-100 flex items-center gap-1"><AlertCircle size={10} /> Error: {aiError}</span>}
                     {isDynamic && <span className="text-[10px] bg-[#324FA2]/10 text-[#324FA2] px-2 py-0.5 rounded-full">AI Personalized</span>}
                   </h4>
                   <p className="text-sm text-slate-600 font-bold leading-relaxed">
