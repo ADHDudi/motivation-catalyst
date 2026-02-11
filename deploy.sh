@@ -43,7 +43,8 @@ git push -u origin "$BRANCH" || echo "⚠️  Git push failed. Check your remote
 echo "🏗️  Setting up isolated build environment..."
 DEPLOY_DIR="/tmp/motivation-deploy-auto"
 mkdir -p "$DEPLOY_DIR"
-rsync -av --exclude node_modules --exclude .git --exclude dist . "$DEPLOY_DIR/"
+# Use || [ $? -eq 23 ] to ignore "some files could not be transferred" which is expected for locked/forbidden dirs
+rsync -av --exclude node_modules --exclude .git --exclude dist . "$DEPLOY_DIR/" || [ $? -eq 23 ]
 
 # 3. Build & Deploy from Isolated Environment
 echo "⚙️  Building and Deploying from $DEPLOY_DIR..."
