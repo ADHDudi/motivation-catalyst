@@ -62,6 +62,9 @@ if [ -f "$HOME/.config/configstore/firebase-tools.json" ]; then
   cp "$HOME/.config/configstore/firebase-tools.json" "$XDG_CONFIG_HOME/configstore/"
 fi
 
+# Inject API Key if provided as an environment variable or hardcoded here (as a fix for current session)
+echo "GEMINI_API_KEY=AIzaSyB--Yat1rD5voz7CZsYh7osv5sFLVsD100" > "$DEPLOY_DIR/functions/.env"
+
 echo "📥 Installing frontend dependencies..."
 npm install --cache .npm-local-cache --silent
 
