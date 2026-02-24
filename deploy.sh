@@ -63,7 +63,11 @@ if [ -f "$HOME/.config/configstore/firebase-tools.json" ]; then
 fi
 
 # Inject API Key if provided as an environment variable or hardcoded here (as a fix for current session)
-echo "GEMINI_API_KEY=AIzaSyB--Yat1rD5voz7CZsYh7osv5sFLVsD100" > "$DEPLOY_DIR/functions/.env"
+# Check if GEMINI_API_KEY is available in functions/.env or environment
+if [ ! -f "$DEPLOY_DIR/functions/.env" ] && [ -z "$GEMINI_API_KEY" ]; then
+  echo "⚠️  WARNING: GEMINI_API_KEY not found in functions/.env or environment variables."
+  echo "The deployment might fail or the function might not work correctly."
+fi
 
 echo "📥 Installing frontend dependencies..."
 npm install --cache .npm-local-cache --silent
