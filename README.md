@@ -18,3 +18,11 @@ View your app in AI Studio: https://ai.studio/apps/drive/1lqunQla3uPI2xRCwJq-5Qb
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## URLs
+
+| Environment  | URL                                                        |
+| ------------ | ---------------------------------------------------------- |
+| **Local Dev**    | http://localhost:5173 (run `npm run dev`)               |
+| **Firebase Live**| https://motivation-catalyst-david.web.app               |
+| **Firebase Console** | https://console.firebase.google.com/project/motivation-catalyst-david/overview |

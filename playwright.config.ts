@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const FIREBASE_URL = 'https://motivation-catalyst-david.web.app';
+const LOCAL_URL = 'http://localhost:5173';
+
 export default defineConfig({
     testDir: './tests',
     fullyParallel: true,
@@ -8,7 +11,7 @@ export default defineConfig({
     workers: process.env.CI ? 1 : undefined,
     reporter: 'html',
     use: {
-        baseURL: 'https://motivation-catalyst-david.web.app',
+        baseURL: process.env.BASE_URL || FIREBASE_URL,
         trace: 'on-first-retry',
     },
     projects: [

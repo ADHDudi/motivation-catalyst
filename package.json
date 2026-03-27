@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "deploy": "./deploy.sh",
     "test": "playwright test",
+    "test:local": "BASE_URL=http://localhost:5173 playwright test",
+    "test:live": "BASE_URL=https://motivation-catalyst-david.web.app playwright test",
     "report": "playwright show-report"
   },
   "dependencies": {
