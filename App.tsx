@@ -4,6 +4,7 @@ import WelcomeView from './views/WelcomeView';
 import AssessmentView from './views/AssessmentView';
 import AnalysisView from './views/AnalysisView';
 import { Language, FormData, Answers, Results, CategoryKey } from './types';
+import { signInWithGoogle, onAuthStateChange } from './authUtils';
 
 const App = () => {
   const [lang, setLang] = useState<Language>('he');
@@ -15,6 +16,34 @@ const App = () => {
   const [statusMsg, setStatusMsg] = useState('');
 
   const t = TRANSLATIONS[lang];
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChange((user) => {
+      if (user) {
+        setFormData(prev => ({
+          ...prev,
+          employeeName: user.displayName || prev.employeeName,
+          employeeEmail: user.email || prev.employeeEmail,
+        }));
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleGoogleLogin = async () => {
+    try {
+      const user = await signInWithGoogle();
+      if (user) {
+        setFormData(prev => ({
+          ...prev,
+          employeeName: user.displayName || prev.employeeName,
+          employeeEmail: user.email || prev.employeeEmail,
+        }));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // --- Data Sync Logic ---
 
@@ -208,6 +237,7 @@ const App = () => {
           setFormData={setFormData}
           onStart={handleStart}
           onDemo={handleDemo}
+          onGoogleLogin={handleGoogleLogin}
         />
       )}
       {step === 'assessment' && (

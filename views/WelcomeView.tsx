@@ -1,5 +1,5 @@
 import React from 'react';
-import { Beaker, AlertCircle, ShieldCheck, Target, Zap, ArrowRight } from 'lucide-react';
+import { Beaker, AlertCircle, ShieldCheck, Target, Zap, ArrowRight, LogIn } from 'lucide-react';
 import Logo from '../components/Logo';
 import { TranslationData, FormData, Language } from '../types';
 
@@ -11,9 +11,11 @@ interface WelcomeViewProps {
   setFormData: (data: FormData) => void;
   onStart: (e: React.FormEvent) => void;
   onDemo: (type: 'high' | 'mid' | 'at-risk') => void;
+  onGoogleLogin: () => void;
 }
 
-const WelcomeView: React.FC<WelcomeViewProps> = ({ t, lang, setLang, formData, setFormData, onStart, onDemo }) => {
+const WelcomeView: React.FC<WelcomeViewProps> = ({ t, lang, setLang, formData, setFormData, onStart, onDemo, onGoogleLogin }) => {
+  const googleBtnText = lang === 'he' ? 'התחבר עם גוגל' : 'Sign in with Google';
   return (
     <div className={`w-full max-w-lg mx-auto bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col min-h-[100dvh] md:min-h-0 text-${t.dir === 'rtl' ? 'right' : 'left'}`} dir={t.dir}>
       <div className={`p-8 pt-12 text-center relative bg-white overflow-hidden text-slate-900`}>
@@ -60,6 +62,21 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ t, lang, setLang, formData, s
         </div>
 
         <form onSubmit={onStart} className="space-y-6">
+          <button 
+            type="button" 
+            onClick={onGoogleLogin} 
+            className="w-full bg-white text-slate-700 font-bold text-lg py-4 border-2 border-slate-200 rounded-[30px] flex items-center justify-center gap-3 shadow-sm hover:bg-slate-50 transition-all mb-4"
+          >
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-6 h-6" alt="Google Icon" />
+            {googleBtnText}
+          </button>
+          
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex-1 h-px bg-slate-200"></div>
+            <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">{lang === 'he' ? 'או' : 'OR'}</span>
+            <div className="flex-1 h-px bg-slate-200"></div>
+          </div>
+
           {[
             { label: t.employeeName, key: 'employeeName' as const, type: 'text' }, 
             { label: t.employeeEmail, key: 'employeeEmail' as const, type: 'email' }
