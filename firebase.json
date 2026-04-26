@@ -4,6 +4,7 @@
     "runtime": "nodejs22"
   },
   "hosting": {
+    "site": "motivation-catalyst-david",
     "public": "dist",
     "ignore": [
       "firebase.json",
