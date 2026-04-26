@@ -206,7 +206,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[cat].hex }}></div>
                     {t.categories[cat]}
                     {isLoadingAI && <span className="text-xs font-normal text-slate-400 flex items-center gap-1 animate-pulse">{lang === 'he' ? '(מייצר תובנות מותאמות אישית...)' : '(Generating personalized insights...)'}</span>}
-                    {aiError && <span className="text-[10px] text-red-500 bg-red-50 px-2 py-0.5 rounded-full border border-red-100 flex items-center gap-1"><AlertCircle size={10} /> Error: {aiError}</span>}
+                    {aiError && <span className="text-[10px] text-[#E46B3F] bg-[#E46B3F]/10 px-2 py-0.5 rounded-full border border-[#E46B3F]/20 flex items-center gap-1" title={aiError}><AlertCircle size={10} /> {lang === 'he' ? 'תובנות סטטיות בלבד (AI לא זמין)' : 'Static insights only (AI unavailable)'}</span>}
                     {isDynamic && <span className="text-[10px] bg-[#324FA2]/10 text-[#324FA2] px-2 py-0.5 rounded-full">{lang === 'he' ? 'מותאם AI' : 'AI Personalized'}</span>}
                   </h4>
                   <p className="text-sm text-slate-600 font-bold leading-relaxed">

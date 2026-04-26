@@ -9,8 +9,8 @@
 ## 🔴 High Priority
 
 - [x] **AI insights not translated to Hebrew** — switching language to Hebrew after assessment leaves AI-generated insights in English; insights must re-render in the active language
-- [ ] **AI Deep Analysis fails with missing API key error** — "Failed to generate analysis: GEMINI_API_KEY environment variable is not set" shown to user; should display a friendly fallback message and gracefully degrade to static insights instead of surfacing a raw error
-- [ ] **Raw Firebase error shown in AI Deep Analysis UI** — when Firebase Cloud Functions are unavailable, the raw error string "Firebase: No Firebase App '[DEFAULT]' has been created..." appears as a badge next to each category name (`AnalysisView.tsx:207`); should show a friendly fallback message instead
+- [x] **AI Deep Analysis fails with missing API key error** — "Failed to generate analysis: GEMINI_API_KEY environment variable is not set" shown to user; should display a friendly fallback message and gracefully degrade to static insights instead of surfacing a raw error
+- [x] **Raw Firebase error shown in AI Deep Analysis UI** — when Firebase Cloud Functions are unavailable, the raw error string "Firebase: No Firebase App '[DEFAULT]' has been created..." appears as a badge next to each category name (`AnalysisView.tsx:207`); should show a friendly fallback message instead
 - [ ] **App blank on localhost — Firebase not initialized** — `/__/firebase/init.js` only loads on Firebase Hosting; on Vite dev server, Firebase SDK loads but `initializeApp()` is never called, crashing the app (`authUtils.ts` partially fixed, `geminiService.ts` still throws)
 - [ ] **Implement email/password sign-in** — password field `onChange` is a no-op; wire up Firebase email/password auth (`WelcomeView.tsx:92`)
 - [ ] **Implement Sign Up flow** — "Sign up" button has no handler (`WelcomeView.tsx:109`)

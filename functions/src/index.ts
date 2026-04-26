@@ -5,6 +5,7 @@ import { GoogleGenAI, Type, Schema } from "@google/genai";
 // Initialize Gemini with the API key from environment
 const getAI = () => {
     // Force redeploy comment to sync .env key
+    console.log("Initializing Gemini AI client...");
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
         throw new Error("GEMINI_API_KEY environment variable is not set");
