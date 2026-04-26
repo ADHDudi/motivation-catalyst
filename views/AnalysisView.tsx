@@ -90,14 +90,15 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState<number>(0);
 
-  // AI Insights State
   const [aiInsights, setAiInsights] = useState<MotivationAnalysisResult | null>(null);
+  const [lastAiLang, setLastAiLang] = useState<Language | null>(null);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAIInsights = async () => {
-      if (!results || aiInsights) return;
+      if (!results) return;
+      if (aiInsights && lastAiLang === lang) return;
 
       setIsLoadingAI(true);
       setAiError(null);
@@ -117,6 +118,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
         );
 
         setAiInsights(analysis);
+        setLastAiLang(lang);
       } catch (e) {
         console.warn("Failed to generate AI insights", e);
         setAiError(e instanceof Error ? e.message : String(e));
@@ -203,9 +205,9 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
                   <h4 className="font-black text-[#324FA2] mb-2 flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[cat].hex }}></div>
                     {t.categories[cat]}
-                    {isLoadingAI && <span className="text-xs font-normal text-slate-400 flex items-center gap-1 animate-pulse">(Generating personalized insights...)</span>}
+                    {isLoadingAI && <span className="text-xs font-normal text-slate-400 flex items-center gap-1 animate-pulse">{lang === 'he' ? '(מייצר תובנות מותאמות אישית...)' : '(Generating personalized insights...)'}</span>}
                     {aiError && <span className="text-[10px] text-red-500 bg-red-50 px-2 py-0.5 rounded-full border border-red-100 flex items-center gap-1"><AlertCircle size={10} /> Error: {aiError}</span>}
-                    {isDynamic && <span className="text-[10px] bg-[#324FA2]/10 text-[#324FA2] px-2 py-0.5 rounded-full">AI Personalized</span>}
+                    {isDynamic && <span className="text-[10px] bg-[#324FA2]/10 text-[#324FA2] px-2 py-0.5 rounded-full">{lang === 'he' ? 'מותאם AI' : 'AI Personalized'}</span>}
                   </h4>
                   <p className="text-sm text-slate-600 font-bold leading-relaxed">
                     {displayTip}

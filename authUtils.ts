@@ -1,5 +1,7 @@
+const isFirebaseReady = () => window.firebase?.apps?.length > 0;
+
 export const signInWithGoogle = async (): Promise<any> => {
-    if (!window.firebase) {
+    if (!isFirebaseReady()) {
         console.error('Firebase not initialized');
         return null;
     }
@@ -15,7 +17,7 @@ export const signInWithGoogle = async (): Promise<any> => {
 };
 
 export const signOutUser = async (): Promise<void> => {
-    if (!window.firebase) return;
+    if (!isFirebaseReady()) return;
     try {
         await window.firebase.auth().signOut();
     } catch (error) {
@@ -25,6 +27,6 @@ export const signOutUser = async (): Promise<void> => {
 };
 
 export const onAuthStateChange = (callback: (user: any) => void) => {
-    if (!window.firebase) return () => {};
+    if (!isFirebaseReady()) return () => {};
     return window.firebase.auth().onAuthStateChanged(callback);
 };

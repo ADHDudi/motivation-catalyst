@@ -61,40 +61,53 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ t, lang, setLang, formData, s
             </ul>
         </div>
 
-        <form onSubmit={onStart} className="space-y-6">
+        <form onSubmit={onStart} className="w-[95%] mx-auto block space-y-0 relative z-10">
           <button 
             type="button" 
             onClick={onGoogleLogin} 
-            className="w-full bg-white text-slate-700 font-bold text-lg py-4 border-2 border-slate-200 rounded-[30px] flex items-center justify-center gap-3 shadow-sm hover:bg-slate-50 transition-all mb-4"
+            className="w-full bg-white text-[#334155] font-bold text-[15px] tracking-wide py-3.5 border border-slate-200 rounded-2xl flex items-center justify-center gap-3 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md hover:border-slate-300 transition-all mb-8"
           >
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-6 h-6" alt="Google Icon" />
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-[18px] h-[18px]" alt="Google Icon" />
             {googleBtnText}
           </button>
           
-          <div className="flex items-center gap-4 mb-4">
-            <div className="flex-1 h-px bg-slate-200"></div>
-            <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">{lang === 'he' ? 'או' : 'OR'}</span>
-            <div className="flex-1 h-px bg-slate-200"></div>
+          <div className="flex items-center gap-4 mb-8">
+            <div className="flex-1 h-px bg-slate-200/60"></div>
+            <span className="text-[#94A3B8] text-[11px] font-black uppercase tracking-wider text-center">{lang === 'he' ? 'או' : 'OR'}</span>
+            <div className="flex-1 h-px bg-slate-200/60"></div>
           </div>
 
-          {[
-            { label: t.employeeName, key: 'employeeName' as const, type: 'text' }, 
-            { label: t.employeeEmail, key: 'employeeEmail' as const, type: 'email' }
-          ].map((field) => (
-            <div key={field.key}>
-              <label className="block text-[10px] font-black text-slate-400 mb-2 px-1 tracking-widest uppercase">{field.label}</label>
-              <input 
-                type={field.type} 
-                placeholder={field.label} 
-                className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-3xl text-slate-700 outline-none transition-all text-base font-bold focus:border-[#324FA2] focus:bg-white" 
-                value={formData[field.key]} 
-                onChange={e => setFormData({...formData, [field.key]: e.target.value})} 
-              />
-            </div>
-          ))}
-          <button type="submit" className="w-full bg-[#E46B3F] text-white font-black text-xl py-6 rounded-[30px] flex items-center justify-center gap-4 shadow-xl active:scale-95 transition-all mt-6">
-            {t.beginBtn} <ArrowRight size={24} className={t.dir === 'rtl' ? 'rotate-180' : ''} />
+          <div className="space-y-4">
+            <input 
+              type="email" 
+              placeholder={lang === 'he' ? 'כתובת אימייל' : 'Email address'}
+              className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-2xl text-slate-700 outline-none transition-all placeholder:text-[#94A3B8] placeholder:font-medium font-medium focus:border-slate-400 focus:ring-1 focus:ring-slate-400" 
+              value={formData.employeeEmail} 
+              onChange={e => setFormData({...formData, employeeName: e.target.value.split('@')[0], employeeEmail: e.target.value})} 
+              required
+            />
+            <input 
+              type="password" 
+              placeholder={lang === 'he' ? 'סיסמה' : 'Password'}
+              className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-2xl text-slate-700 outline-none transition-all placeholder:text-[#94A3B8] placeholder:font-medium font-medium focus:border-slate-400 focus:ring-1 focus:ring-slate-400" 
+              onChange={() => {}}
+            />
+          </div>
+
+          <div className="flex justify-end pt-4 pb-6">
+            <button type="button" className="text-[#94A3B8] text-[13px] font-bold hover:text-slate-500 transition-colors">
+              {lang === 'he' ? 'שכחת סיסמה?' : 'Forgot Password?'}
+            </button>
+          </div>
+
+          <button type="submit" className="w-full bg-[#111827] text-white font-bold text-[15px] py-4 rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.15)] hover:bg-black hover:shadow-lg transition-all mb-8">
+            {lang === 'he' ? 'התחבר' : 'Sign In'}
           </button>
+
+          <div className="text-center">
+            <span className="text-[#94A3B8] text-[14px] font-medium">{lang === 'he' ? 'אין לך חשבון? ' : "Don't have an account? "}</span>
+            <button type="button" className="text-[#8B5CF6] text-[14px] font-bold hover:text-[#7C3AED] transition-colors ml-1">{lang === 'he' ? 'הרשם' : 'Sign up'}</button>
+          </div>
         </form>
 
         {formData.employeeName.toLowerCase() === 'dudi' && (
