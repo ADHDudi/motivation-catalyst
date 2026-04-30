@@ -1,0 +1,23 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - generic [ref=e8]:
+      - button "EN" [ref=e9] [cursor=pointer]
+      - link "udi" [ref=e10] [cursor=pointer]:
+        - /url: https://linktr.ee/ADHDudi
+        - generic [ref=e11]:
+          - img [ref=e13]
+          - img [ref=e19]
+          - img [ref=e22]
+          - img [ref=e25]
+        - generic [ref=e27]: udi
+    - img [ref=e30]
+    - heading "קתליזטור למוטיבציה" [level=1] [ref=e33]
+    - paragraph [ref=e35]: הנוסחה המדעית לצמיחה ומימוש
+  - generic [ref=e72]:
+    - heading "יצירת חשבון חדש" [level=2] [ref=e87]
+    - generic [ref=e79]:
+      - textbox "כתובת אימייל" [ref=e80]
+      - textbox "סיסמה" [ref=e81]
+      - textbox "אימות סיסמה" [ref=e88]
+    - button "צור חשבון" [ref=e90] [cursor=pointer]
+    - button "← חזור להתחברות" [ref=e92] [cursor=pointer]

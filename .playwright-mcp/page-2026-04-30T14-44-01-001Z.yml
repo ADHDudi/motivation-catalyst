@@ -1,0 +1,59 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - generic [ref=e8]:
+      - button "EN" [ref=e9] [cursor=pointer]
+      - link "udi" [ref=e10] [cursor=pointer]:
+        - /url: https://linktr.ee/ADHDudi
+        - generic [ref=e11]:
+          - img [ref=e13]
+          - img [ref=e19]
+          - img [ref=e22]
+          - img [ref=e25]
+        - generic [ref=e27]: udi
+    - img [ref=e30]
+    - heading "קתליזטור למוטיבציה" [level=1] [ref=e33]
+    - paragraph [ref=e35]: הנוסחה המדעית לצמיחה ומימוש
+  - generic [ref=e36]:
+    - generic [ref=e94]:
+      - generic [ref=e95]:
+        - img [ref=e96]
+        - heading "מרגישים תקועים?" [level=3] [ref=e98]
+      - paragraph [ref=e99]: חוסר מוטיבציה, תחושה של דריכה במקום ושחיקה בעבודה הן לא גזירת גורל. לפעמים פשוט חסר לנו המרכיב הנכון ב"כימיה" המקצועית שלנו.
+    - generic [ref=e100]:
+      - generic [ref=e101]:
+        - img [ref=e102]
+        - 'heading "הפתרון: מדע המוטיבציה" [level=3] [ref=e105]'
+      - paragraph [ref=e106]: מודל ה-SDT הוא שיטה מוכחת מחקרית המבוססת על עשורים של מחקר פסיכולוגי. המודל נחשב ל"תקן הזהב" במדעי ההתנהגות ומזהה את הצרכים הבסיסיים שחייבים להתקיים כדי שתרגישו חיוניות ומשמעות בעבודה.
+    - generic [ref=e107]:
+      - heading "למה כדאי לכם לבצע את האבחון?" [level=3] [ref=e108]:
+        - img [ref=e109]
+        - text: למה כדאי לכם לבצע את האבחון?
+      - list [ref=e113]:
+        - listitem [ref=e114]:
+          - img [ref=e115]
+          - text: מבוסס על מעל 40 שנות מחקר אמפירי הנתמך במאות מחקרים אקדמיים.
+        - listitem [ref=e117]:
+          - img [ref=e118]
+          - text: בשימוש על ידי חברות Fortune 500 וארגונים גלובליים למיטוב מחוברות.
+        - listitem [ref=e120]:
+          - img [ref=e121]
+          - text: בהירות לגבי המרכיבים המדויקים שחסרים לכם למוטיבציה שיא.
+        - listitem [ref=e123]:
+          - img [ref=e124]
+          - text: טיפים פרקטיים המתרגמים תיאוריה פסיכולוגית לצעדים בני-יישום.
+        - listitem [ref=e126]:
+          - img [ref=e127]
+          - text: כלי מדויק ומקצועי לשיתוף הצרכים שלכם עם המנהל/ת.
+    - generic [ref=e72]:
+      - button "Google Icon התחבר עם גוגל" [ref=e129] [cursor=pointer]:
+        - img "Google Icon" [ref=e130]
+        - text: התחבר עם גוגל
+      - generic [ref=e133]: או
+      - generic [ref=e79]:
+        - textbox "כתובת אימייל" [ref=e80]: test@example.com
+        - textbox "סיסמה" [ref=e81]
+      - button "שכחת סיסמה?" [ref=e136] [cursor=pointer]
+      - button "התחבר" [ref=e137] [cursor=pointer]
+      - generic [ref=e138]:
+        - text: אין לך חשבון?
+        - button "הרשם" [ref=e139] [cursor=pointer]

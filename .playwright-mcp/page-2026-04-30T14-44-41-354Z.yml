@@ -1,0 +1,113 @@
+- generic [ref=e199]:
+  - generic [ref=e200]:
+    - button "EN" [ref=e201] [cursor=pointer]
+    - link "udi" [ref=e202] [cursor=pointer]:
+      - /url: https://linktr.ee/ADHDudi
+      - generic [ref=e203]:
+        - img [ref=e205]
+        - img [ref=e211]
+        - img [ref=e214]
+        - img [ref=e217]
+      - generic [ref=e219]: udi
+  - heading "פרופיל מוטיבציה אישי" [level=2] [ref=e220]
+  - img [ref=e222]:
+    - generic [ref=e224]:
+      - generic: "3"
+      - generic [ref=e226]:
+        - text: אוטונומיה
+        - generic [ref=e227]: (AUTONOMY)
+    - generic [ref=e228]:
+      - generic: "3"
+      - generic [ref=e230]:
+        - text: מסוגלות
+        - generic [ref=e231]: (COMPETENCE)
+    - generic [ref=e232]:
+      - generic: "3"
+      - generic [ref=e234]:
+        - text: שייכות
+        - generic [ref=e235]: (RELATEDNESS)
+  - generic [ref=e236]:
+    - generic [ref=e237]:
+      - generic [ref=e238]:
+        - heading "תובנות לצמיחה אישית" [level=4] [ref=e239]:
+          - img [ref=e240]
+          - text: תובנות לצמיחה אישית
+        - button "העתק תובנות" [ref=e244] [cursor=pointer]:
+          - img [ref=e245]
+      - generic [ref=e248]:
+        - button "אוטונומיה (3.0)" [ref=e250] [cursor=pointer]:
+          - generic [ref=e251]: אוטונומיה (3.0)
+          - img [ref=e252]
+        - button "מסוגלות (3.0)" [ref=e255] [cursor=pointer]:
+          - generic [ref=e256]: מסוגלות (3.0)
+          - img [ref=e257]
+        - button "שייכות (3.0)" [ref=e260] [cursor=pointer]:
+          - generic [ref=e261]: שייכות (3.0)
+          - img [ref=e262]
+    - generic [ref=e264]:
+      - generic [ref=e265]:
+        - heading "המלצות לניהול מעצים" [level=4] [ref=e266]:
+          - img [ref=e267]
+          - text: המלצות לניהול מעצים
+        - button "העתק המלצות" [ref=e270] [cursor=pointer]:
+          - img [ref=e271]
+      - generic [ref=e274]:
+        - button "אוטונומיה (3.0)" [ref=e276] [cursor=pointer]:
+          - generic [ref=e277]: אוטונומיה (3.0)
+          - img [ref=e278]
+        - button "מסוגלות (3.0)" [ref=e281] [cursor=pointer]:
+          - generic [ref=e282]: מסוגלות (3.0)
+          - img [ref=e283]
+        - button "שייכות (3.0)" [ref=e286] [cursor=pointer]:
+          - generic [ref=e287]: שייכות (3.0)
+          - img [ref=e288]
+  - generic [ref=e290]:
+    - img [ref=e292]
+    - generic [ref=e304]:
+      - img [ref=e306]
+      - heading "ניתוח AI מעמיק וטיפים" [level=3] [ref=e309]
+    - generic [ref=e310]:
+      - generic [ref=e311]:
+        - heading "אוטונומיה תובנות סטטיות בלבד (AI לא זמין)" [level=4] [ref=e312]:
+          - text: אוטונומיה
+          - 'generic "Firebase: No Firebase App ''[DEFAULT]'' has been created - call Firebase App.initializeApp() (app-compat/no-app)." [ref=e314]':
+            - img [ref=e315]
+            - text: תובנות סטטיות בלבד (AI לא זמין)
+        - paragraph [ref=e317]: נסה שיטת "ניהול יומן חוסם" (Time Blocking) כדי לייצר לעצמך מרחב עבודה עצמאי. בשיחה הבאה עם המנהל, הצע משימה אחת שאתה לוקח עליה אחריות מלאה מהתחלה ועד הסוף.
+      - generic [ref=e318]:
+        - heading "מסוגלות תובנות סטטיות בלבד (AI לא זמין)" [level=4] [ref=e319]:
+          - text: מסוגלות
+          - 'generic "Firebase: No Firebase App ''[DEFAULT]'' has been created - call Firebase App.initializeApp() (app-compat/no-app)." [ref=e321]':
+            - img [ref=e322]
+            - text: תובנות סטטיות בלבד (AI לא זמין)
+        - paragraph [ref=e324]: פרק משימות גדולות למשימות קטנות של 15 דקות. כל וי (V) קטן כזה בונה את תחושת המסוגלות שלך מחדש. חפש "למידת מיקרו" (Micro-learning) של 10 דקות ביום בנושא שמעניין אותך.
+      - generic [ref=e325]:
+        - heading "שייכות תובנות סטטיות בלבד (AI לא זמין)" [level=4] [ref=e326]:
+          - text: שייכות
+          - 'generic "Firebase: No Firebase App ''[DEFAULT]'' has been created - call Firebase App.initializeApp() (app-compat/no-app)." [ref=e328]':
+            - img [ref=e329]
+            - text: תובנות סטטיות בלבד (AI לא זמין)
+        - paragraph [ref=e331]: קבע "קפה וירטואלי" או פיזי של 10 דקות עם קולגה שלא דיברת איתו מזמן. השיתוף בקשיים קטנים יכול לייצר חיבור מהיר ולהפחית את תחושת הבידוד.
+  - generic [ref=e332]:
+    - heading "האם התובנות עזרו לך?" [level=4] [ref=e333]
+    - generic [ref=e334]:
+      - button [ref=e335] [cursor=pointer]:
+        - img [ref=e336]
+      - button [ref=e338] [cursor=pointer]:
+        - img [ref=e339]
+  - button "העתק דוח מלא" [ref=e342] [cursor=pointer]:
+    - img [ref=e343]
+    - text: העתק דוח מלא
+  - generic [ref=e346]:
+    - paragraph [ref=e347]: עקבו אחריי לעוד
+    - generic [ref=e348]:
+      - link [ref=e349] [cursor=pointer]:
+        - /url: https://www.linkedin.com/in/davidtsur/
+        - img [ref=e350]
+      - link [ref=e354] [cursor=pointer]:
+        - /url: https://www.youtube.com/@ADHDudiDO
+        - img [ref=e355]
+      - link [ref=e358] [cursor=pointer]:
+        - /url: https://www.facebook.com/ADHDudi.D
+        - img [ref=e359]
+    - button "התחל שאלון מחדש" [ref=e361] [cursor=pointer]
