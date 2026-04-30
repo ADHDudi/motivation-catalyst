@@ -4,7 +4,7 @@ import WelcomeView from './views/WelcomeView';
 import AssessmentView from './views/AssessmentView';
 import AnalysisView from './views/AnalysisView';
 import { Language, FormData, Answers, Results, CategoryKey } from './types';
-import { signInWithGoogle, onAuthStateChange } from './authUtils';
+import { signInWithGoogle, onAuthStateChange, signInWithEmail, signUpWithEmail, sendPasswordReset } from './authUtils';
 
 const App = () => {
   const [lang, setLang] = useState<Language>('he');
@@ -14,6 +14,8 @@ const App = () => {
   const [answers, setAnswers] = useState<Answers>({});
   const [results, setResults] = useState<Results | null>(null);
   const [statusMsg, setStatusMsg] = useState('');
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [authSuccess, setAuthSuccess] = useState<string | null>(null);
 
   const t = TRANSLATIONS[lang];
 
@@ -42,6 +44,82 @@ const App = () => {
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const advanceToAssessment = (user: any) => {
+    if (!user) {
+      setAuthError(lang === 'he' ? 'אימות נכשל. נסה שוב' : 'Authentication failed. Please try again');
+      return;
+    }
+    setFormData(prev => ({
+      ...prev,
+      employeeName: user.displayName || prev.employeeName,
+      employeeEmail: user.email || prev.employeeEmail,
+    }));
+    setStep('assessment');
+    setCurrentQuestionIndex(0);
+  };
+
+  const handleEmailSignIn = async (email: string, password: string) => {
+    setAuthError(null);
+    setAuthSuccess(null);
+    try {
+      const user = await signInWithEmail(email, password);
+      advanceToAssessment(user);
+    } catch (error: any) {
+      const code = error?.code || '';
+      if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        setAuthError(lang === 'he' ? 'אימייל או סיסמה שגויים' : 'Invalid email or password');
+      } else if (code === 'auth/too-many-requests') {
+        setAuthError(lang === 'he' ? 'יותר מדי ניסיונות. נסה שוב מאוחר יותר' : 'Too many attempts. Try again later');
+      } else if (code === 'auth/invalid-email') {
+        setAuthError(lang === 'he' ? 'כתובת אימייל לא תקינה' : 'Invalid email address');
+      } else if (code === 'auth/network-request-failed') {
+        setAuthError(lang === 'he' ? 'בעיית חיבור לרשת. בדוק את החיבור שלך' : 'Network error. Check your connection');
+      } else {
+        setAuthError(lang === 'he' ? 'שגיאת התחברות. נסה שוב' : 'Sign in failed. Please try again');
+      }
+    }
+  };
+
+  const handleEmailSignUp = async (email: string, password: string) => {
+    setAuthError(null);
+    setAuthSuccess(null);
+    try {
+      const user = await signUpWithEmail(email, password);
+      advanceToAssessment(user);
+    } catch (error: any) {
+      const code = error?.code || '';
+      if (code === 'auth/email-already-in-use') {
+        setAuthError(lang === 'he' ? 'כתובת האימייל כבר רשומה במערכת' : 'Email already in use. Try signing in instead');
+      } else if (code === 'auth/weak-password') {
+        setAuthError(lang === 'he' ? 'הסיסמה חלשה מדי (מינימום 6 תווים)' : 'Password is too weak (min 6 characters)');
+      } else if (code === 'auth/invalid-email') {
+        setAuthError(lang === 'he' ? 'כתובת אימייל לא תקינה' : 'Invalid email address');
+      } else if (code === 'auth/network-request-failed') {
+        setAuthError(lang === 'he' ? 'בעיית חיבור לרשת. בדוק את החיבור שלך' : 'Network error. Check your connection');
+      } else {
+        setAuthError(lang === 'he' ? 'הרשמה נכשלה. נסה שוב' : 'Sign up failed. Please try again');
+      }
+    }
+  };
+
+  const handleForgotPassword = async (email: string) => {
+    setAuthError(null);
+    setAuthSuccess(null);
+    try {
+      await sendPasswordReset(email);
+      setAuthSuccess(lang === 'he' ? 'קישור לאיפוס סיסמה נשלח לאימייל שלך' : 'Password reset link sent — check your inbox');
+    } catch (error: any) {
+      const code = error?.code || '';
+      if (code === 'auth/user-not-found') {
+        setAuthError(lang === 'he' ? 'לא נמצא חשבון עם כתובת האימייל הזו' : 'No account found with this email');
+      } else if (code === 'auth/network-request-failed') {
+        setAuthError(lang === 'he' ? 'בעיית חיבור לרשת. בדוק את החיבור שלך' : 'Network error. Check your connection');
+      } else {
+        setAuthError(lang === 'he' ? 'שליחה נכשלה. בדוק את האימייל ונסה שוב' : 'Failed to send. Check the email and try again');
+      }
     }
   };
 
@@ -86,6 +164,8 @@ const App = () => {
 
   const handleStart = (e: React.FormEvent) => {
     e.preventDefault();
+    setAuthError(null);
+    setAuthSuccess(null);
     if (!formData.employeeName) return;
     setStep('assessment');
     setCurrentQuestionIndex(0);
@@ -238,6 +318,11 @@ const App = () => {
           onStart={handleStart}
           onDemo={handleDemo}
           onGoogleLogin={handleGoogleLogin}
+          onEmailSignIn={handleEmailSignIn}
+          onEmailSignUp={handleEmailSignUp}
+          onForgotPassword={handleForgotPassword}
+          authError={authError}
+          authSuccess={authSuccess}
         />
       )}
       {step === 'assessment' && (
