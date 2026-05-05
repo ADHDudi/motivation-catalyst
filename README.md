@@ -4,23 +4,29 @@
 
 # Motivation Catalyst
 
-Welcome to the **Motivation Catalyst** app! This document guides you through running the project locally, and breaks down the project from three key angles: the core business value, the end-to-end user journey, and the concrete outputs users receive.
+Welcome to **Motivation Catalyst** — an innovative assessment and insights platform built on **Self-Determination Theory (SDT)**. This document guides you through running the project locally and explains the app from three key perspectives: business value, the end-to-end user journey, and the outputs users receive.
 
 ---
 
-## Run Locally
+## Quick Start
 
 **Prerequisites:** Node.js
 
 1. Install dependencies:
-   `npm install`
+   ```bash
+   npm install
+   ```
+
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+
 3. Run the app:
-   `npm run dev`
+   ```bash
+   npm run dev
+   ```
 
 View your app in AI Studio: https://ai.studio/apps/drive/1lqunQla3uPI2xRCwJq-5Qbxs4YLHM-Rw
 
-## URLs
+## Environments
 
 | Environment  | URL                                                        |
 | ------------ | ---------------------------------------------------------- |
@@ -32,12 +38,22 @@ View your app in AI Studio: https://ai.studio/apps/drive/1lqunQla3uPI2xRCwJq-5Qb
 
 ## 1. Business Value Perspective
 
-The Motivation Catalyst application is a scientific motivation assessment tool based on **Self-Determination Theory (SDT)**. It is designed to help employees and managers improve workplace dynamics by measuring core psychological needs. Its primary business value includes:
+**Motivation Catalyst** is a scientific motivation assessment tool grounded in **Self-Determination Theory (SDT)**, which identifies three basic psychological needs essential for well-being: **Autonomy**, **Competence**, and **Relatedness**.
 
-* **Scientific Framework & Workplace Analytics:** Grounded in SDT, the app evaluates employee motivation across three critical axes: **Autonomy** (the need to control one's work), **Competence** (the need for mastery), and **Relatedness** (the need to belong).
-* **Early Intervention for "At-Risk" Talent:** By identifying low motivation scores, managers and organizations can proactively intervene before burnout or turnover occurs.
-* **Managerial Enablement:** The tool bridges the gap between employee sentiment and management action. It equips leadership with direct feedback and practical recommendations on how to support each specific team member based on their unique motivational profile.
-* **Neurodivergent Context:** The app offers specialized guidance (e.g., specific ADHD executive function hacks) within the context of core motivations, ensuring diverse mindsets are understood and engaged effectively.
+### Core Objectives
+
+* **Scientific Framework & Workplace Analytics:** The app evaluates employee motivation across three critical axes:
+  - **Autonomy** — The need to control one's work and have agency
+  - **Competence** — The need for mastery and effectiveness
+  - **Relatedness** — The need to belong and connect with others
+
+* **Early Intervention for At-Risk Talent:** By identifying low motivation scores, managers and organizations can proactively intervene before burnout or turnover occurs.
+
+* **Managerial Enablement:** The tool bridges the gap between employee sentiment and management action, equipping leadership with direct feedback and practical recommendations tailored to each team member's unique motivational profile.
+
+* **Neurodivergent Inclusivity:** The application integrates specialized AI to generate tailored workplace and coaching tips for individuals with ADHD and other neurodivergent profiles, ensuring advice is actionable and accommodating to diverse work styles.
+
+* **Bridge Communication Gaps:** It acts as a facilitator between employees and managers (or between co-founders), establishing mutual understanding and aligning goals for better productivity and job satisfaction.
 
 ---
 
@@ -45,28 +61,77 @@ The Motivation Catalyst application is a scientific motivation assessment tool b
 
 The application flows seamlessly, fostering self-reflection and communication:
 
-1. **Onboarding & Context Setting:**
-   * The user arrives at the platform and views an introduction to intrinsic drivers. They enter their name, email, and their manager's details. They can also seamlessly authenticate via Google Authentication.
-2. **The Assessment Interface:**
-   * The user answers a series of structured questions, evaluating themselves on specific statements related to workplace autonomy, mastery, and relationships.
-   * Feedback is gathered continuously as they progress through the intuitive questionnaire.
-3. **Instant Profile Analysis:**
-   * Upon completing the assessment, the app instantly reveals the employee's Motivation Catalyst dashboard.
-   * The user receives a visually coded breakdown of their scores across the three SDT axes.
-4. **Deep Dive & Actionable Guidance:**
-   * Beyond raw scores, the internal engine triggers deep analysis. It provides "Personal Insights" for the employee to reflect on, and parallel "Manager Recommendations."
-5. **Engagement & Sharing:**
-   * The user can review AI-driven strategy tips and easily bundle the entire report to a clipboard format, ready to be sent to their manager for a constructive alignment conversation.
+### Step 1: Onboarding & Welcome (`WelcomeView`)
+* Users land on the platform and receive a brief introduction to Self-Determination Theory.
+* They learn about the value of understanding their core motivations and how it solves common workplace pain points.
+* Users authenticate via **Google Sign-In**, **Email/Password Sign In**, or **Sign Up** with email.
+* They enter their basic details (Name, Email) and optional manager context to begin the assessment.
+
+### Step 2: The Assessment (`AssessmentView`)
+* Users answer a weighted questionnaire (18 questions) assessing their levels of Autonomy, Competence, and Relatedness.
+* The application features built-in localization (English/Hebrew) and tracks question progress dynamically.
+* Users receive continuous feedback as they progress through the intuitive questionnaire.
+
+### Step 3: AI-Powered Analysis
+* Once the assessment is complete, the application communicates securely with a Firebase Cloud Functions backend.
+* Using the Google Gemini API, the system formulates deep psychological models matching the user's questionnaire scores.
+* It generates distinct insights based on whether the user scored High, Mid, or At-Risk (Low) in the SDT categories.
+
+### Step 4: Reviewing Results (`AnalysisView`)
+* Users are presented with a rich, interactive summary of their motivation footprint.
+* The UI displays a visual output (such as a **Polar Chart**) mapping results across the three SDT axes.
+* Users can view:
+  - **Personal Insights:** Psychological breakdown of current state and recommended self-improvement actions
+  - **Manager Recommendations:** Specific steps managers can take to improve performance and well-being
+  - **AI Deep Analysis:** Curated mental strategies and workflow tips matching the user's specific profile
+  - **ADHD-Specific Guidance:** Neurodivergent-friendly strategies and accommodations
 
 ---
 
-## 3. Outputs and Artifacts Provided to the User
+## 3. Outputs and Artifacts
 
-By completing the motivation assessment, the user generates a set of highly actionable artifacts:
+By completing the motivation assessment, users generate a set of highly actionable artifacts:
 
-* **The SDT Motivation Snapshot:** A quantitative scoring (out of 5.0) of Autonomy, Competence, and Relatedness.
-* **Dual-Target Analytical Briefs:**
-  * **Personal Insights:** A psychological breakdown of the employee's current state and recommended self-improvement or communication actions.
-  * **Manager Recommendations:** Specific steps a manager must take (e.g., offering more flexible deadlines, increasing feedback loops, or assigning a mentor) to improve performance and well-being.
-* **Strategic AI Tips:** Curated mental strategies and workflow tips mapping directly to their lowest or highest driving factors.
-* **The Final Report Deliverable:** A cleanly formatted text report encompassing all analysis and recommended actions, easily copied or emailed directly to leadership to initiate immediate change.
+### The SDT Motivation Snapshot
+* Quantitative scoring (out of 5.0) for Autonomy, Competence, and Relatedness
+* Visual representation via an interactive polar chart
+
+### Dual-Target Analytical Briefs
+* **Personal Insights:** A psychological breakdown with recommended self-improvement or communication actions
+* **Manager Recommendations:** Specific, actionable steps for leadership to support the employee, such as:
+  - Offering flexible deadlines
+  - Increasing feedback loops
+  - Assigning a mentor
+  - Creating autonomy opportunities
+
+### Actionable AI & ADHD Tips
+* **For Employees:** Direct strategies on how to approach tasks, communicate boundaries, ask for help — customized with specialized ADHD executive function hacks
+* **For Managers (or Co-founders):** Guidance on how to best manage, support, and communicate based on the user's specific motivational profile
+
+### Conversation Starters
+* Generated by the AI, these are practical scenarios or talking points designed to help individuals initiate difficult or productive conversations with their managers regarding their needs
+
+### Shareable Deliverables
+* **Copy Full Report:** Users can easily copy the entire analysis to clipboard in a cleanly formatted text report
+* **Email Prep:** Users can automatically generate a pre-drafted email to initiate transparent dialogue with leadership
+* **Visual Data:** The polar chart visualization provides a quick, digestible artifact perfect for performance reviews or 1-on-1 meetings
+
+---
+
+## Architecture Overview
+
+**Tech Stack:**
+* React 19 + TypeScript
+* Vite (dev server)
+* Firebase Authentication (email/password, Google Sign-In)
+* Firebase Cloud Functions (backend analysis)
+* Google Gemini API (AI-powered insights)
+* Tailwind CSS (styling)
+* Playwright (end-to-end testing)
+
+**Key Features:**
+* Bilingual support (Hebrew/English)
+* Real-time assessment progress tracking
+* Firebase-based user authentication
+* AI-generated personalized insights
+* Responsive, accessible UI with ARIA labels
