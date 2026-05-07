@@ -27,15 +27,15 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({ t, lang, currentQuestio
           <Logo size="sm" />
         </div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[10px] font-black text-slate-300 uppercase">{t.questionProgress} {currentQuestionIndex + 1} / {QUESTIONS.length}</h2>
+          <h2 className="text-[10px] font-black text-slate-300 uppercase" style={{ color: 'var(--b2c-ink)' }}>{t.questionProgress} {currentQuestionIndex + 1} / {QUESTIONS.length}</h2>
           <span className="text-[10px] font-black px-4 py-1 rounded-full uppercase" style={{ backgroundColor: hexToRgba(COLORS[q.category].hex, 0.1), color: COLORS[q.category].hex }}>{t.categories[q.category]}</span>
         </div>
         <div className="h-2 w-full bg-slate-50 rounded-full overflow-hidden border border-slate-100">
-          <div className="h-full bg-[#78A9D6] transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
+          <div className="h-full transition-all duration-500 ease-out" style={{ backgroundColor: 'var(--b2c-azure)', width: `${progress}%` }} />
         </div>
       </div>
       <div className="flex-1 p-10 flex flex-col justify-center bg-[#F8FAFC]/50">
-        <p className="text-3xl font-black text-[#324FA2] leading-tight mb-12">{q.text[lang]}</p>
+        <p className="text-3xl font-black leading-tight mb-12" style={{ color: 'var(--b2c-ink)' }}>{q.text[lang]}</p>
         <div className="grid grid-cols-5 gap-3">
           {[1, 2, 3, 4, 5].map((v) => (
             <button 
