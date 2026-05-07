@@ -249,10 +249,8 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
               <button
                 type="button"
                 onClick={() => { setLocalError(null); setPassword(''); setConfirmPassword(''); setAuthMode('signup'); }}
-                className="text-[14px] font-bold transition-colors ms-1"
+                className="text-[14px] font-bold transition-colors hover:text-[var(--b2c-sky)] ms-1"
                 style={{ color: 'var(--b2c-azure)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
               >
                 {lang === 'he' ? 'הרשם' : 'Sign up'}
               </button>
@@ -264,10 +262,8 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
               <button
                 type="button"
                 onClick={() => { setLocalError(null); setPassword(''); setConfirmPassword(''); setAuthMode('signin'); }}
-                className="text-[14px] font-bold transition-colors"
+                className="text-[14px] font-bold transition-colors hover:text-[var(--b2c-sky)]"
                 style={{ color: 'var(--b2c-azure)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
               >
                 {lang === 'he' ? '← חזור להתחברות' : '← Back to Sign In'}
               </button>
