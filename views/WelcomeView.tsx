@@ -235,7 +235,8 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
 
           <button
             type="submit"
-            className="w-full bg-[#111827] text-white font-bold text-[15px] py-4 rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.15)] hover:bg-black hover:shadow-lg transition-all mb-8"
+            className="w-full text-white font-bold text-[15px] py-4 rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.15)] hover:shadow-lg transition-all mb-8"
+            style={{ backgroundImage: 'var(--gradient-b2c)' }}
           >
             {submitLabel}
           </button>
@@ -248,7 +249,10 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
               <button
                 type="button"
                 onClick={() => { setLocalError(null); setPassword(''); setConfirmPassword(''); setAuthMode('signup'); }}
-                className="text-[#8B5CF6] text-[14px] font-bold hover:text-[#7C3AED] transition-colors ms-1"
+                className="text-[14px] font-bold transition-colors ms-1"
+                style={{ color: 'var(--b2c-azure)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
               >
                 {lang === 'he' ? 'הרשם' : 'Sign up'}
               </button>
@@ -260,7 +264,10 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
               <button
                 type="button"
                 onClick={() => { setLocalError(null); setPassword(''); setConfirmPassword(''); setAuthMode('signin'); }}
-                className="text-[#8B5CF6] text-[14px] font-bold hover:text-[#7C3AED] transition-colors"
+                className="text-[14px] font-bold transition-colors"
+                style={{ color: 'var(--b2c-azure)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
               >
                 {lang === 'he' ? '← חזור להתחברות' : '← Back to Sign In'}
               </button>
