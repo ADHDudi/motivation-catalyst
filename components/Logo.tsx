@@ -21,17 +21,17 @@ const Logo: React.FC<LogoProps> = ({ size = "sm" }) => {
       dir="ltr"
     >
       <div className="flex gap-1 items-end">
-        <div className={`${boxW} ${boxH} bg-[#E46B3F] rounded-t-full rounded-b-lg flex flex-col items-center justify-center relative shadow-sm group-hover:shadow-md transition-shadow`}>
+        <div className={`${boxW} ${boxH} bg-[#1F7AFF] rounded-t-full rounded-b-lg flex flex-col items-center justify-center relative shadow-sm group-hover:shadow-md transition-shadow`}>
           <Zap size={iconSize} className="text-white fill-white -mt-1" />
           <div className="absolute bottom-1 left-1.5 flex flex-col gap-0.5">
             <div className={`${isLg ? 'w-4 h-1.5' : 'w-2.5 h-1'} bg-[#90BC6E] rounded-sm`} />
             <div className={`${isLg ? 'w-4 h-1.5' : 'w-2.5 h-1'} bg-[#90BC6E] rounded-sm`} />
           </div>
         </div>
-        <div className={`${boxW} ${boxH} bg-[#D9618E] rounded-tr-[50%] rounded-br-lg rounded-tl-lg rounded-bl-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
+        <div className={`${boxW} ${boxH} bg-[#3CDCF0] rounded-tr-[50%] rounded-br-lg rounded-tl-lg rounded-bl-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
           <Zap size={iconSize} className="text-white fill-white" />
         </div>
-        <div className={`${boxW} ${boxH} bg-[#78A9D6] rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
+        <div className={`${boxW} ${boxH} bg-[#38BDF8] rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>
           <Zap size={iconSize} className="text-white fill-white" />
         </div>
         <div className={`${boxW} ${boxH} bg-[#324FA2] rounded-tr-[50%] rounded-br-lg rounded-tl-lg rounded-bl-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}>

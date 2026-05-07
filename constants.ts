@@ -25,25 +25,25 @@ export const QUESTIONS: Question[] = [
 ];
 
 export const BRAND_HEX: BrandColors = {
-  orange: '#E46B3F',
+  orange: '#1F7AFF',
   green: '#90BC6E',
-  pink: '#D9618E',
-  lightBlue: '#78A9D6',
+  pink: '#3CDCF0',
+  lightBlue: '#38BDF8',
   darkBlue: '#324FA2',
   offWhite: '#F8FAFC'
 };
 
 export const COLORS: Record<CategoryKey, CategoryColor> = {
-  autonomy: { hex: BRAND_HEX.orange, bg: 'bg-[#E46B3F]/5', text: 'text-[#E46B3F]', border: 'border-[#E46B3F]/20' },
-  competence: { hex: BRAND_HEX.lightBlue, bg: 'bg-[#78A9D6]/5', text: 'text-[#78A9D6]', border: 'border-[#78A9D6]/20' }, 
-  relatedness: { hex: BRAND_HEX.pink, bg: 'bg-[#D9618E]/5', text: 'text-[#D9618E]', border: 'border-[#D9618E]/20' } 
+  autonomy: { hex: BRAND_HEX.orange, bg: 'bg-[#1F7AFF]/5', text: 'text-[#1F7AFF]', border: 'border-[#1F7AFF]/20' },
+  competence: { hex: BRAND_HEX.lightBlue, bg: 'bg-[#38BDF8]/5', text: 'text-[#38BDF8]', border: 'border-[#38BDF8]/20' },
+  relatedness: { hex: BRAND_HEX.pink, bg: 'bg-[#3CDCF0]/5', text: 'text-[#3CDCF0]', border: 'border-[#3CDCF0]/20' }
 };
 
 export const RATING_COLORS: Record<number, RatingColor> = {
-  1: { selected: 'bg-[#E46B3F] text-white border-[#E46B3F] shadow-lg shadow-[#E46B3F]/30', unselected: 'bg-white text-[#E46B3F] border-[#E46B3F]/20 hover:border-[#E46B3F] hover:bg-[#E46B3F]/5' },
-  2: { selected: 'bg-[#D9618E] text-white border-[#D9618E] shadow-lg shadow-[#D9618E]/30', unselected: 'bg-white text-[#D9618E] border-[#D9618E]/20 hover:border-[#D9618E] hover:bg-[#D9618E]/5' },
+  1: { selected: 'bg-[#1F7AFF] text-white border-[#1F7AFF] shadow-lg shadow-[#1F7AFF]/30', unselected: 'bg-white text-[#1F7AFF] border-[#1F7AFF]/20 hover:border-[#1F7AFF] hover:bg-[#1F7AFF]/5' },
+  2: { selected: 'bg-[#3CDCF0] text-white border-[#3CDCF0] shadow-lg shadow-[#3CDCF0]/30', unselected: 'bg-white text-[#3CDCF0] border-[#3CDCF0]/20 hover:border-[#3CDCF0] hover:bg-[#3CDCF0]/5' },
   3: { selected: 'bg-slate-400 text-white border-slate-400 shadow-lg shadow-slate-400/30', unselected: 'bg-white text-slate-400 border-slate-200 hover:border-slate-400 hover:bg-slate-50' },
-  4: { selected: 'bg-[#78A9D6] text-white border-[#78A9D6] shadow-lg shadow-[#78A9D6]/30', unselected: 'bg-white text-[#78A9D6] border-[#78A9D6]/20 hover:border-[#78A9D6] hover:bg-[#78A9D6]/5' },
+  4: { selected: 'bg-[#38BDF8] text-white border-[#38BDF8] shadow-lg shadow-[#38BDF8]/30', unselected: 'bg-white text-[#38BDF8] border-[#38BDF8]/20 hover:border-[#38BDF8] hover:bg-[#38BDF8]/5' },
   5: { selected: 'bg-[#324FA2] text-white border-[#324FA2] shadow-lg shadow-[#324FA2]/30', unselected: 'bg-white text-[#324FA2] border-[#324FA2]/20 hover:border-[#324FA2] hover:bg-[#324FA2]/5' },
 };
 

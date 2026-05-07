@@ -206,7 +206,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[cat].hex }}></div>
                     {t.categories[cat]}
                     {isLoadingAI && <span className="text-xs font-normal text-slate-400 flex items-center gap-1 animate-pulse">{lang === 'he' ? '(מייצר תובנות מותאמות אישית...)' : '(Generating personalized insights...)'}</span>}
-                    {aiError && <span className="text-[10px] text-[#E46B3F] bg-[#E46B3F]/10 px-2 py-0.5 rounded-full border border-[#E46B3F]/20 flex items-center gap-1" title={aiError}><AlertCircle size={10} /> {lang === 'he' ? 'תובנות סטטיות בלבד (AI לא זמין)' : 'Static insights only (AI unavailable)'}</span>}
+                    {aiError && <span className="text-[10px] text-[#1F7AFF] bg-[#1F7AFF]/10 px-2 py-0.5 rounded-full border border-[#1F7AFF]/20 flex items-center gap-1" title={aiError}><AlertCircle size={10} /> {lang === 'he' ? 'תובנות סטטיות בלבד (AI לא זמין)' : 'Static insights only (AI unavailable)'}</span>}
                     {isDynamic && <span className="text-[10px] bg-[#324FA2]/10 text-[#324FA2] px-2 py-0.5 rounded-full">{lang === 'he' ? 'מותאם AI' : 'AI Personalized'}</span>}
                   </h4>
                   <p className="text-sm text-slate-600 font-bold leading-relaxed">
@@ -215,12 +215,12 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
 
                   {adhdTip && (
                     <div className="mt-4 pt-4 border-t border-slate-100">
-                      <h5 className="font-extrabold text-[#E46B3F] text-xs uppercase tracking-wider mb-2 flex items-center gap-1">
+                      <h5 className="font-extrabold text-[#1F7AFF] text-xs uppercase tracking-wider mb-2 flex items-center gap-1">
                         <BrainCircuit size={14} />
                         {lang === 'he' ? 'טיפ מותאם קשב (ADHD)' : 'ADHD Focus Tip'}
                       </h5>
-                      <p className="text-sm text-slate-600 font-medium leading-relaxed bg-white p-3 rounded-xl border border-[#E46B3F]/20 shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-1 h-full bg-[#E46B3F]"></div>
+                      <p className="text-sm text-slate-600 font-medium leading-relaxed bg-white p-3 rounded-xl border border-[#1F7AFF]/20 shadow-sm relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1 h-full bg-[#1F7AFF]"></div>
                         {adhdTip}
                       </p>
                     </div>
@@ -243,7 +243,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
               <h4 className="font-black text-lg mb-6" style={{ color: 'var(--b2c-deep)' }}>{t.feedbackTitle}</h4>
               <div className="flex justify-center gap-6 mb-6">
                 <button onClick={() => handleThumbClick(5)} className={`p-4 bg-white rounded-full shadow-sm hover:bg-[#90BC6E] hover:text-white transition-all active:scale-95 border border-slate-100 ${rating === 5 ? 'bg-[#90BC6E] text-white ring-4 ring-[#90BC6E]/30' : ''}`}><ThumbsUp size={24} /></button>
-                <button onClick={() => handleThumbClick(1)} className={`p-4 bg-white rounded-full shadow-sm hover:bg-[#E46B3F] hover:text-white transition-all active:scale-95 border border-slate-100 ${rating === 1 ? 'bg-[#E46B3F] text-white ring-4 ring-[#E46B3F]/30' : ''}`}><ThumbsDown size={24} /></button>
+                <button onClick={() => handleThumbClick(1)} className={`p-4 bg-white rounded-full shadow-sm hover:bg-[#1F7AFF] hover:text-white transition-all active:scale-95 border border-slate-100 ${rating === 1 ? 'bg-[#1F7AFF] text-white ring-4 ring-[#1F7AFF]/30' : ''}`}><ThumbsDown size={24} /></button>
               </div>
 
               {feedbackState === 'commenting' && (
@@ -272,7 +272,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
           <p className="text-sm font-black text-slate-300 uppercase tracking-widest">{t.followMe}</p>
           <div className="flex gap-8" dir="ltr">
             <a href="https://www.linkedin.com/in/davidtsur/" target="_blank" rel="noopener noreferrer" onClick={() => onSocialClick?.('linkedin')} className="p-4 bg-slate-50 rounded-full hover:bg-[var(--b2c-azure)] hover:text-white text-[var(--b2c-azure)] transition-colors shadow-sm" style={{}}><Linkedin size={24} /></a>
-            <a href="https://www.youtube.com/@ADHDudiDO" target="_blank" rel="noopener noreferrer" onClick={() => onSocialClick?.('youtube')} className="p-4 bg-slate-50 rounded-full hover:bg-[#E46B3F] hover:text-white text-[var(--b2c-azure)] transition-colors shadow-sm" style={{}}><Youtube size={24} /></a>
+            <a href="https://www.youtube.com/@ADHDudiDO" target="_blank" rel="noopener noreferrer" onClick={() => onSocialClick?.('youtube')} className="p-4 bg-slate-50 rounded-full hover:bg-[#1F7AFF] hover:text-white text-[var(--b2c-azure)] transition-colors shadow-sm" style={{}}><Youtube size={24} /></a>
             <a href="https://www.facebook.com/ADHDudi.D" target="_blank" rel="noopener noreferrer" onClick={() => onSocialClick?.('facebook')} className="p-4 bg-slate-50 rounded-full hover:bg-[var(--b2c-azure)] hover:text-white text-[var(--b2c-azure)] transition-colors shadow-sm" style={{}}><Facebook size={24} /></a>
           </div>
 
