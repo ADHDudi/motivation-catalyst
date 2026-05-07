@@ -249,13 +249,11 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
               {feedbackState === 'commenting' && (
                 <div className="animate-in slide-in-from-bottom-2 fade-in max-w-sm mx-auto">
                   <textarea
-                    className="w-full p-4 rounded-2xl bg-white border border-slate-200 text-sm focus:outline-none mb-3 min-h-[80px] transition-colors"
+                    className="w-full p-4 rounded-2xl bg-white border border-slate-200 text-sm focus:outline-none focus:border-[var(--b2c-azure)] mb-3 min-h-[80px] transition-colors"
                     placeholder={t.feedbackComment}
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     style={{ '--tw-border-opacity': '1' } as React.CSSProperties & { '--tw-border-opacity': string }}
-                    onFocus={(e) => e.currentTarget.style.borderColor = 'var(--b2c-azure)'}
-                    onBlur={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
                   />
                   <button onClick={handleSubmitFeedback} className="px-6 py-2 text-white rounded-full text-sm font-bold flex items-center gap-2 mx-auto transition-colors" style={{ backgroundImage: 'var(--gradient-b2c)' }}>
                     {t.sendFeedback} <Send size={14} className={t.dir === 'rtl' ? 'rotate-180' : ''} />
@@ -273,13 +271,13 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
         <div className="mt-20 pt-10 border-t-4 border-dashed border-slate-50 flex flex-col items-center gap-6">
           <p className="text-sm font-black text-slate-300 uppercase tracking-widest">{t.followMe}</p>
           <div className="flex gap-8" dir="ltr">
-            <a href="https://www.linkedin.com/in/davidtsur/" target="_blank" rel="noopener noreferrer" onClick={() => onSocialClick?.('linkedin')} className="p-4 bg-slate-50 rounded-full hover:text-white transition-all shadow-sm" style={{ color: 'var(--b2c-azure)' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--b2c-azure)'; e.currentTarget.style.color = 'white'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgb(248, 250, 252)'; e.currentTarget.style.color = 'var(--b2c-azure)'; }}><Linkedin size={24} /></a>
-            <a href="https://www.youtube.com/@ADHDudiDO" target="_blank" rel="noopener noreferrer" onClick={() => onSocialClick?.('youtube')} className="p-4 bg-slate-50 rounded-full hover:text-white transition-all shadow-sm" style={{ color: 'var(--b2c-azure)' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#E46B3F'; e.currentTarget.style.color = 'white'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgb(248, 250, 252)'; e.currentTarget.style.color = 'var(--b2c-azure)'; }}><Youtube size={24} /></a>
-            <a href="https://www.facebook.com/ADHDudi.D" target="_blank" rel="noopener noreferrer" onClick={() => onSocialClick?.('facebook')} className="p-4 bg-slate-50 rounded-full hover:text-white transition-all shadow-sm" style={{ color: 'var(--b2c-azure)' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--b2c-azure)'; e.currentTarget.style.color = 'white'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgb(248, 250, 252)'; e.currentTarget.style.color = 'var(--b2c-azure)'; }}><Facebook size={24} /></a>
+            <a href="https://www.linkedin.com/in/davidtsur/" target="_blank" rel="noopener noreferrer" onClick={() => onSocialClick?.('linkedin')} className="p-4 bg-slate-50 rounded-full hover:bg-[var(--b2c-azure)] hover:text-white text-[var(--b2c-azure)] transition-colors shadow-sm" style={{}}><Linkedin size={24} /></a>
+            <a href="https://www.youtube.com/@ADHDudiDO" target="_blank" rel="noopener noreferrer" onClick={() => onSocialClick?.('youtube')} className="p-4 bg-slate-50 rounded-full hover:bg-[#E46B3F] hover:text-white text-[var(--b2c-azure)] transition-colors shadow-sm" style={{}}><Youtube size={24} /></a>
+            <a href="https://www.facebook.com/ADHDudi.D" target="_blank" rel="noopener noreferrer" onClick={() => onSocialClick?.('facebook')} className="p-4 bg-slate-50 rounded-full hover:bg-[var(--b2c-azure)] hover:text-white text-[var(--b2c-azure)] transition-colors shadow-sm" style={{}}><Facebook size={24} /></a>
           </div>
 
           {/* Start Over Link */}
-          <button onClick={onReset} className="mt-4 font-bold text-sm underline transition-colors" style={{ color: 'var(--b2c-azure)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--b2c-deep)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--b2c-azure)'}>
+          <button onClick={onReset} className="mt-4 font-bold text-sm underline transition-colors text-[var(--b2c-azure)] hover:text-[var(--b2c-deep)]">
             {t.startOver}
           </button>
         </div>
