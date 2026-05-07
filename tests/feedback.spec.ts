@@ -4,29 +4,24 @@ import { test, expect } from '@playwright/test';
 test.describe('Feedback Mechanism', () => {
 
     test.beforeEach(async ({ page }) => {
-        // Go directly to analysis view via a shortcut if possible, 
+        // Go directly to analysis view via a shortcut if possible,
         // or just speed-run the assessment
         await page.goto('/');
 
-        // Login - using accessible name from labels
-        const nameInput = page.getByRole('textbox', { name: 'שם מלא' }).or(page.getByRole('textbox', { name: 'Full Name' }));
-        const emailInput = page.getByRole('textbox', { name: 'כתובת אימייל' }).or(page.getByRole('textbox', { name: 'Email Address' }));
-        await nameInput.fill('Feedback Tester');
-        await emailInput.fill('feedback@test.com');
-        await page.getByRole('button', { name: 'בואו נתחיל' }).or(page.getByRole('button', { name: 'Start Assessment' })).click();
+        // Wait for welcome screen to be visible
+        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' }).or(page.getByRole('heading', { name: 'The Motivation Catalyst' }))).toBeVisible({ timeout: 10000 });
 
-        // Speed run questions - there are 18 questions
-        for (let i = 0; i < 18; i++) {
-            // Wait for question to be visible
-            await expect(page.getByRole('heading', { level: 2 })).toBeVisible();
+        // Use demo mode to bypass authentication - enter "dudi" as email to trigger demo buttons
+        const emailInput = page.locator('input[type="email"]');
+        await emailInput.fill('dudi@test.com');
 
-            // Click answer option "3" (middle option)
-            await page.getByRole('button', { name: '3', exact: true }).click();
-            await page.waitForTimeout(100);
-        }
+        // Demo mode should appear - click to launch demo
+        await page.waitForTimeout(500); // Wait for demo buttons to appear
+        const demoBtn = page.locator('button').filter({ hasText: /high|mid|at-risk/ }).first();
+        await demoBtn.click();
 
-        // Wait for results - look for category names
-        await expect(page.getByText('אוטונומיה', { exact: false }).or(page.getByText('Autonomy'))).toBeVisible();
+        // Wait for analysis view to load - demo skips the assessment questions
+        await expect(page.getByText('אוטונומיה', { exact: false }).or(page.getByText('Autonomy')).first()).toBeVisible({ timeout: 10000 });
     });
 
     test('Submit Feedback (Happy Path)', async ({ page }) => {
