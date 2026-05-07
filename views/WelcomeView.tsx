@@ -101,9 +101,9 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
           </div>
           <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-[#90BC6E] rounded-full border-4 border-white shadow-lg" />
         </div>
-        <h1 className="text-3xl font-black tracking-tight text-[#324FA2] leading-tight mb-2">{t.title}</h1>
+        <h1 className="text-3xl font-black tracking-tight leading-tight mb-2" style={{ color: 'var(--b2c-ink)' }}>{t.title}</h1>
         <div className="inline-block px-4 py-1 bg-[#E46B3F]/10 rounded-full">
-          <p className="text-[#E46B3F] text-xs font-black uppercase tracking-widest">{t.subtitle}</p>
+          <p className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--b2c-azure)' }}>{t.subtitle}</p>
         </div>
       </div>
 
@@ -113,26 +113,26 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
             <div className="mb-8 p-6 bg-gradient-to-br from-[#E46B3F]/5 to-[#D9618E]/5 rounded-[30px] border-2 border-[#D9618E]/10 shadow-sm">
               <div className="flex items-center gap-3 mb-3">
                 <AlertCircle size={20} className="text-[#D9618E]" />
-                <h3 className="font-black text-lg text-[#324FA2]">{t.painTitle}</h3>
+                <h3 className="font-black text-lg" style={{ color: 'var(--b2c-ink)' }}>{t.painTitle}</h3>
               </div>
-              <p className="text-sm text-slate-600 font-bold leading-relaxed">{t.painText}</p>
+              <p className="text-sm font-bold leading-relaxed" style={{ color: 'var(--b2c-ink)', opacity: 0.85 }}>{t.painText}</p>
             </div>
 
             <div className="mb-8 p-6 bg-[#78A9D6]/5 rounded-[30px] border-2 border-[#78A9D6]/20 shadow-sm">
               <div className="flex items-center gap-3 mb-3">
                 <ShieldCheck size={20} className="text-[#324FA2]" />
-                <h3 className="font-black text-lg text-[#324FA2]">{t.solutionTitle}</h3>
+                <h3 className="font-black text-lg" style={{ color: 'var(--b2c-ink)' }}>{t.solutionTitle}</h3>
               </div>
-              <p className="text-sm text-slate-600 font-bold opacity-80 leading-relaxed">{t.solutionText}</p>
+              <p className="text-sm font-bold leading-relaxed" style={{ color: 'var(--b2c-ink)', opacity: 0.8 }}>{t.solutionText}</p>
             </div>
 
             <div className="mb-10 p-6 bg-[#90BC6E]/5 rounded-[30px] border-2 border-[#90BC6E]/10 shadow-sm">
-              <h3 className="font-black text-lg text-[#324FA2] mb-4 flex items-center gap-3">
+              <h3 className="font-black text-lg mb-4 flex items-center gap-3" style={{ color: 'var(--b2c-ink)' }}>
                 <Target size={20} className="text-[#90BC6E]" /> {t.valueTitle}
               </h3>
               <ul className="space-y-3">
                 {t.valueList.map((item, i) => (
-                  <li key={i} className="flex gap-3 text-sm text-slate-600 font-bold leading-tight">
+                  <li key={i} className="flex gap-3 text-sm font-bold leading-tight" style={{ color: 'var(--b2c-ink)', opacity: 0.85 }}>
                     <Zap size={14} className="text-[#E46B3F] shrink-0 mt-1" />
                     {String(item)}
                   </li>
@@ -144,7 +144,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
 
         <form onSubmit={handleSubmit} className="w-[95%] mx-auto block space-y-0 relative z-10">
           {modeHeading && (
-            <h2 className="text-xl font-black text-[#324FA2] text-center mb-6">{modeHeading}</h2>
+            <h2 className="text-xl font-black text-center mb-6" style={{ color: 'var(--b2c-ink)' }}>{modeHeading}</h2>
           )}
 
           {displayError && (
