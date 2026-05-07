@@ -307,7 +307,7 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F1F5F9] md:py-12 md:px-6 font-sans text-slate-900 selection:bg-[#78A9D6]/30">
+    <div className="min-h-screen md:py-12 md:px-6 font-sans text-slate-900 selection:bg-[#78A9D6]/30" style={{ backgroundColor: 'var(--b2c-ice)' }}>
       {step === 'welcome' && (
         <WelcomeView
           t={t}
