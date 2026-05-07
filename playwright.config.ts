@@ -11,7 +11,8 @@ export default defineConfig({
     workers: process.env.CI ? 1 : undefined,
     reporter: 'html',
     use: {
-        baseURL: process.env.BASE_URL || FIREBASE_URL,
+        // Default to localhost for local testing, Firebase URL for CI
+        baseURL: process.env.BASE_URL || (process.env.CI ? FIREBASE_URL : LOCAL_URL),
         trace: 'on-first-retry',
     },
     projects: [
