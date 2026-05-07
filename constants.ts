@@ -40,11 +40,11 @@ export const COLORS: Record<CategoryKey, CategoryColor> = {
 };
 
 export const RATING_COLORS: Record<number, RatingColor> = {
-  1: { selected: 'bg-[#E46B3F] text-white border-[#E46B3F] shadow-lg shadow-[#E46B3F]/30', unselected: 'bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-200' },
-  2: { selected: 'bg-[#D9618E] text-white border-[#D9618E] shadow-lg shadow-[#D9618E]/30', unselected: 'bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-200' },
-  3: { selected: 'bg-slate-400 text-white border-slate-400 shadow-lg shadow-slate-400/30', unselected: 'bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-200' },
-  4: { selected: 'bg-[#78A9D6] text-white border-[#78A9D6] shadow-lg shadow-[#78A9D6]/30', unselected: 'bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-200' },
-  5: { selected: 'bg-[#324FA2] text-white border-[#324FA2] shadow-lg shadow-[#324FA2]/30', unselected: 'bg-slate-100 text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-200' },
+  1: { selected: 'bg-[#E46B3F] text-white border-[#E46B3F] shadow-lg shadow-[#E46B3F]/30', unselected: 'bg-white text-[#E46B3F] border-[#E46B3F]/20 hover:border-[#E46B3F] hover:bg-[#E46B3F]/5' },
+  2: { selected: 'bg-[#D9618E] text-white border-[#D9618E] shadow-lg shadow-[#D9618E]/30', unselected: 'bg-white text-[#D9618E] border-[#D9618E]/20 hover:border-[#D9618E] hover:bg-[#D9618E]/5' },
+  3: { selected: 'bg-slate-400 text-white border-slate-400 shadow-lg shadow-slate-400/30', unselected: 'bg-white text-slate-400 border-slate-200 hover:border-slate-400 hover:bg-slate-50' },
+  4: { selected: 'bg-[#78A9D6] text-white border-[#78A9D6] shadow-lg shadow-[#78A9D6]/30', unselected: 'bg-white text-[#78A9D6] border-[#78A9D6]/20 hover:border-[#78A9D6] hover:bg-[#78A9D6]/5' },
+  5: { selected: 'bg-[#324FA2] text-white border-[#324FA2] shadow-lg shadow-[#324FA2]/30', unselected: 'bg-white text-[#324FA2] border-[#324FA2]/20 hover:border-[#324FA2] hover:bg-[#324FA2]/5' },
 };
 
 export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {

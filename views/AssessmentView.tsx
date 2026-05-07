@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronLeft } from 'lucide-react';
 import Logo from '../components/Logo';
-import { QUESTIONS, COLORS, RATING_COLORS } from '../constants';
+import { QUESTIONS, COLORS } from '../constants';
 import { hexToRgba } from '../utils';
 import { TranslationData, Answers, Language } from '../types';
 
@@ -38,10 +38,20 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({ t, lang, currentQuestio
         <p className="text-3xl font-black leading-tight mb-12" style={{ color: 'var(--b2c-ink)' }}>{q.text[lang]}</p>
         <div className="grid grid-cols-5 gap-3">
           {[1, 2, 3, 4, 5].map((v) => (
-            <button 
-              key={v} 
-              onClick={() => onAnswer(q.id, v)} 
-              className={`aspect-square rounded-3xl border-2 font-black text-2xl transition-all active:scale-90 flex items-center justify-center ${answers[q.id] === v ? RATING_COLORS[v].selected + ' scale-110' : RATING_COLORS[v].unselected}`}
+            <button
+              key={v}
+              onClick={() => onAnswer(q.id, v)}
+              className={`aspect-square rounded-3xl border-2 font-black text-2xl transition-all active:scale-90 flex items-center justify-center ${answers[q.id] === v ? 'scale-110 shadow-lg' : 'hover:bg-slate-200 hover:border-slate-300'}`}
+              style={answers[q.id] === v ? {
+                backgroundColor: 'var(--b2c-azure)',
+                color: 'white',
+                borderColor: 'var(--slate-200)',
+                boxShadow: '0 10px 15px -3px rgba(28, 121, 196, 0.3)'
+              } : {
+                backgroundColor: 'var(--slate-100)',
+                color: 'var(--b2c-ink)',
+                borderColor: 'var(--slate-200)'
+              }}
             >
               {v}
             </button>
