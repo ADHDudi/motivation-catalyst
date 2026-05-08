@@ -1,6 +1,5 @@
 import React from 'react';
 import { Beaker, AlertCircle, ShieldCheck, Target, Zap, ArrowRight, LogIn } from 'lucide-react';
-import Logo from '../components/Logo';
 import { TranslationData, FormData, Language } from '../types';
 
 interface WelcomeViewProps {
@@ -86,14 +85,13 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
       <div className="p-8 pt-12 text-center relative bg-white overflow-hidden text-slate-900">
         <div className="absolute top-0 left-0 w-32 h-32 bg-[#90BC6E]/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-0 w-32 h-32 bg-[#3CDCF0]/5 rounded-full blur-3xl" />
-        <div className="flex justify-between items-center mb-10 relative z-10">
+        <div className="flex justify-end mb-10 relative z-10">
           <button
             onClick={() => setLang(lang === 'he' ? 'en' : 'he')}
             className="bg-slate-50 text-slate-400 p-3 rounded-2xl text-[10px] font-black transition-all active:scale-90"
           >
             {lang === 'he' ? 'EN' : 'עב'}
           </button>
-          <Logo size="sm" />
         </div>
         <div className="relative inline-block mb-6 z-10">
           <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mx-auto shadow-xl border-4 border-[#324FA2]/5">
