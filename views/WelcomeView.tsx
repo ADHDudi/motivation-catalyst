@@ -1,5 +1,15 @@
 import React from 'react';
-import { Beaker, AlertCircle, ShieldCheck, Target, Zap, ArrowRight, LogIn } from 'lucide-react';
+import { AlertCircle, ShieldCheck, Target, Zap, ArrowRight, LogIn } from 'lucide-react';
+
+const MotivationOSHeroIcon: React.FC = () => (
+  <svg width="48" height="48" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="5" y="30" width="8" height="10" rx="2.5" fill="#38BDF8" fillOpacity="0.6" />
+    <rect x="17" y="20" width="8" height="20" rx="2.5" fill="#38BDF8" fillOpacity="0.8" />
+    <rect x="29" y="10" width="8" height="30" rx="2.5" fill="#1F7AFF" />
+    <path d="M33 6 L38 11 L35.5 11 L35.5 10 L30.5 10 L30.5 11 L28 11 Z" fill="#1F7AFF" />
+    <path d="M9 29 Q23 15 33 8" stroke="#3CDCF0" strokeWidth="1.5" fill="none" strokeDasharray="2,2" />
+  </svg>
+);
 import { Link } from 'react-router-dom';
 import { TranslationData, FormData, Language } from '../types';
 
@@ -96,7 +106,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
         </div>
         <div className="relative inline-block mb-6 z-10">
           <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mx-auto shadow-xl border-4 border-[#324FA2]/5">
-            <Beaker size={48} className="text-[#38BDF8]" strokeWidth={2.5} />
+            <MotivationOSHeroIcon />
           </div>
           <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-[#90BC6E] rounded-full border-4 border-white shadow-lg" />
         </div>

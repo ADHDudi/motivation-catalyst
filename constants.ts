@@ -50,7 +50,7 @@ export const RATING_COLORS: Record<number, RatingColor> = {
 export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
   he: {
     dir: 'rtl',
-    title: 'קתליזטור למוטיבציה', 
+    title: 'MotivationOS',
     subtitle: 'הנוסחה המדעית לצמיחה ומימוש',
     sdtIntro: 'גלו את המרכיבים המדויקים שיוצרים אצלכם מוטיבציה פנימית: אוטונומיה, מסוגלות ושייכות.',
     painTitle: 'מרגישים תקועים?',
@@ -158,7 +158,7 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
   },
   en: {
     dir: 'ltr',
-    title: 'The Motivation Catalyst',
+    title: 'MotivationOS',
     subtitle: 'Science-Backed Drive & Growth',
     sdtIntro: 'Discover the precise elements creating your inner drive: Autonomy, Competence, and Relatedness.',
     painTitle: 'Feeling Stuck?',
