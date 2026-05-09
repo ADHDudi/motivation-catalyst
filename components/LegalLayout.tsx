@@ -19,7 +19,9 @@ interface LegalLayoutProps {
 const LegalLayout: React.FC<LegalLayoutProps> = ({
   titleHe, titleEn, lastUpdated, sectionsHe, sectionsEn,
 }) => {
-  const [lang, setLang] = useState<'he' | 'en'>('he');
+  const [lang, setLang] = useState<'he' | 'en'>(
+    () => (localStorage.getItem('mc_lang') as 'he' | 'en') || 'he'
+  );
   const isRtl = lang === 'he';
   const sections = lang === 'he' ? sectionsHe : sectionsEn;
   const title = lang === 'he' ? titleHe : titleEn;

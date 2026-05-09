@@ -12,7 +12,13 @@ const PrivacyView = lazy(() => import('./views/legal/PrivacyView'));
 const AccessibilityView = lazy(() => import('./views/legal/AccessibilityView'));
 
 const App = () => {
-  const [lang, setLang] = useState<Language>('he');
+  const [lang, setLang] = useState<Language>(
+    () => (localStorage.getItem('mc_lang') as Language) || 'he'
+  );
+
+  useEffect(() => {
+    localStorage.setItem('mc_lang', lang);
+  }, [lang]);
   const [step, setStep] = useState<'welcome' | 'assessment' | 'analysis'>('welcome');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [formData, setFormData] = useState<FormData>({ employeeName: '', employeeEmail: '', managerName: '', managerEmail: '' });
