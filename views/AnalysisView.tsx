@@ -275,7 +275,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
           </button>
 
           {/* Powered by JustAIIt */}
-          <a href="https://justaiit.web.app/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 active:scale-95 no-underline group" style={{ background: 'linear-gradient(135deg, #a014f0 0%, #8c50f0 28%, #5078ff 58%, #3cdcf0 100%)' }}>
+          <a href="https://justaiit.web.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 active:scale-95 no-underline" style={{ background: 'linear-gradient(135deg, #a014f0 0%, #8c50f0 28%, #5078ff 58%, #3cdcf0 100%)', boxShadow: '0 4px 12px rgba(140, 80, 240, 0.2)' }}>
             <span className="text-xs font-black text-white uppercase tracking-widest">{lang === 'he' ? 'מונע על ידי' : 'Powered by'}</span>
             <span className="text-sm font-black text-white tracking-tighter">Just AI It</span>
           </a>
