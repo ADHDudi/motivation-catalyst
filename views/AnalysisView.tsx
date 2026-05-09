@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { generateMotivationAnalysis } from '../services/geminiService';
 import { MotivationAnalysisResult, Answers, FormData } from '../types';
 import { QUESTIONS } from '../constants';
-import { UserCheck, ShieldCheck, RefreshCw, Copy, BrainCircuit, Sparkles, CheckCircle2, AlertCircle, ThumbsUp, ThumbsDown, Clipboard, Linkedin, Youtube, Facebook, Send } from 'lucide-react';
+import { UserCheck, ShieldCheck, RefreshCw, Copy, BrainCircuit, Sparkles, CheckCircle2, AlertCircle, ThumbsUp, ThumbsDown, Clipboard, Send } from 'lucide-react';
 import Logo from '../components/Logo';
 import { Link } from 'react-router-dom';
 import ResultPolarChart from '../components/ResultPolarChart';
@@ -21,7 +21,6 @@ interface AnalysisViewProps {
   copyToClipboard: (text: string) => void;
   generateFullReportText: () => string;
   statusMsg: string;
-  onSocialClick?: (platform: string) => void;
   answers: Answers;
   formData: FormData;
 }
@@ -86,7 +85,7 @@ const AnalysisSection: React.FC<AnalysisSectionProps> = ({ title, icon: Icon, ch
   );
 };
 
-const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, onReset, copyToClipboard, generateFullReportText, statusMsg, onSocialClick, answers, formData }) => {
+const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, onReset, copyToClipboard, generateFullReportText, statusMsg, answers, formData }) => {
   const [feedbackState, setFeedbackState] = useState<'idle' | 'commenting' | 'submitted'>('idle');
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState<number>(0);
@@ -270,15 +269,8 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
         </div>
 
         <div className="mt-20 pt-10 border-t-4 border-dashed border-slate-50 flex flex-col items-center gap-6">
-          <p className="text-sm font-black text-slate-300 uppercase tracking-widest">{t.followMe}</p>
-          <div className="flex gap-8" dir="ltr">
-            <a href="https://www.linkedin.com/in/davidtsur/" target="_blank" rel="noopener noreferrer" onClick={() => onSocialClick?.('linkedin')} className="p-4 bg-slate-50 rounded-full hover:bg-[var(--b2c-azure)] hover:text-white text-[var(--b2c-azure)] transition-colors shadow-sm" style={{}}><Linkedin size={24} /></a>
-            <a href="https://www.youtube.com/@ADHDudiDO" target="_blank" rel="noopener noreferrer" onClick={() => onSocialClick?.('youtube')} className="p-4 bg-slate-50 rounded-full hover:bg-[#1F7AFF] hover:text-white text-[var(--b2c-azure)] transition-colors shadow-sm" style={{}}><Youtube size={24} /></a>
-            <a href="https://www.facebook.com/ADHDudi.D" target="_blank" rel="noopener noreferrer" onClick={() => onSocialClick?.('facebook')} className="p-4 bg-slate-50 rounded-full hover:bg-[var(--b2c-azure)] hover:text-white text-[var(--b2c-azure)] transition-colors shadow-sm" style={{}}><Facebook size={24} /></a>
-          </div>
-
           {/* Start Over Link */}
-          <button onClick={onReset} className="mt-4 font-bold text-sm underline transition-colors text-[var(--b2c-azure)] hover:text-[var(--b2c-deep)]">
+          <button onClick={onReset} className="font-bold text-sm underline transition-colors text-[var(--b2c-azure)] hover:text-[var(--b2c-deep)]">
             {t.startOver}
           </button>
 
