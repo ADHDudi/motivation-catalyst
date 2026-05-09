@@ -108,7 +108,6 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
           <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mx-auto shadow-xl border-4 border-[#324FA2]/5">
             <MotivationOSHeroIcon />
           </div>
-          <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-[#90BC6E] rounded-full border-4 border-white shadow-lg" />
         </div>
         <h1 className="text-3xl font-black tracking-tight leading-tight mb-2" style={{ color: 'var(--b2c-ink)' }}>{t.title}</h1>
         <div className="inline-block px-4 py-1 bg-[#1F7AFF]/10 rounded-full">
