@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { QUESTIONS, TRANSLATIONS, COLORS, APP_ID, WEBHOOK_URL } from './constants';
 import WelcomeView from './views/WelcomeView';
 import AssessmentView from './views/AssessmentView';
@@ -6,8 +7,18 @@ import AnalysisView from './views/AnalysisView';
 import { Language, FormData, Answers, Results, CategoryKey } from './types';
 import { signInWithGoogle, onAuthStateChange, signInWithEmail, signUpWithEmail, sendPasswordReset } from './authUtils';
 
+const TermsView = lazy(() => import('./views/legal/TermsView'));
+const PrivacyView = lazy(() => import('./views/legal/PrivacyView'));
+const AccessibilityView = lazy(() => import('./views/legal/AccessibilityView'));
+
 const App = () => {
-  const [lang, setLang] = useState<Language>('he');
+  const [lang, setLang] = useState<Language>(
+    () => (localStorage.getItem('mc_lang') as Language) || 'he'
+  );
+
+  useEffect(() => {
+    localStorage.setItem('mc_lang', lang);
+  }, [lang]);
   const [step, setStep] = useState<'welcome' | 'assessment' | 'analysis'>('welcome');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [formData, setFormData] = useState<FormData>({ employeeName: '', employeeEmail: '', managerName: '', managerEmail: '' });
@@ -306,7 +317,7 @@ const App = () => {
     syncData('interaction', { action: 'social_click', platform });
   };
 
-  return (
+  const mainApp = (
     <div className="min-h-screen md:py-12 md:px-6 font-sans text-slate-900 selection:bg-[#38BDF8]/30" style={{ backgroundColor: 'var(--b2c-ice)' }}>
       {step === 'welcome' && (
         <WelcomeView
@@ -351,6 +362,17 @@ const App = () => {
         />
       )}
     </div>
+  );
+
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--b2c-ice)' }} />}>
+      <Routes>
+        <Route path="/" element={mainApp} />
+        <Route path="/terms" element={<TermsView />} />
+        <Route path="/privacy" element={<PrivacyView />} />
+        <Route path="/accessibility" element={<AccessibilityView />} />
+      </Routes>
+    </Suspense>
   );
 };
 

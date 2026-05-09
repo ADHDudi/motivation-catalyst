@@ -4,6 +4,7 @@ import { MotivationAnalysisResult, Answers, FormData } from '../types';
 import { QUESTIONS } from '../constants';
 import { UserCheck, ShieldCheck, RefreshCw, Copy, BrainCircuit, Sparkles, CheckCircle2, AlertCircle, ThumbsUp, ThumbsDown, Clipboard, Linkedin, Youtube, Facebook, Send } from 'lucide-react';
 import Logo from '../components/Logo';
+import { Link } from 'react-router-dom';
 import ResultPolarChart from '../components/ResultPolarChart';
 import AccordionItem from '../components/AccordionItem';
 import { TranslationData, Results, Language, CategoryKey } from '../types';
@@ -280,6 +281,19 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
           <button onClick={onReset} className="mt-4 font-bold text-sm underline transition-colors text-[var(--b2c-azure)] hover:text-[var(--b2c-deep)]">
             {t.startOver}
           </button>
+
+          {/* Legal footer */}
+          <div className="mt-8 flex flex-wrap gap-4 justify-center text-xs font-bold text-slate-300">
+            <Link to="/terms" className="hover:text-[var(--b2c-azure)] transition-colors">
+              {lang === 'he' ? 'תנאי שימוש' : 'Terms of Use'}
+            </Link>
+            <Link to="/privacy" className="hover:text-[var(--b2c-azure)] transition-colors">
+              {lang === 'he' ? 'מדיניות פרטיות' : 'Privacy Policy'}
+            </Link>
+            <Link to="/accessibility" className="hover:text-[var(--b2c-azure)] transition-colors">
+              {lang === 'he' ? 'נגישות' : 'Accessibility'}
+            </Link>
+          </div>
         </div>
       </div>
       {statusMsg && <div className="fixed bottom-8 left-1/2 -translate-x-1/2 px-8 py-4 text-white text-sm font-black rounded-full animate-in fade-in slide-in-from-bottom-2 z-50 shadow-2xl" style={{ backgroundImage: 'var(--gradient-b2c)' }}>{String(statusMsg)}</div>}
