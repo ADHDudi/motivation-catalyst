@@ -1,5 +1,6 @@
 import React from 'react';
 import { Beaker, AlertCircle, ShieldCheck, Target, Zap, ArrowRight, LogIn } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { TranslationData, FormData, Language } from '../types';
 
 interface WelcomeViewProps {
@@ -285,6 +286,19 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
             </div>
           </div>
         )}
+
+        {/* Legal footer */}
+        <div className="mt-10 pt-6 border-t border-slate-100 flex flex-wrap gap-4 justify-center text-xs font-bold text-slate-300">
+          <Link to="/terms" className="hover:text-[var(--b2c-azure)] transition-colors">
+            {lang === 'he' ? 'תנאי שימוש' : 'Terms of Use'}
+          </Link>
+          <Link to="/privacy" className="hover:text-[var(--b2c-azure)] transition-colors">
+            {lang === 'he' ? 'מדיניות פרטיות' : 'Privacy Policy'}
+          </Link>
+          <Link to="/accessibility" className="hover:text-[var(--b2c-azure)] transition-colors">
+            {lang === 'he' ? 'נגישות' : 'Accessibility'}
+          </Link>
+        </div>
       </div>
     </div>
   );
