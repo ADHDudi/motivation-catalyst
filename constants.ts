@@ -51,7 +51,7 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
   he: {
     dir: 'rtl',
     title: 'MotivationOS',
-    subtitle: 'הנוסחה המדעית לצמיחה ומימוש',
+    subtitle: 'Workplace Insights',
     sdtIntro: 'גלו את המרכיבים המדויקים שיוצרים אצלכם מוטיבציה פנימית: אוטונומיה, מסוגלות ושייכות.',
     painTitle: 'מרגישים תקועים?',
     painText: 'חוסר מוטיבציה, תחושה של דריכה במקום ושחיקה בעבודה הן לא גזירת גורל. לפעמים פשוט חסר לנו המרכיב הנכון ב"כימיה" המקצועית שלנו.',
@@ -159,7 +159,7 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
   en: {
     dir: 'ltr',
     title: 'MotivationOS',
-    subtitle: 'Science-Backed Drive & Growth',
+    subtitle: 'Workplace Insights',
     sdtIntro: 'Discover the precise elements creating your inner drive: Autonomy, Competence, and Relatedness.',
     painTitle: 'Feeling Stuck?',
     painText: 'Lack of motivation and growth aren\'t permanent. You\'re likely missing a core "chemistry" component.',
