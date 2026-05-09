@@ -274,6 +274,12 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
             {t.startOver}
           </button>
 
+          {/* Powered by JustAIIt */}
+          <a href="https://justaiit.web.app/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 active:scale-95 no-underline group" style={{ background: 'linear-gradient(135deg, #a014f0 0%, #8c50f0 28%, #5078ff 58%, #3cdcf0 100%)' }}>
+            <span className="text-xs font-black text-white uppercase tracking-widest">{lang === 'he' ? 'מונע על ידי' : 'Powered by'}</span>
+            <span className="text-sm font-black text-white tracking-tighter">Just AI It</span>
+          </a>
+
           {/* Legal footer */}
           <div className="mt-8 flex flex-wrap gap-4 justify-center text-xs font-bold text-slate-300">
             <Link to="/terms" className="hover:text-[var(--b2c-azure)] transition-colors">
