@@ -268,17 +268,17 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
           <button onClick={() => copyToClipboard(generateFullReportText())} className="w-full py-6 text-white rounded-[30px] font-black text-xl flex items-center justify-center gap-4 shadow-xl active:scale-95 transition-all" style={{ backgroundImage: 'var(--gradient-b2c)' }}><Clipboard size={24} /> {t.copyReport}</button>
         </div>
 
-        <div className="mt-20 pt-10 border-t-4 border-dashed border-slate-50 flex flex-col items-center gap-6">
+        <div className="mt-20 pt-10 border-t-4 border-dashed border-slate-50 flex flex-col items-center gap-8">
+          {/* Powered by JustAIIt - positioned first */}
+          <a href="https://justaiit.web.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 active:scale-95 no-underline shadow-lg" style={{ background: 'linear-gradient(135deg, #a014f0 0%, #8c50f0 28%, #5078ff 58%, #3cdcf0 100%)' }}>
+            <span className="text-xs font-black text-white uppercase tracking-widest">{lang === 'he' ? 'מונע על ידי' : 'Powered by'}</span>
+            <span className="text-sm font-black text-white tracking-tighter">Just AI It</span>
+          </a>
+
           {/* Start Over Link */}
           <button onClick={onReset} className="font-bold text-sm underline transition-colors text-[var(--b2c-azure)] hover:text-[var(--b2c-deep)]">
             {t.startOver}
           </button>
-
-          {/* Powered by JustAIIt */}
-          <a href="https://justaiit.web.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 active:scale-95 no-underline" style={{ background: 'linear-gradient(135deg, #a014f0 0%, #8c50f0 28%, #5078ff 58%, #3cdcf0 100%)', boxShadow: '0 4px 12px rgba(140, 80, 240, 0.2)' }}>
-            <span className="text-xs font-black text-white uppercase tracking-widest">{lang === 'he' ? 'מונע על ידי' : 'Powered by'}</span>
-            <span className="text-sm font-black text-white tracking-tighter">Just AI It</span>
-          </a>
 
           {/* Legal footer */}
           <div className="mt-8 flex flex-wrap gap-4 justify-center text-xs font-bold text-slate-300">
