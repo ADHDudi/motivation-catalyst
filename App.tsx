@@ -44,17 +44,20 @@ const App = () => {
   }, []);
 
   const handleGoogleLogin = async () => {
+    setAuthError(null);
+    setAuthSuccess(null);
     try {
       const user = await signInWithGoogle();
-      if (user) {
-        setFormData(prev => ({
-          ...prev,
-          employeeName: user.displayName || prev.employeeName,
-          employeeEmail: user.email || prev.employeeEmail,
-        }));
+      advanceToAssessment(user);
+    } catch (error: any) {
+      const code = error?.code || '';
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+        // User dismissed the popup — no error message needed
+      } else if (code === 'auth/network-request-failed') {
+        setAuthError(lang === 'he' ? 'בעיית חיבור לרשת. בדוק את החיבור שלך' : 'Network error. Check your connection');
+      } else {
+        setAuthError(lang === 'he' ? 'כניסה עם Google נכשלה. נסה שוב' : 'Google sign in failed. Please try again');
       }
-    } catch (error) {
-      console.error(error);
     }
   };
 
