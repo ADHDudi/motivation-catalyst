@@ -281,7 +281,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
           </button>
 
           {/* Legal footer */}
-          <div className="mt-8 flex flex-wrap gap-4 justify-center text-xs font-bold text-slate-300">
+          <div className="mt-8 w-full flex flex-wrap gap-4 justify-center items-center text-xs font-bold text-slate-300">
             <Link to="/terms" className="hover:text-[var(--b2c-azure)] transition-colors">
               {lang === 'he' ? 'תנאי שימוש' : 'Terms of Use'}
             </Link>
