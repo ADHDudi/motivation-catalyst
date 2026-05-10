@@ -96,6 +96,13 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
     testAtRisk: 'בסיכון',
     questionProgress: 'שאלה',
     followMe: 'עקבו אחריי לעוד',
+    categoryIntroBtn: 'מוכן!',
+    categoryIntroLabel: 'חלק הבא:',
+    categoryIntroDesc: {
+      autonomy: 'עד כמה אתם מרגישים חופשיים לבחור כיצד ומתי לעבוד, ולהביע את הרעיונות שלכם?',
+      competence: 'עד כמה אתם מרגישים מיומנים, בטוחים ומתפתחים מקצועית בתפקידכם?',
+      relatedness: 'עד כמה אתם מרגישים קשורים, נתמכים ושייכים לאנשים סביבכם בעבודה?',
+    },
     startOver: 'התחל שאלון מחדש',
     categories: { autonomy: 'אוטונומיה', competence: 'מסוגלות', relatedness: 'שייכות' },
     aiInsightsTitle: 'ניתוח AI מעמיק וטיפים',
@@ -215,6 +222,13 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
     conversationTitle: 'Conversation Tip',
     conversationIntro: 'Based on results, try opening with:',
     followMe: 'Follow me for more',
+    categoryIntroBtn: 'Ready!',
+    categoryIntroLabel: 'Next section:',
+    categoryIntroDesc: {
+      autonomy: 'How free do you feel to choose how and when you work, and to express your own ideas?',
+      competence: 'How skilled, confident, and professionally developed do you feel in your role?',
+      relatedness: 'How connected, supported, and accepted do you feel by the people around you at work?',
+    },
     categories: { autonomy: 'Autonomy', competence: 'Competence', relatedness: 'Relatedness' },
     deepAnalysis: {
       autonomy: {

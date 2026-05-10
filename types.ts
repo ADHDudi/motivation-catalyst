@@ -100,6 +100,9 @@ export interface TranslationData {
   conversationTitle: string;
   conversationIntro: string;
   followMe: string;
+  categoryIntroBtn: string;
+  categoryIntroLabel: string;
+  categoryIntroDesc: Record<CategoryKey, string>;
   categories: Record<CategoryKey, string>;
   deepAnalysis: Record<CategoryKey, DeepAnalysisCategory>;
   conversationTips: {

@@ -4,6 +4,7 @@ import { QUESTIONS, TRANSLATIONS, COLORS, APP_ID, WEBHOOK_URL } from './constant
 import WelcomeView from './views/WelcomeView';
 import AssessmentView from './views/AssessmentView';
 import AnalysisView from './views/AnalysisView';
+import CategoryIntroCard from './components/CategoryIntroCard';
 import { Language, FormData, Answers, Results, CategoryKey } from './types';
 import { signInWithGoogle, onAuthStateChange, signInWithEmail, signUpWithEmail, sendPasswordReset } from './authUtils';
 
@@ -25,6 +26,8 @@ const App = () => {
   const [answers, setAnswers] = useState<Answers>({});
   const [results, setResults] = useState<Results | null>(null);
   const [statusMsg, setStatusMsg] = useState('');
+  const [categoryIntro, setCategoryIntro] = useState<CategoryKey | null>(null);
+  const [pendingNextIndex, setPendingNextIndex] = useState<number>(0);
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSuccess, setAuthSuccess] = useState<string | null>(null);
 
@@ -173,7 +176,14 @@ const App = () => {
     setAnswers({});
     setResults(null);
     setCurrentQuestionIndex(0);
+    setCategoryIntro(null);
+    setPendingNextIndex(0);
     setFormData({ employeeName: '', employeeEmail: '', managerName: '', managerEmail: '' });
+  };
+
+  const handleCategoryReady = () => {
+    setCategoryIntro(null);
+    setCurrentQuestionIndex(pendingNextIndex);
   };
 
   const handleStart = (e: React.FormEvent) => {
@@ -301,8 +311,16 @@ const App = () => {
   const handleAnswer = (questionId: number, value: number) => {
     const newAnswers = { ...answers, [questionId]: value };
     setAnswers(newAnswers);
-    if (currentQuestionIndex < QUESTIONS.length - 1) {
-      setCurrentQuestionIndex(i => i + 1);
+    const nextIndex = currentQuestionIndex + 1;
+    if (nextIndex < QUESTIONS.length) {
+      const currentCat = QUESTIONS[currentQuestionIndex].category;
+      const nextCat = QUESTIONS[nextIndex].category;
+      if (nextCat !== currentCat) {
+        setPendingNextIndex(nextIndex);
+        setCategoryIntro(nextCat);
+      } else {
+        setCurrentQuestionIndex(nextIndex);
+      }
     } else {
       calculateResults(newAnswers);
     }
@@ -339,7 +357,16 @@ const App = () => {
           authSuccess={authSuccess}
         />
       )}
-      {step === 'assessment' && (
+      {step === 'assessment' && categoryIntro && (
+        <CategoryIntroCard
+          category={categoryIntro}
+          t={t}
+          lang={lang}
+          sectionNumber={categoryIntro === 'competence' ? 2 : 3}
+          onReady={handleCategoryReady}
+        />
+      )}
+      {step === 'assessment' && !categoryIntro && (
         <AssessmentView
           t={t}
           lang={lang}
