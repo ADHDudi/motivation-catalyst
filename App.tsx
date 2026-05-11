@@ -193,6 +193,7 @@ const App = () => {
     if (!formData.employeeName) return;
     setStep('assessment');
     setCurrentQuestionIndex(0);
+    setCategoryIntro('autonomy');
   };
 
   const calculateResults = (inputAnswers: Answers | null = null) => {
