@@ -36,7 +36,7 @@ const ResultPolarChart: React.FC<ResultPolarChartProps> = ({ scores, t }) => {
         {/* Category Wedges */}
         {cats.map(cat => {
             const scoreValue = parseFloat(scores[cat.key]);
-            const radius = (scoreValue / 5) * maxRadius;
+            const radius = Math.max((scoreValue / 5) * maxRadius, maxRadius * 0.2);
             const start = getCoords(cat.start, radius);
             const end = getCoords(cat.end, radius);
             const largeArc = cat.end - cat.start > 180 ? 1 : 0;
@@ -52,18 +52,34 @@ const ResultPolarChart: React.FC<ResultPolarChartProps> = ({ scores, t }) => {
                     {/* Score Labels inside Wedges */}
                     {(() => {
                         const mid = getCoords((cat.start + cat.end) / 2, radius * 0.7);
-                        if (scoreValue < 0.5) return null; // Only show if there's space
                         return (
-                          <text 
-                            x={mid.x} 
-                            y={mid.y} 
-                            textAnchor="middle" 
-                            dominantBaseline="middle" 
-                            fill="white" 
+                          <text
+                            x={mid.x}
+                            y={mid.y}
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="white"
                             className="font-black text-sm drop-shadow-md pointer-events-none"
                           >
                             {scoreValue}
                           </text>
+                        );
+                    })()}
+
+                    {/* Axis vertex score label */}
+                    {(() => {
+                        const vertexPos = getCoords((cat.start + cat.end) / 2, maxRadius + 16);
+                        return (
+                            <text
+                                x={vertexPos.x}
+                                y={vertexPos.y}
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                fill={cat.color}
+                                className="font-black text-[13px] select-none"
+                            >
+                                {scoreValue.toFixed(1)}
+                            </text>
                         );
                     })()}
 
@@ -91,6 +107,20 @@ const ResultPolarChart: React.FC<ResultPolarChartProps> = ({ scores, t }) => {
             )
         })}
       </svg>
+      <div className="flex justify-center gap-3 mt-3 flex-wrap md:hidden">
+          {cats.map(cat => (
+              <span
+                  key={cat.key}
+                  className="px-3 py-1.5 rounded-full text-sm font-black"
+                  style={{
+                      backgroundColor: hexToRgba(cat.color, 0.1),
+                      color: cat.color
+                  }}
+              >
+                  {t.categories[cat.key]} {parseFloat(scores[cat.key]).toFixed(1)}
+              </span>
+          ))}
+      </div>
     </div>
   );
 };
