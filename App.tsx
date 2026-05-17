@@ -3,11 +3,15 @@ import { QUESTIONS, TRANSLATIONS, COLORS, APP_ID, WEBHOOK_URL } from './constant
 import WelcomeView from './views/WelcomeView';
 import AssessmentView from './views/AssessmentView';
 import AnalysisView from './views/AnalysisView';
-import { Language, FormData, Answers, Results, CategoryKey } from './types';
+import RoleSelectView from './views/RoleSelectView';
+import { Language, FormData, Answers, Results, CategoryKey, UserRole } from './types';
 
 const App = () => {
   const [lang, setLang] = useState<Language>('he');
-  const [step, setStep] = useState<'welcome' | 'assessment' | 'analysis'>('welcome');
+  const [step, setStep] = useState<'welcome' | 'role-select' | 'assessment' | 'analysis'>('welcome');
+  const [userRole, setUserRole] = useState<UserRole>(() => {
+    return (localStorage.getItem('mc_role') as UserRole) || 'solo';
+  });
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [formData, setFormData] = useState<FormData>({ employeeName: '', employeeEmail: '', managerName: '', managerEmail: '' });
   const [answers, setAnswers] = useState<Answers>({});
@@ -15,6 +19,14 @@ const App = () => {
   const [statusMsg, setStatusMsg] = useState('');
 
   const t = TRANSLATIONS[lang];
+
+  useEffect(() => {
+    localStorage.setItem('mc_lang', lang);
+  }, [lang]);
+
+  useEffect(() => {
+    localStorage.setItem('mc_role', userRole);
+  }, [userRole]);
 
   // --- Data Sync Logic ---
 
@@ -53,16 +65,24 @@ const App = () => {
     setResults(null);
     setCurrentQuestionIndex(0);
     setFormData({ employeeName: '', employeeEmail: '', managerName: '', managerEmail: '' });
+    localStorage.removeItem('mc_progress');
   };
 
   const handleStart = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.employeeName) return;
+    setStep('role-select');
+    setCurrentQuestionIndex(0);
+  };
+
+  const handleRoleSelect = (role: UserRole) => {
+    setUserRole(role);
     setStep('assessment');
     setCurrentQuestionIndex(0);
   };
 
   const calculateResults = (inputAnswers: Answers | null = null) => {
+    localStorage.removeItem('mc_progress');
     const data = inputAnswers || answers;
     const cats: Record<CategoryKey, number> = { autonomy: 0, competence: 0, relatedness: 0 };
     const counts: Record<CategoryKey, number> = { autonomy: 0, competence: 0, relatedness: 0 };
@@ -99,6 +119,7 @@ const App = () => {
     syncData('submission', {
       answers: data,
       results: calculatedResults,
+      userRole,
       insights: insightsSummary
     });
   };
@@ -137,37 +158,24 @@ const App = () => {
       analysis: lang === 'he' ? 'ניתוח' : 'Analysis',
       actions: lang === 'he' ? 'פעולות מומלצות' : 'Recommended Actions',
       aiTips: lang === 'he' ? 'טיפ AI אסטרטגי' : 'Strategic AI Tip',
-      managerTitle: lang === 'he' ? 'המלצות למנהל' : 'Manager Recommendations',
-      selfTitle: lang === 'he' ? 'תובנות אישיות' : 'Personal Insights'
     };
 
     (['autonomy', 'competence', 'relatedness'] as CategoryKey[]).forEach(cat => {
       const score = results[cat];
       const scoreNum = parseFloat(score);
       const isLow = scoreNum < 3.5;
-      
-      const empData = t.deepAnalysis[cat].employee[isLow ? 'low' : 'high'];
-      const mgrData = t.deepAnalysis[cat].manager[isLow ? 'low' : 'high'];
+      const data = t.deepAnalysis[cat][userRole === 'manager' ? 'manager' : 'employee'][isLow ? 'low' : 'high'];
 
       text += `💠 ${t.categories[cat].toUpperCase()} (${score}/5.0)\n`;
       text += `-------------------------------\n`;
-      
-      // Personal Section
-      text += `👤 ${labels.selfTitle}:\n`;
-      text += `   • ${labels.analysis}: ${empData.analysis}\n`;
-      text += `   • ${labels.actions}: ${empData.actions.join(', ')}\n\n`;
+      text += `   • ${labels.analysis}: ${data.analysis}\n`;
+      text += `   • ${labels.actions}: ${data.actions.join(', ')}\n\n`;
 
-      // Manager Section
-      text += `📋 ${labels.managerTitle}:\n`;
-      text += `   • ${labels.analysis}: ${mgrData.analysis}\n`;
-      text += `   • ${labels.actions}: ${mgrData.actions.join(', ')}\n\n`;
-
-      // AI Section
-      if (empData.aiTips) {
+      if (data.aiTips) {
         text += `✨ ${labels.aiTips}:\n`;
-        text += `   ${empData.aiTips}\n\n`;
+        text += `   ${data.aiTips}\n\n`;
       }
-      
+
       text += `\n`;
     });
 
@@ -177,6 +185,12 @@ const App = () => {
 
   const handleAnswer = (questionId: number, value: number) => {
     const newAnswers = { ...answers, [questionId]: value };
+    localStorage.setItem('mc_progress', JSON.stringify({
+      answers: newAnswers,
+      currentQuestionIndex: currentQuestionIndex + 1 < QUESTIONS.length ? currentQuestionIndex + 1 : currentQuestionIndex,
+      userRole,
+      lang
+    }));
     setAnswers(newAnswers);
     if (currentQuestionIndex < QUESTIONS.length - 1) {
       setCurrentQuestionIndex(i => i + 1);
@@ -210,25 +224,37 @@ const App = () => {
           onDemo={handleDemo} 
         />
       )}
+      {step === 'role-select' && (
+        <RoleSelectView
+          t={t}
+          lang={lang}
+          setLang={setLang}
+          userRole={userRole}
+          formData={formData}
+          onRoleSelect={handleRoleSelect}
+        />
+      )}
       {step === 'assessment' && (
-        <AssessmentView 
-          t={t} 
-          lang={lang} 
-          currentQuestionIndex={currentQuestionIndex} 
-          answers={answers} 
-          onAnswer={handleAnswer} 
-          onBack={handleBack} 
+        <AssessmentView
+          t={t}
+          lang={lang}
+          currentQuestionIndex={currentQuestionIndex}
+          answers={answers}
+          onAnswer={handleAnswer}
+          onBack={handleBack}
         />
       )}
       {step === 'analysis' && results && (
-        <AnalysisView 
-          t={t} 
-          lang={lang} 
+        // @ts-ignore
+        <AnalysisView
+          t={t}
+          lang={lang}
           setLang={setLang}
-          results={results} 
-          onReset={handleReset} 
-          copyToClipboard={copyToClipboard} 
-          generateFullReportText={generateFullReportText} 
+          results={results}
+          userRole={userRole}
+          onReset={handleReset}
+          copyToClipboard={copyToClipboard}
+          generateFullReportText={generateFullReportText}
           statusMsg={statusMsg}
           onSocialClick={handleSocialClick}
         />
