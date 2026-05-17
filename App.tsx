@@ -260,6 +260,7 @@ const App = () => {
         <AssessmentView
           t={t}
           lang={lang}
+          setLang={setLang}
           currentQuestionIndex={currentQuestionIndex}
           answers={answers}
           onAnswer={handleAnswer}
