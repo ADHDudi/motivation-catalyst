@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Beaker, AlertCircle, ShieldCheck, Target, Zap, ArrowRight } from 'lucide-react';
 import Logo from '../components/Logo';
 import { TranslationData, FormData, Language } from '../types';
@@ -11,11 +11,49 @@ interface WelcomeViewProps {
   setFormData: (data: FormData) => void;
   onStart: (e: React.FormEvent) => void;
   onDemo: (type: 'high' | 'mid' | 'at-risk') => void;
+  onResume?: () => void;
+  onDiscardProgress?: () => void;
 }
 
-const WelcomeView: React.FC<WelcomeViewProps> = ({ t, lang, setLang, formData, setFormData, onStart, onDemo }) => {
+const WelcomeView: React.FC<WelcomeViewProps> = ({ t, lang, setLang, formData, setFormData, onStart, onDemo, onResume, onDiscardProgress }) => {
+  const [hasProgress, setHasProgress] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('mc_progress');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed.answers !== 'undefined' && typeof parsed.currentQuestionIndex === 'number') {
+          setHasProgress(true);
+        }
+      }
+    } catch {
+      // ignore malformed data
+    }
+  }, []);
+
   return (
     <div className={`w-full max-w-lg mx-auto bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col min-h-[100dvh] md:min-h-0 text-${t.dir === 'rtl' ? 'right' : 'left'}`} dir={t.dir}>
+      {hasProgress && (
+        <div className="mb-6 p-5 bg-[#324FA2]/5 border-2 border-[#324FA2]/20 rounded-3xl flex flex-col gap-3 mx-8 mt-8">
+          <p className="font-black text-[#324FA2] text-base">{t.resumeTitle}</p>
+          <p className="text-sm text-slate-600">{t.resumeDesc}</p>
+          <div className="flex gap-3 flex-wrap">
+            <button
+              onClick={() => { onResume?.(); }}
+              className="px-5 py-2.5 bg-[#324FA2] text-white font-black text-sm rounded-full active:scale-95 transition-all"
+            >
+              {t.resumeContinue}
+            </button>
+            <button
+              onClick={() => { onDiscardProgress?.(); setHasProgress(false); }}
+              className="px-5 py-2.5 bg-white border border-slate-200 text-slate-500 font-bold text-sm rounded-full active:scale-95 transition-all"
+            >
+              {t.resumeStartFresh}
+            </button>
+          </div>
+        </div>
+      )}
       <div className={`p-8 pt-12 text-center relative bg-white overflow-hidden text-slate-900`}>
         <div className="absolute top-0 left-0 w-32 h-32 bg-[#90BC6E]/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-0 w-32 h-32 bg-[#D9618E]/5 rounded-full blur-3xl" />

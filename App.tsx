@@ -200,6 +200,25 @@ const App = () => {
     }
   };
 
+  const handleResume = () => {
+    const saved = localStorage.getItem('mc_progress');
+    if (!saved) return;
+    try {
+      const progress = JSON.parse(saved);
+      if (progress.answers) setAnswers(progress.answers);
+      if (typeof progress.currentQuestionIndex === 'number') setCurrentQuestionIndex(progress.currentQuestionIndex);
+      if (progress.userRole === 'solo' || progress.userRole === 'manager') setUserRole(progress.userRole);
+      if (progress.lang === 'he' || progress.lang === 'en') setLang(progress.lang);
+      setStep('assessment');
+    } catch {
+      localStorage.removeItem('mc_progress');
+    }
+  };
+
+  const handleDiscardProgress = () => {
+    localStorage.removeItem('mc_progress');
+  };
+
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(i => i - 1);
@@ -215,14 +234,16 @@ const App = () => {
   return (
     <div className="min-h-screen bg-[#F1F5F9] md:py-12 md:px-6 font-sans text-slate-900 selection:bg-[#78A9D6]/30">
       {step === 'welcome' && (
-        <WelcomeView 
-          t={t} 
-          lang={lang} 
-          setLang={setLang} 
-          formData={formData} 
-          setFormData={setFormData} 
-          onStart={handleStart} 
-          onDemo={handleDemo} 
+        <WelcomeView
+          t={t}
+          lang={lang}
+          setLang={setLang}
+          formData={formData}
+          setFormData={setFormData}
+          onStart={handleStart}
+          onDemo={handleDemo}
+          onResume={handleResume}
+          onDiscardProgress={handleDiscardProgress}
         />
       )}
       {step === 'role-select' && (
