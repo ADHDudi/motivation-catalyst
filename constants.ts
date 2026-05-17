@@ -121,8 +121,8 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
           high: { analysis: 'יש לך תחושת חופש ובעלות גבוהה על המשימות שלך.', actions: ['המשך ליזום פרויקטים חדשים', 'שמש דוגמה לניהול עצמי בצוות'], aiTips: 'נצל את החופש שלך כדי לחקור כלים חדשים שיכולים לשדרג את ביצועי הצוות. זה הזמן להוביל יוזמות שמעבר להגדרת התפקיד הפורמלית.' }
         },
         manager: {
-          low: { analysis: 'העובד מרגיש כבול. חוסר אוטונומיה מוביל לשחיקה מהירה.', actions: ['הגדר את ה"מה" ושחרר את ה"איך"', 'שתף את העובד בקבלת החלטות'] },
-          high: { analysis: 'העובד מרגיש אמון מלא. זהו מנוע צמיחה חזק.', actions: ['האצל סמכויות מורכבות יותר', 'הימנע ממעורבות יתר במשימות שגורות'] }
+          low: { analysis: 'העובד מרגיש כבול. חוסר אוטונומיה מוביל לשחיקה מהירה.', actions: ['הגדר את ה"מה" ושחרר את ה"איך"', 'שתף את העובד בקבלת החלטות'], aiTips: 'השבוע, בחר משימה אחת שאתה בדרך כלל בודק לעומק - והסתפק בקביעת התוצאה המצופה בלבד. תן לעובד לבחור את הדרך. בסוף השבוע, שאל אותו "מה למדת מהבחירה שלך?" במקום לבדוק את הביצוע.' },
+          high: { analysis: 'העובד מרגיש אמון מלא. זהו מנוע צמיחה חזק.', actions: ['האצל סמכויות מורכבות יותר', 'הימנע ממעורבות יתר במשימות שגורות'], aiTips: 'הזמן הוא להעביר לעובד אחריות על תחום שלם, לא רק על משימות. הצע לו להוביל יוזמה חוצת-צוותים שדורשת מהמנהל "להזיז את הכיסא" - ולקדם אותו לתפקיד של שותף-בקבלת-החלטות.' }
         }
       },
       competence: {
@@ -132,8 +132,8 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
           high: { analysis: 'אתה מרגיש מקצועי, חד ובעל יכולת לתרום לצוות.', actions: ['חפש אתגרים חדשים שמותחים אותך', 'שמש כמנטור לעובדים אחרים'], aiTips: 'זה הזמן המושלם לבקש פרויקט "מתיחה" (Stretch Assignment) שיחשוף אותך לתחומים חדשים בארגון. היכולת שלך ללמד אחרים היא הדרך הטובה ביותר לשכלל את המומחיות שלך.' }
         },
         manager: {
-          low: { analysis: 'העובד חווה תסכול או חשש מחוסר הצלחה.', actions: ['פרק משימות ליעדים קטנים וברי השגה', 'ספק משוב בונה ומיידי'] },
-          high: { analysis: 'העובד בטוח ביכולותיו ומספק תוצאות איכותיות.', actions: ['בדוק אפשרות לקידום או הרחבת אחריות', 'שבח את המיומנות הספציפית שלו'] }
+          low: { analysis: 'העובד חווה תסכול או חשש מחוסר הצלחה.', actions: ['פרק משימות ליעדים קטנים וברי השגה', 'ספק משוב בונה ומיידי'], aiTips: 'השבוע, קבע פגישה של 20 דקות שבה לא מדברים על משימות, אלא רק על מיומנויות: "מה היית רוצה להיות טוב בו יותר?" ובנה איתו תוכנית למידה מיקרו של 15 דקות ביום. השקעה ביכולות = מנוע ביצועים לטווח ארוך.' },
+          high: { analysis: 'העובד בטוח ביכולותיו ומספק תוצאות איכותיות.', actions: ['בדוק אפשרות לקידום או הרחבת אחריות', 'שבח את המיומנות הספציפית שלו'], aiTips: 'הצע לעובד "פרויקט מתיחה" שמוציא אותו מאזור הנוחות - אבל בתחום שהוא בטוח בו. הצמיחה האמיתית מגיעה כשעובד מצוין מתבקש ללמד אחרים. הפוך אותו למנטור של עמית חדש.' }
         }
       },
       relatedness: {
@@ -143,8 +143,8 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
           high: { analysis: 'אתה מרגיש חלק בלתי נפרד מהצוות וזוכה לתמיכה.', actions: ['חזק את הקשרים הקיימים', 'הייה הגורם המקשר לאחרים שמרגישים מחוץ לעניינים'], aiTips: 'השתמש בחיבור החזק שלך כדי לעזור לעובדים חדשים להיקלט. תחושת המשמעות שלך תגדל ככל שתהיה "הדבק" ששומר על הצוות מאוחד.' }
         },
         manager: {
-          low: { analysis: 'העובד מרגיש מבודד. חוסר שייכות פוגע במחויבות.', actions: ['קבע פגישות 1:1 אישיות (לא רק על משימות)', 'שלב אותו בצוותי חשיבה משותפים'] },
-          high: { analysis: 'העובד מחובר היטב לתרבות הארגונית ולצוות.', actions: ['המשך לטפח סביבה בטוחה ותומכת', 'הבע הערכה פומבית על תרומתו לצוות'] }
+          low: { analysis: 'העובד מרגיש מבודד. חוסר שייכות פוגע במחויבות.', actions: ['קבע פגישות 1:1 אישיות (לא רק על משימות)', 'שלב אותו בצוותי חשיבה משותפים'], aiTips: 'השבוע, פתח את ה-1:1 עם שאלה אישית: "מה תפס אותך השבוע מחוץ לעבודה?" - והקשב באמת. בנוסף, צור הזדמנות אחת לשיתוף פעולה לא-משימתי, כמו "ליצור יחד מצגת לצוות" - חיבור נוצר ביצירה משותפת, לא ביעדים.' },
+          high: { analysis: 'העובד מחובר היטב לתרבות הארגונית ולצוות.', actions: ['המשך לטפח סביבה בטוחה ותומכת', 'הבע הערכה פומבית על תרומתו לצוות'], aiTips: 'השתמש בעובד המחובר כ"שגריר תרבות" - שלח אותו לקדם את הקליטה של עובדים חדשים. הבע הערכה ספציפית (לא כללית) פעם בשבועיים בפורום צוותי, ותציין מה בדיוק תרם הוא לסביבה החיובית.' }
         }
       }
     },
@@ -161,7 +161,41 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
         relatedness: '"היי [שם העובד], שמתי לב שאנחנו פחות מתקשרים לאחרונה. בוא נצא לקפה, חשוב לי לשמוע איך אתה מרגיש בצוות ברמה האישית."',
         high: '"היי [שם העובד], אני מאוד מעריך את העבודה שלך לאחרונה. בוא נחשוב יחד איך משמרים את האנרגיה הטובה הזו ומה הצעד הבא עבורך."'
       }
-    }
+    },
+    // --- Phase 1: role selector ---
+    roleSelectGreeting: 'היי {name}, מי אתה בעבודה?',
+    roleSelectIntro: 'התשובה תעזור לנו להתאים לך את התובנות אחרי האבחון.',
+    roleSolo: 'תורם/ת יחיד/ה',
+    roleSoloDesc: 'מבצע/ת את העבודה, חלק/ה מצוות.',
+    roleManager: 'מנהל/ת',
+    roleManagerDesc: 'מוביל/ה אנשים שמבצעים את העבודה.',
+    roleSelectCta: 'התחל אבחון',
+    roleSelectContinueAs: 'המשך כ',
+    roleSoloLabel: 'תורם/ת יחיד/ה',
+    roleManagerLabel: 'מנהל/ת',
+    // --- Phase 1: resume banner ---
+    resumeBannerTitle: 'יש לך אבחון פתוח',
+    resumeBannerText: 'התחלת אבחון ולא סיימת. רוצה להמשיך מאיפה שהפסקת?',
+    resumeContinue: 'המשך',
+    resumeStartFresh: 'התחל מחדש',
+    // --- Phase 1: what's next strip ---
+    whatsNextTitle: 'מה הצעד הבא?',
+    whatsNextCopyTitle: 'העתק לעצמך',
+    whatsNextCopyDesc: 'העתק את הדוח המלא והדבק לאן שנוח לך - יומן, פנקס, מסמך.',
+    whatsNextShareTitle: 'שתף עם מנהל/צוות',
+    whatsNextShareDesc: 'העתק עם פתיח מוכן לשליחה לאדם שחשוב לך לעדכן.',
+    whatsNextRetakeTitle: 'תזכורת לחזרה',
+    whatsNextRetakeDesc: 'שלח לעצמך מייל עם תזכורת לבצע את האבחון שוב בעוד 3 חודשים.',
+    whatsNextRetakeSubject: 'תזכורת: לבצע אבחון מוטיבציה שוב',
+    whatsNextRetakeBody: 'היי, ביצעת אבחון מוטיבציה לפני 3 חודשים. זה זמן טוב לבדוק איפה אתה עומד עכשיו. https://motivation-catalyst-david.web.app',
+    // --- Phase 1: share ---
+    shareIntroLine: 'היי, ביצעתי אבחון מוטיבציה לפי מודל SDT. הנה התובנות שעלו:',
+    // --- Phase 1: rating labels (mobile pills) ---
+    rating1Label: 'בכלל לא מסכים/ה',
+    rating2Label: 'לא מסכים/ה',
+    rating3Label: 'ניטרלי/ת',
+    rating4Label: 'מסכים/ה',
+    rating5Label: 'מסכים/ה מאוד'
   },
   en: {
     dir: 'ltr',
@@ -238,8 +272,8 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
           high: { analysis: 'You have a strong sense of freedom and high ownership over your tasks and projects.', actions: ['Continue initiating new projects', 'Serve as a role model for self-management in the team'], aiTips: 'Leverage your freedom to research new tools that can upgrade team performance. This is the time to lead initiatives that go beyond your formal job description.' }
         },
         manager: {
-          low: { analysis: 'Employee feels restricted. A lack of autonomy leads to rapid burnout.', actions: ["Define the 'what' and release the 'how'", "Involve the employee in decision-making processes"] },
-          high: { analysis: 'Employee feels fully trusted. This is a powerful growth engine.', actions: ['Delegate more complex authorities', 'Avoid over-involvement in routine tasks'] }
+          low: { analysis: 'Employee feels restricted. A lack of autonomy leads to rapid burnout.', actions: ["Define the 'what' and release the 'how'", "Involve the employee in decision-making processes"], aiTips: 'This week, pick one task you normally review in detail and only set the expected outcome. Let the employee choose the approach. At week\'s end, ask "What did you learn from your choice?" instead of checking execution — autonomy is built through trust experiments.' },
+          high: { analysis: 'Employee feels fully trusted. This is a powerful growth engine.', actions: ['Delegate more complex authorities', 'Avoid over-involvement in routine tasks'], aiTips: 'Time to hand over ownership of an entire area, not just tasks. Offer them a cross-team initiative that requires you to step back — promote them to a "decision partner" role so their autonomy compounds into real influence.' }
         }
       },
       competence: {
@@ -249,8 +283,8 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
           high: { analysis: 'You feel professional, sharp, and highly capable of delivering quality results for the team.', actions: ["Seek new 'stretch' challenges that push your limits", "Serve as a mentor for other team members"], aiTips: 'This is the perfect time to request a "Stretch Assignment" that exposes you to new areas of the organization. Your ability to teach others is the best way to further refine your own expertise.' }
         },
         manager: {
-          low: { analysis: 'Employee is experiencing frustration or fear of failure.', actions: ['Break tasks into small, achievable goals', 'Provide constructive and immediate feedback'] },
-          high: { analysis: 'Employee is confident in their abilities and delivers high-quality results.', actions: ['Explore promotion or expanded responsibility', 'Praise their specific professional skills'] }
+          low: { analysis: 'Employee is experiencing frustration or fear of failure.', actions: ['Break tasks into small, achievable goals', 'Provide constructive and immediate feedback'], aiTips: 'This week, schedule a 20-minute meeting with no task agenda — just skills: "What would you like to be better at?" Then co-build a 15-minute-a-day micro-learning plan. Investing in capability is the longest-leverage move you can make on motivation.' },
+          high: { analysis: 'Employee is confident in their abilities and delivers high-quality results.', actions: ['Explore promotion or expanded responsibility', 'Praise their specific professional skills'], aiTips: 'Offer a stretch project just outside their comfort zone — but in a domain they trust themselves in. Real growth happens when a strong performer is asked to teach others. Pair them with a newer colleague as a mentor this quarter.' }
         }
       },
       relatedness: {
@@ -260,8 +294,8 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
           high: { analysis: 'You feel like an integral part of the team and receive genuine support from your colleagues.', actions: ['Strengthen existing connections', 'Be a bridge for others who might feel excluded'], aiTips: 'Use your strong connections to help new hires integrate. Your sense of meaning will grow as you become the "glue" that keeps the team united.' }
         },
         manager: {
-          low: { analysis: 'Employee feels isolated. Lack of belonging harms commitment.', actions: ['Schedule personal 1:1 meetings (not just task-focused)', 'Include them in collaborative thinking groups'] },
-          high: { analysis: 'Employee is well-connected to the organizational culture and the team.', actions: ['Continue fostering a safe and supportive environment', 'Express public appreciation for their team contribution'] }
+          low: { analysis: 'Employee feels isolated. Lack of belonging harms commitment.', actions: ['Schedule personal 1:1 meetings (not just task-focused)', 'Include them in collaborative thinking groups'], aiTips: 'This week, open your 1:1 with a personal question — "What grabbed your attention outside of work this week?" — and listen for real. Then create one non-task collaboration like co-building a slide for the team. Connection grows through shared creation, not shared deadlines.' },
+          high: { analysis: 'Employee is well-connected to the organizational culture and the team.', actions: ['Continue fostering a safe and supportive environment', 'Express public appreciation for their team contribution'], aiTips: 'Deploy this employee as a "culture ambassador" — have them own the onboarding of a new hire. Give specific (not generic) public appreciation every two weeks in a team forum, naming exactly what they contributed to the team\'s atmosphere.' }
         }
       }
     },
@@ -278,6 +312,40 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
         relatedness: '"Hi [Employee], we haven\'t connected lately. Let\'s grab coffee; I want to hear how you are."',
         high: '"Hi [Employee], I appreciate your work. Let\'s think about how to maintain this energy."'
       }
-    }
+    },
+    // --- Phase 1: role selector ---
+    roleSelectGreeting: 'Hi {name}, who are you at work?',
+    roleSelectIntro: 'This helps us tailor your insights after the assessment.',
+    roleSolo: 'Solo Contributor',
+    roleSoloDesc: 'Doing the work, part of a team.',
+    roleManager: 'Manager',
+    roleManagerDesc: 'Leading people who do the work.',
+    roleSelectCta: 'Start assessment',
+    roleSelectContinueAs: 'Continue as',
+    roleSoloLabel: 'Solo Contributor',
+    roleManagerLabel: 'Manager',
+    // --- Phase 1: resume banner ---
+    resumeBannerTitle: 'You have an assessment in progress',
+    resumeBannerText: 'You started an assessment and didn\'t finish. Want to pick up where you left off?',
+    resumeContinue: 'Continue',
+    resumeStartFresh: 'Start fresh',
+    // --- Phase 1: what's next strip ---
+    whatsNextTitle: 'What\'s next?',
+    whatsNextCopyTitle: 'Copy for yourself',
+    whatsNextCopyDesc: 'Copy the full report and paste it wherever works for you — journal, notes, doc.',
+    whatsNextShareTitle: 'Share with your manager / team',
+    whatsNextShareDesc: 'Copy with a ready-made intro line to send to someone who should know.',
+    whatsNextRetakeTitle: 'Retake reminder',
+    whatsNextRetakeDesc: 'Email yourself a reminder to retake this assessment in 3 months.',
+    whatsNextRetakeSubject: 'Reminder: retake your motivation assessment',
+    whatsNextRetakeBody: 'Hi, you took a motivation assessment 3 months ago. Time to check in on how you\'re doing now. https://motivation-catalyst-david.web.app',
+    // --- Phase 1: share ---
+    shareIntroLine: 'Hi, I just took a Self-Determination Theory motivation assessment. Here\'s what came up:',
+    // --- Phase 1: rating labels (mobile pills) ---
+    rating1Label: 'Strongly disagree',
+    rating2Label: 'Disagree',
+    rating3Label: 'Neutral',
+    rating4Label: 'Agree',
+    rating5Label: 'Strongly agree'
   }
 };

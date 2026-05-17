@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle, ShieldCheck, Target, Zap, ArrowRight, LogIn } from 'lucide-react';
+import { AlertCircle, ShieldCheck, Target, Zap, ArrowRight, RotateCcw, X } from 'lucide-react';
 
 const MotivationOSHeroIcon: React.FC = () => (
   <svg width="48" height="48" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -27,6 +27,9 @@ interface WelcomeViewProps {
   onForgotPassword: (email: string) => Promise<void>;
   authError: string | null;
   authSuccess: string | null;
+  hasSavedProgress?: boolean;
+  onResume?: () => void;
+  onDiscardProgress?: () => void;
 }
 
 type AuthMode = 'signin' | 'signup' | 'forgot';
@@ -45,6 +48,9 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
   onForgotPassword,
   authError,
   authSuccess,
+  hasSavedProgress,
+  onResume,
+  onDiscardProgress,
 }) => {
   const [authMode, setAuthMode] = React.useState<AuthMode>('signin');
   const [password, setPassword] = React.useState('');
@@ -116,6 +122,40 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
       </div>
 
       <div className="flex-1 px-8 pb-12 relative z-10 overflow-y-auto">
+        {hasSavedProgress && onResume && onDiscardProgress && (
+          <div className="mb-6 p-5 rounded-[28px] border-2 shadow-sm" style={{ backgroundColor: 'var(--b2c-mist)', borderColor: 'var(--b2c-azure)', borderOpacity: 0.2 }}>
+            <div className="flex items-start gap-3 mb-4">
+              <div className="shrink-0 w-10 h-10 rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--b2c-deep)' }}>
+                <RotateCcw size={18} className="text-white" strokeWidth={2.5} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-black text-base leading-tight mb-1" style={{ color: 'var(--b2c-deep)' }}>{t.resumeBannerTitle}</h3>
+                <p className="text-xs text-slate-500 font-bold leading-snug">{t.resumeBannerText}</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={onResume}
+                className="flex-1 py-3 text-white font-black text-sm rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2"
+                style={{ backgroundImage: 'var(--gradient-b2c)' }}
+              >
+                {t.resumeContinue}
+                <ArrowRight size={16} className={t.dir === 'rtl' ? 'rotate-180' : ''} />
+              </button>
+              <button
+                type="button"
+                onClick={onDiscardProgress}
+                className="px-4 py-3 bg-white text-slate-400 font-black text-sm rounded-2xl border border-slate-200 active:scale-95 transition-all flex items-center justify-center gap-1"
+                aria-label={t.resumeStartFresh}
+                title={t.resumeStartFresh}
+              >
+                <X size={14} strokeWidth={2.5} />
+              </button>
+            </div>
+          </div>
+        )}
+
         {authMode === 'signin' && (
           <>
             <div className="mb-8 p-6 bg-gradient-to-br from-[#1F7AFF]/5 to-[#3CDCF0]/5 rounded-[30px] border-2 border-[#3CDCF0]/10 shadow-sm">
