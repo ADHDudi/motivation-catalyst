@@ -2,27 +2,65 @@ import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { QUESTIONS, TRANSLATIONS, COLORS, APP_ID, WEBHOOK_URL } from './constants';
 import WelcomeView from './views/WelcomeView';
+import RoleSelectView from './views/RoleSelectView';
 import AssessmentView from './views/AssessmentView';
 import AnalysisView from './views/AnalysisView';
 import CategoryIntroCard from './components/CategoryIntroCard';
-import { Language, FormData, Answers, Results, CategoryKey } from './types';
+import { Language, FormData, Answers, Results, CategoryKey, UserRole } from './types';
 import { signInWithGoogle, onAuthStateChange, signInWithEmail, signUpWithEmail, sendPasswordReset } from './authUtils';
 
 const TermsView = lazy(() => import('./views/legal/TermsView'));
 const PrivacyView = lazy(() => import('./views/legal/PrivacyView'));
 const AccessibilityView = lazy(() => import('./views/legal/AccessibilityView'));
 
-const App = () => {
-  const [lang, setLang] = useState<Language>(
-    () => (localStorage.getItem('mc_lang') as Language) || 'he'
-  );
+type Step = 'welcome' | 'role-select' | 'assessment' | 'analysis';
 
-  useEffect(() => {
-    localStorage.setItem('mc_lang', lang);
-  }, [lang]);
-  const [step, setStep] = useState<'welcome' | 'assessment' | 'analysis'>('welcome');
+interface SavedProgress {
+  formData: FormData;
+  userRole: UserRole;
+  lang: Language;
+  answers: Answers;
+  currentQuestionIndex: number;
+}
+
+const LS_ROLE = 'mc_role';
+const LS_LANG = 'mc_lang';
+const LS_PROGRESS = 'mc_progress';
+
+const readSavedRole = (): UserRole => {
+  try {
+    const v = localStorage.getItem(LS_ROLE);
+    return v === 'manager' ? 'manager' : 'solo';
+  } catch { return 'solo'; }
+};
+
+const readSavedLang = (): Language => {
+  try {
+    const v = localStorage.getItem(LS_LANG);
+    return v === 'en' ? 'en' : 'he';
+  } catch { return 'he'; }
+};
+
+const readSavedProgress = (): SavedProgress | null => {
+  try {
+    const raw = localStorage.getItem(LS_PROGRESS);
+    if (!raw) return null;
+    const p = JSON.parse(raw) as SavedProgress;
+    if (!p || typeof p !== 'object' || !p.answers || Object.keys(p.answers).length === 0) return null;
+    return p;
+  } catch { return null; }
+};
+
+const clearSavedProgress = () => {
+  try { localStorage.removeItem(LS_PROGRESS); } catch { /* noop */ }
+};
+
+const App = () => {
+  const [lang, setLang] = useState<Language>(readSavedLang);
+  const [step, setStep] = useState<Step>('welcome');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [formData, setFormData] = useState<FormData>({ employeeName: '', employeeEmail: '', managerName: '', managerEmail: '' });
+  const [userRole, setUserRoleState] = useState<UserRole>(readSavedRole);
   const [answers, setAnswers] = useState<Answers>({});
   const [results, setResults] = useState<Results | null>(null);
   const [statusMsg, setStatusMsg] = useState('');
@@ -30,9 +68,30 @@ const App = () => {
   const [pendingNextIndex, setPendingNextIndex] = useState<number>(0);
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSuccess, setAuthSuccess] = useState<string | null>(null);
+  const [hasSavedProgress, setHasSavedProgress] = useState<boolean>(() => readSavedProgress() !== null);
 
   const t = TRANSLATIONS[lang];
 
+  // Persist lang to localStorage
+  useEffect(() => {
+    try { localStorage.setItem(LS_LANG, lang); } catch { /* noop */ }
+  }, [lang]);
+
+  const setUserRole = (r: UserRole) => {
+    setUserRoleState(r);
+    try { localStorage.setItem(LS_ROLE, r); } catch { /* noop */ }
+  };
+
+  // Persist in-flight progress on every answer change (only while taking the assessment)
+  useEffect(() => {
+    if (step !== 'assessment') return;
+    if (Object.keys(answers).length === 0) return;
+    const payload: SavedProgress = { formData, userRole, lang, answers, currentQuestionIndex };
+    try { localStorage.setItem(LS_PROGRESS, JSON.stringify(payload)); } catch { /* noop */ }
+    setHasSavedProgress(true);
+  }, [answers, currentQuestionIndex, step, formData, userRole, lang]);
+
+  // Sync authenticated user data into formData
   useEffect(() => {
     const unsubscribe = onAuthStateChange((user) => {
       if (user) {
@@ -46,25 +105,9 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
-  const handleGoogleLogin = async () => {
-    setAuthError(null);
-    setAuthSuccess(null);
-    try {
-      const user = await signInWithGoogle();
-      advanceToAssessment(user);
-    } catch (error: any) {
-      const code = error?.code || '';
-      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
-        // User dismissed the popup — no error message needed
-      } else if (code === 'auth/network-request-failed') {
-        setAuthError(lang === 'he' ? 'בעיית חיבור לרשת. בדוק את החיבור שלך' : 'Network error. Check your connection');
-      } else {
-        setAuthError(lang === 'he' ? 'כניסה עם Google נכשלה. נסה שוב' : 'Google sign in failed. Please try again');
-      }
-    }
-  };
+  // --- Auth helpers ---
 
-  const advanceToAssessment = (user: any) => {
+  const advanceToRoleSelect = (user: any) => {
     if (!user) {
       setAuthError(lang === 'he' ? 'אימות נכשל. נסה שוב' : 'Authentication failed. Please try again');
       return;
@@ -74,8 +117,25 @@ const App = () => {
       employeeName: user.displayName || prev.employeeName,
       employeeEmail: user.email || prev.employeeEmail,
     }));
-    setStep('assessment');
-    setCurrentQuestionIndex(0);
+    setStep('role-select');
+  };
+
+  const handleGoogleLogin = async () => {
+    setAuthError(null);
+    setAuthSuccess(null);
+    try {
+      const user = await signInWithGoogle();
+      advanceToRoleSelect(user);
+    } catch (error: any) {
+      const code = error?.code || '';
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+        // user dismissed — no error needed
+      } else if (code === 'auth/network-request-failed') {
+        setAuthError(lang === 'he' ? 'בעיית חיבור לרשת. בדוק את החיבור שלך' : 'Network error. Check your connection');
+      } else {
+        setAuthError(lang === 'he' ? 'כניסה עם Google נכשלה. נסה שוב' : 'Google sign in failed. Please try again');
+      }
+    }
   };
 
   const handleEmailSignIn = async (email: string, password: string) => {
@@ -83,7 +143,7 @@ const App = () => {
     setAuthSuccess(null);
     try {
       const user = await signInWithEmail(email, password);
-      advanceToAssessment(user);
+      advanceToRoleSelect(user);
     } catch (error: any) {
       const code = error?.code || '';
       if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
@@ -105,7 +165,7 @@ const App = () => {
     setAuthSuccess(null);
     try {
       const user = await signUpWithEmail(email, password);
-      advanceToAssessment(user);
+      advanceToRoleSelect(user);
     } catch (error: any) {
       const code = error?.code || '';
       if (code === 'auth/email-already-in-use') {
@@ -140,23 +200,22 @@ const App = () => {
     }
   };
 
-  // --- Data Sync Logic ---
+  // --- Data Sync ---
 
   const syncData = async (type: 'submission' | 'interaction', payload: any) => {
-    if (!WEBHOOK_URL || WEBHOOK_URL.includes('REPLACE_WITH')) {
+    if (!WEBHOOK_URL || WEBHOOK_URL.includes('REPLACE_WITH') || WEBHOOK_URL.includes('REPLACE_ME')) {
       console.warn('Webhook URL not configured');
       return;
     }
-
     const data = {
       appId: APP_ID,
       timestamp: new Date().toISOString(),
       eventType: type,
       language: lang,
+      userRole,
       user: formData,
       ...payload
     };
-
     try {
       await fetch(WEBHOOK_URL, {
         method: 'POST',
@@ -179,6 +238,9 @@ const App = () => {
     setCategoryIntro(null);
     setPendingNextIndex(0);
     setFormData({ employeeName: '', employeeEmail: '', managerName: '', managerEmail: '' });
+    clearSavedProgress();
+    setHasSavedProgress(false);
+    // Preserve userRole and lang — those are the user's preferences, not assessment data.
   };
 
   const handleCategoryReady = () => {
@@ -191,9 +253,30 @@ const App = () => {
     setAuthError(null);
     setAuthSuccess(null);
     if (!formData.employeeName) return;
-    setStep('assessment');
+    setStep('role-select');
+  };
+
+  const handleRoleConfirm = () => {
     setCurrentQuestionIndex(0);
+    setAnswers({});
     setCategoryIntro('autonomy');
+    setStep('assessment');
+  };
+
+  const handleResume = () => {
+    const p = readSavedProgress();
+    if (!p) return;
+    setFormData(p.formData);
+    setUserRole(p.userRole);
+    setLang(p.lang);
+    setAnswers(p.answers);
+    setCurrentQuestionIndex(p.currentQuestionIndex);
+    setStep('assessment');
+  };
+
+  const handleDiscardProgress = () => {
+    clearSavedProgress();
+    setHasSavedProgress(false);
   };
 
   const calculateResults = (inputAnswers: Answers | null = null) => {
@@ -217,24 +300,20 @@ const App = () => {
     setResults(calculatedResults);
     setStep('analysis');
 
-    // Prepare full insights data for the sheet
+    // Assessment complete — clear in-flight progress
+    clearSavedProgress();
+    setHasSavedProgress(false);
+
+    // Prepare full insights data for the sheet (role-aware)
+    const roleKey: 'employee' | 'manager' = userRole === 'manager' ? 'manager' : 'employee';
     const insightsSummary = (['autonomy', 'competence', 'relatedness'] as CategoryKey[]).reduce((acc, cat) => {
       const score = parseFloat(calculatedResults[cat]);
-      const insight = t.deepAnalysis[cat].employee[score < 3.5 ? 'low' : 'high'];
-      acc[cat] = {
-        score,
-        analysis: insight.analysis,
-        actions: insight.actions
-      };
+      const insight = t.deepAnalysis[cat][roleKey][score < 3.5 ? 'low' : 'high'];
+      acc[cat] = { score, analysis: insight.analysis, actions: insight.actions };
       return acc;
     }, {} as any);
 
-    // POST full results to the sheet
-    syncData('submission', {
-      answers: data,
-      results: calculatedResults,
-      insights: insightsSummary
-    });
+    syncData('submission', { answers: data, results: calculatedResults, insights: insightsSummary });
   };
 
   const handleDemo = (type: 'high' | 'mid' | 'at-risk') => {
@@ -258,54 +337,43 @@ const App = () => {
     document.body.removeChild(el);
     setStatusMsg(t.copied);
     setTimeout(() => setStatusMsg(''), 3000);
-
     syncData('interaction', { action: 'copy_report', length: text.length });
   };
 
-  const generateFullReportText = () => {
-    if (!results) return "";
-    let text = `${t.profileTitle} - ${formData.employeeName}\n`;
+  const generateFullReportText = (variant: 'self' | 'share' = 'self') => {
+    if (!results) return '';
+    let text = '';
+    if (variant === 'share') {
+      text += `${t.shareIntroLine}\n\n`;
+    }
+    text += `${t.profileTitle} - ${formData.employeeName}\n`;
     text += `===============================\n\n`;
 
     const labels = {
       analysis: lang === 'he' ? 'ניתוח' : 'Analysis',
       actions: lang === 'he' ? 'פעולות מומלצות' : 'Recommended Actions',
       aiTips: lang === 'he' ? 'טיפ AI אסטרטגי' : 'Strategic AI Tip',
-      managerTitle: lang === 'he' ? 'המלצות למנהל' : 'Manager Recommendations',
-      selfTitle: lang === 'he' ? 'תובנות אישיות' : 'Personal Insights'
     };
+
+    const roleKey: 'employee' | 'manager' = userRole === 'manager' ? 'manager' : 'employee';
 
     (['autonomy', 'competence', 'relatedness'] as CategoryKey[]).forEach(cat => {
       const score = results[cat];
       const scoreNum = parseFloat(score);
       const isLow = scoreNum < 3.5;
-
-      const empData = t.deepAnalysis[cat].employee[isLow ? 'low' : 'high'];
-      const mgrData = t.deepAnalysis[cat].manager[isLow ? 'low' : 'high'];
+      const data = t.deepAnalysis[cat][roleKey][isLow ? 'low' : 'high'];
 
       text += `💠 ${t.categories[cat].toUpperCase()} (${score}/5.0)\n`;
       text += `-------------------------------\n`;
-
-      // Personal Section
-      text += `👤 ${labels.selfTitle}:\n`;
-      text += `   • ${labels.analysis}: ${empData.analysis}\n`;
-      text += `   • ${labels.actions}: ${empData.actions.join(', ')}\n\n`;
-
-      // Manager Section
-      text += `📋 ${labels.managerTitle}:\n`;
-      text += `   • ${labels.analysis}: ${mgrData.analysis}\n`;
-      text += `   • ${labels.actions}: ${mgrData.actions.join(', ')}\n\n`;
-
-      // AI Section
-      if (empData.aiTips) {
-        text += `✨ ${labels.aiTips}:\n`;
-        text += `   ${empData.aiTips}\n\n`;
+      text += `   • ${labels.analysis}: ${data.analysis}\n`;
+      text += `   • ${labels.actions}: ${data.actions.join(', ')}\n`;
+      if (data.aiTips) {
+        text += `   • ${labels.aiTips}: ${data.aiTips}\n`;
       }
-
       text += `\n`;
     });
 
-    text += `\nGenerated via Motivation Catalyst`;
+    text += `\nGenerated via MotivationOS`;
     return text;
   };
 
@@ -331,8 +399,17 @@ const App = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(i => i - 1);
     } else {
-      setStep('welcome');
+      setStep('role-select');
     }
+  };
+
+  const handleRetakeReminder = () => {
+    const email = formData.employeeEmail;
+    if (!email) return;
+    const subject = encodeURIComponent(t.whatsNextRetakeSubject);
+    const body = encodeURIComponent(t.whatsNextRetakeBody);
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    syncData('interaction', { action: 'retake_reminder' });
   };
 
   const handleSocialClick = (platform: string) => {
@@ -356,6 +433,21 @@ const App = () => {
           onForgotPassword={handleForgotPassword}
           authError={authError}
           authSuccess={authSuccess}
+          hasSavedProgress={hasSavedProgress}
+          onResume={handleResume}
+          onDiscardProgress={handleDiscardProgress}
+        />
+      )}
+      {step === 'role-select' && (
+        <RoleSelectView
+          t={t}
+          lang={lang}
+          setLang={setLang}
+          formData={formData}
+          userRole={userRole}
+          setUserRole={setUserRole}
+          onConfirm={handleRoleConfirm}
+          onBack={() => setStep('welcome')}
         />
       )}
       {step === 'assessment' && categoryIntro && (
@@ -371,6 +463,7 @@ const App = () => {
         <AssessmentView
           t={t}
           lang={lang}
+          setLang={setLang}
           currentQuestionIndex={currentQuestionIndex}
           answers={answers}
           onAnswer={handleAnswer}
@@ -382,14 +475,16 @@ const App = () => {
           t={t}
           lang={lang}
           setLang={setLang}
+          userRole={userRole}
+          formData={formData}
           results={results}
           onReset={handleReset}
           copyToClipboard={copyToClipboard}
           generateFullReportText={generateFullReportText}
+          onRetakeReminder={handleRetakeReminder}
           statusMsg={statusMsg}
           onSocialClick={handleSocialClick}
           answers={answers}
-          formData={formData}
         />
       )}
     </div>

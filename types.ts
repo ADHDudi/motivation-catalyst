@@ -1,5 +1,6 @@
 export type Language = 'he' | 'en';
 export type CategoryKey = 'autonomy' | 'competence' | 'relatedness';
+export type UserRole = 'solo' | 'manager';
 
 declare global {
   interface Window {
@@ -103,6 +104,41 @@ export interface TranslationData {
   categoryIntroBtn: string;
   categoryIntroLabel: string;
   categoryIntroDesc: Record<CategoryKey, string>;
+  // Phase 1: rating labels (mobile pills)
+  rating1Label: string;
+  rating2Label: string;
+  rating3Label: string;
+  rating4Label: string;
+  rating5Label: string;
+  // Phase 1: role selector
+  roleSelectGreeting: string;
+  roleSelectIntro: string;
+  roleSolo: string;
+  roleSoloDesc: string;
+  roleManager: string;
+  roleManagerDesc: string;
+  roleSelectCta: string;
+  roleSelectContinueAs: string;
+  // Phase 1: resume banner
+  resumeBannerTitle: string;
+  resumeBannerText: string;
+  resumeContinue: string;
+  resumeStartFresh: string;
+  // Phase 1: what's next strip
+  whatsNextTitle: string;
+  whatsNextCopyTitle: string;
+  whatsNextCopyDesc: string;
+  whatsNextShareTitle: string;
+  whatsNextShareDesc: string;
+  whatsNextRetakeTitle: string;
+  whatsNextRetakeDesc: string;
+  whatsNextRetakeSubject: string;
+  whatsNextRetakeBody: string;
+  // Phase 1: role labels on analysis screen
+  roleSoloLabel: string;
+  roleManagerLabel: string;
+  // Phase 1: share
+  shareIntroLine: string;
   categories: Record<CategoryKey, string>;
   deepAnalysis: Record<CategoryKey, DeepAnalysisCategory>;
   conversationTips: {
