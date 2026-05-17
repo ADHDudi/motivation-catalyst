@@ -3,7 +3,7 @@ import { UserCheck, ShieldCheck, RefreshCw, Copy, BrainCircuit, Sparkles, CheckC
 import Logo from '../components/Logo';
 import ResultPolarChart from '../components/ResultPolarChart';
 import AccordionItem from '../components/AccordionItem';
-import { TranslationData, Results, Language, CategoryKey } from '../types';
+import { TranslationData, Results, Language, CategoryKey, UserRole, FormData } from '../types';
 import { COLORS } from '../constants';
 import { hexToRgba, getOpacityForScore, getTextColorForScore } from '../utils';
 
@@ -17,6 +17,8 @@ interface AnalysisViewProps {
   generateFullReportText: () => string;
   statusMsg: string;
   onSocialClick?: (platform: string) => void;
+  userRole: UserRole;
+  formData: FormData;
 }
 
 interface CategoryInsightProps {
@@ -79,7 +81,7 @@ const AnalysisSection: React.FC<AnalysisSectionProps> = ({ title, icon: Icon, ch
   );
 };
 
-const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, onReset, copyToClipboard, generateFullReportText, statusMsg, onSocialClick }) => {
+const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, onReset, copyToClipboard, generateFullReportText, statusMsg, onSocialClick, userRole, formData }) => {
   const [feedbackState, setFeedbackState] = useState<'idle' | 'commenting' | 'submitted'>('idle');
   const [comment, setComment] = useState('');
 
@@ -107,15 +109,15 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
         <h2 className="text-4xl font-black text-[#324FA2] text-center mb-8">{t.profileTitle}</h2>
         <ResultPolarChart scores={results} t={t} />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-            <AnalysisSection title={t.userInsights} icon={UserCheck} onCopy={() => copyToClipboard(generateFullReportText())} copyLabel={t.copyEmployee}>
+        <div className="mt-12">
+            <AnalysisSection
+                title={userRole === 'manager' ? t.managerRecs : t.userInsights}
+                icon={userRole === 'manager' ? ShieldCheck : UserCheck}
+                onCopy={() => copyToClipboard(generateFullReportText())}
+                copyLabel={userRole === 'manager' ? t.copyManager : t.copyEmployee}
+            >
                 {(['autonomy', 'competence', 'relatedness'] as CategoryKey[]).map(c => (
-                  <CategoryInsight key={c} categoryKey={c} score={results[c]} type="employee" t={t} lang={lang} />
-                ))}
-            </AnalysisSection>
-            <AnalysisSection title={t.managerRecs} icon={ShieldCheck} onCopy={() => copyToClipboard('Manager Recommendations')} copyLabel={t.copyManager}>
-                {(['autonomy', 'competence', 'relatedness'] as CategoryKey[]).map(c => (
-                  <CategoryInsight key={c} categoryKey={c} score={results[c]} type="manager" t={t} lang={lang} />
+                  <CategoryInsight key={c} categoryKey={c} score={results[c]} type={userRole === 'manager' ? 'manager' : 'employee'} t={t} lang={lang} />
                 ))}
             </AnalysisSection>
         </div>
@@ -130,8 +132,8 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
             <div className="space-y-6 relative z-10">
                 {(['autonomy', 'competence', 'relatedness'] as CategoryKey[]).map(cat => {
                     const scoreVal = parseFloat(results[cat]);
-                    const data = t.deepAnalysis[cat].employee[scoreVal < 3.5 ? 'low' : 'high'];
-                    return (
+                    const data = t.deepAnalysis[cat][userRole === 'manager' ? 'manager' : 'employee'][scoreVal < 3.5 ? 'low' : 'high'];
+                    return data.aiTips ? (
                         <div key={cat} className="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-white shadow-sm">
                             <h4 className="font-black text-[#324FA2] mb-2 flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[cat].hex }}></div>
@@ -139,7 +141,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
                             </h4>
                             <p className="text-sm text-slate-600 font-bold leading-relaxed">{data.aiTips}</p>
                         </div>
-                    );
+                    ) : null;
                 })}
             </div>
         </div>
@@ -176,8 +178,33 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ t, lang, setLang, results, 
             )}
         </div>
 
-        <div className="mt-12 space-y-5">
-            <button onClick={() => copyToClipboard(generateFullReportText())} className="w-full py-6 bg-[#324FA2] text-white rounded-[30px] font-black text-xl flex items-center justify-center gap-4 shadow-xl active:scale-95 transition-all"><Clipboard size={24} /> {t.copyReport}</button>
+        <div className="mt-8 p-6 bg-slate-50 rounded-[40px] border-2 border-slate-100">
+            <h4 className="font-black text-[#324FA2] text-lg mb-5">{t.whatsNextTitle}</h4>
+            <div className="space-y-3">
+                <button
+                    onClick={() => copyToClipboard(generateFullReportText())}
+                    className="w-full flex items-center gap-4 p-4 bg-white rounded-2xl border border-slate-100 hover:border-[#324FA2]/30 active:scale-95 transition-all text-left"
+                >
+                    <div className="p-2.5 bg-[#324FA2]/10 rounded-xl text-[#324FA2] shrink-0"><Clipboard size={18} /></div>
+                    <p className="font-black text-slate-800 text-sm">{t.copyReportLabel}</p>
+                </button>
+
+                <button
+                    onClick={() => copyToClipboard(`${t.shareWithTeamIntro}\n\n${generateFullReportText()}`)}
+                    className="w-full flex items-center gap-4 p-4 bg-white rounded-2xl border border-slate-100 hover:border-[#324FA2]/30 active:scale-95 transition-all text-left"
+                >
+                    <div className="p-2.5 bg-[#90BC6E]/10 rounded-xl text-[#90BC6E] shrink-0"><Send size={18} /></div>
+                    <p className="font-black text-slate-800 text-sm">{t.shareWithTeamLabel}</p>
+                </button>
+
+                <a
+                    href={`mailto:${formData.employeeEmail || ''}?subject=${encodeURIComponent(t.retakeReminderSubject)}`}
+                    className="w-full flex items-center gap-4 p-4 bg-white rounded-2xl border border-slate-100 hover:border-[#324FA2]/30 active:scale-95 transition-all"
+                >
+                    <div className="p-2.5 bg-[#E46B3F]/10 rounded-xl text-[#E46B3F] shrink-0"><RefreshCw size={18} /></div>
+                    <p className="font-black text-slate-800 text-sm">{t.retakeReminderLabel}</p>
+                </a>
+            </div>
         </div>
 
         <div className="mt-20 pt-10 border-t-4 border-dashed border-slate-50 flex flex-col items-center gap-6">

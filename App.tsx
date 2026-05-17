@@ -268,13 +268,13 @@ const App = () => {
         />
       )}
       {step === 'analysis' && results && (
-        // @ts-ignore
         <AnalysisView
           t={t}
           lang={lang}
           setLang={setLang}
           results={results}
           userRole={userRole}
+          formData={formData}
           onReset={handleReset}
           copyToClipboard={copyToClipboard}
           generateFullReportText={generateFullReportText}
