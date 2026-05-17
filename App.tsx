@@ -10,7 +10,8 @@ const App = () => {
   const [lang, setLang] = useState<Language>('he');
   const [step, setStep] = useState<'welcome' | 'role-select' | 'assessment' | 'analysis'>('welcome');
   const [userRole, setUserRole] = useState<UserRole>(() => {
-    return (localStorage.getItem('mc_role') as UserRole) || 'solo';
+    const stored = localStorage.getItem('mc_role');
+    return (stored === 'solo' || stored === 'manager') ? stored : 'solo';
   });
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [formData, setFormData] = useState<FormData>({ employeeName: '', employeeEmail: '', managerName: '', managerEmail: '' });
@@ -106,7 +107,7 @@ const App = () => {
     // Prepare full insights data for the sheet
     const insightsSummary = (['autonomy', 'competence', 'relatedness'] as CategoryKey[]).reduce((acc, cat) => {
       const score = parseFloat(calculatedResults[cat]);
-      const insight = t.deepAnalysis[cat].employee[score < 3.5 ? 'low' : 'high'];
+      const insight = t.deepAnalysis[cat][userRole === 'manager' ? 'manager' : 'employee'][score < 3.5 ? 'low' : 'high'];
       acc[cat] = {
         score,
         analysis: insight.analysis,
