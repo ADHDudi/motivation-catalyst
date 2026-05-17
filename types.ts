@@ -1,5 +1,6 @@
 export type Language = 'he' | 'en';
 export type CategoryKey = 'autonomy' | 'competence' | 'relatedness';
+export type UserRole = 'solo' | 'manager';
 
 export interface LocalizedText {
   he: string;
@@ -93,6 +94,28 @@ export interface TranslationData {
     employee: Record<CategoryKey | 'high', string>;
     manager: Record<CategoryKey | 'high', string>;
   };
+  roleSelectTitle: string;
+  roleSelectGreeting: string;
+  soloLabel: string;
+  soloSubLabel: string;
+  soloDesc: string;
+  managerLabel: string;
+  managerSubLabel: string;
+  managerDesc: string;
+  startAsSolo: string;
+  startAsManager: string;
+  continueSolo: string;
+  continueManager: string;
+  resumeTitle: string;
+  resumeDesc: string;
+  resumeContinue: string;
+  resumeStartFresh: string;
+  whatsNextTitle: string;
+  copyReportLabel: string;
+  shareWithTeamLabel: string;
+  shareWithTeamIntro: string;
+  retakeReminderLabel: string;
+  retakeReminderSubject: string;
 }
 
 export interface DeepAnalysisCategory {

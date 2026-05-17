@@ -114,8 +114,8 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
           high: { analysis: 'יש לך תחושת חופש ובעלות גבוהה על המשימות שלך.', actions: ['המשך ליזום פרויקטים חדשים', 'שמש דוגמה לניהול עצמי בצוות'], aiTips: 'נצל את החופש שלך כדי לחקור כלים חדשים שיכולים לשדרג את ביצועי הצוות. זה הזמן להוביל יוזמות שמעבר להגדרת התפקיד הפורמלית.' }
         },
         manager: {
-          low: { analysis: 'העובד מרגיש כבול. חוסר אוטונומיה מוביל לשחיקה מהירה.', actions: ['הגדר את ה"מה" ושחרר את ה"איך"', 'שתף את העובד בקבלת החלטות'] },
-          high: { analysis: 'העובד מרגיש אמון מלא. זהו מנוע צמיחה חזק.', actions: ['האצל סמכויות מורכבות יותר', 'הימנע ממעורבות יתר במשימות שגורות'] }
+          low: { analysis: 'העובד מרגיש כבול. חוסר אוטונומיה מוביל לשחיקה מהירה.', actions: ['הגדר את ה"מה" ושחרר את ה"איך"', 'שתף את העובד בקבלת החלטות'], aiTips: 'השבוע, בחר משימה אחת ותן לעובד/ת לנהל אותה באופן עצמאי לחלוטין — ללא בדיקות ביניים. זה יבנה אמון ויפתח את החסם.' },
+          high: { analysis: 'העובד מרגיש אמון מלא. זהו מנוע צמיחה חזק.', actions: ['האצל סמכויות מורכבות יותר', 'הימנע ממעורבות יתר במשימות שגורות'], aiTips: 'נצל את האמון הגבוה שיש לעובד/ת בך — הצע לו/לה לייצג אתכם בפגישה חיצונית או להוביל פרויקט צוותי עצמאי.' }
         }
       },
       competence: {
@@ -125,8 +125,8 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
           high: { analysis: 'אתה מרגיש מקצועי, חד ובעל יכולת לתרום לצוות.', actions: ['חפש אתגרים חדשים שמותחים אותך', 'שמש כמנטור לעובדים אחרים'], aiTips: 'זה הזמן המושלם לבקש פרויקט "מתיחה" (Stretch Assignment) שיחשוף אותך לתחומים חדשים בארגון. היכולת שלך ללמד אחרים היא הדרך הטובה ביותר לשכלל את המומחיות שלך.' }
         },
         manager: {
-          low: { analysis: 'העובד חווה תסכול או חשש מחוסר הצלחה.', actions: ['פרק משימות ליעדים קטנים וברי השגה', 'ספק משוב בונה ומיידי'] },
-          high: { analysis: 'העובד בטוח ביכולותיו ומספק תוצאות איכותיות.', actions: ['בדוק אפשרות לקידום או הרחבת אחריות', 'שבח את המיומנות הספציפית שלו'] }
+          low: { analysis: 'העובד חווה תסכול או חשש מחוסר הצלחה.', actions: ['פרק משימות ליעדים קטנים וברי השגה', 'ספק משוב בונה ומיידי'], aiTips: 'בפגישת 1:1 הקרובה, שאל/י: "מה הדבר אחד שאם היה לך כלי או הדרכה עליו, היית מרגיש/ה יותר ביטחון?" — ואז פעל/י על התשובה.' },
+          high: { analysis: 'העובד בטוח ביכולותיו ומספק תוצאות איכותיות.', actions: ['בדוק אפשרות לקידום או הרחבת אחריות', 'שבח את המיומנות הספציפית שלו'], aiTips: 'עובד/ת בעלי מסוגלות גבוהה זקוקים לאתגר כדי להישאר מעורבים. שקול/י להציע "מטלת מתיחה" — פרויקט שמעבר לתפקיד הרשמי.' }
         }
       },
       relatedness: {
@@ -136,11 +136,33 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
           high: { analysis: 'אתה מרגיש חלק בלתי נפרד מהצוות וזוכה לתמיכה.', actions: ['חזק את הקשרים הקיימים', 'הייה הגורם המקשר לאחרים שמרגישים מחוץ לעניינים'], aiTips: 'השתמש בחיבור החזק שלך כדי לעזור לעובדים חדשים להיקלט. תחושת המשמעות שלך תגדל ככל שתהיה "הדבק" ששומר על הצוות מאוחד.' }
         },
         manager: {
-          low: { analysis: 'העובד מרגיש מבודד. חוסר שייכות פוגע במחויבות.', actions: ['קבע פגישות 1:1 אישיות (לא רק על משימות)', 'שלב אותו בצוותי חשיבה משותפים'] },
-          high: { analysis: 'העובד מחובר היטב לתרבות הארגונית ולצוות.', actions: ['המשך לטפח סביבה בטוחה ותומכת', 'הבע הערכה פומבית על תרומתו לצוות'] }
+          low: { analysis: 'העובד מרגיש מבודד. חוסר שייכות פוגע במחויבות.', actions: ['קבע פגישות 1:1 אישיות (לא רק על משימות)', 'שלב אותו בצוותי חשיבה משותפים'], aiTips: 'הקדש/י 5 דקות בתחילת פגישת הצוות הבאה ל"צ\'ק-אין" אישי — לא על משימות, רק על "איך אתם?". זה משנה את הדינמיקה.' },
+          high: { analysis: 'העובד מחובר היטב לתרבות הארגונית ולצוות.', actions: ['המשך לטפח סביבה בטוחה ותומכת', 'הבע הערכה פומבית על תרומתו לצוות'], aiTips: 'שייכות גבוהה היא נכס — השתמש/י בו. בקש/י מהעובד/ת לקחת חסות על הקלטה של חבר צוות חדש ולהיות "שגריר" התרבות הצוותית.' }
         }
       }
     },
+    roleSelectTitle: 'בחר/י את תפקידך',
+    roleSelectGreeting: 'שלום, {name}!',
+    soloLabel: 'עובד/ת',
+    soloSubLabel: 'Solo Contributor',
+    soloDesc: 'עובד/ת בצוות, מבצע/ת את העבודה',
+    managerLabel: 'מנהל/ת',
+    managerSubLabel: 'Manager',
+    managerDesc: 'מוביל/ה אנשים שעושים את העבודה',
+    startAsSolo: 'התחל כעובד/ת',
+    startAsManager: 'התחל כמנהל/ת',
+    continueSolo: 'המשך כעובד/ת',
+    continueManager: 'המשך כמנהל/ת',
+    resumeTitle: 'יש לך שאלון פתוח',
+    resumeDesc: 'ענית על חלק מהשאלות. רוצה להמשיך מאיפה שעצרת?',
+    resumeContinue: 'המשך',
+    resumeStartFresh: 'התחל מחדש',
+    whatsNextTitle: 'מה עכשיו?',
+    copyReportLabel: 'העתק דוח',
+    shareWithTeamLabel: 'שתף עם הצוות',
+    shareWithTeamIntro: 'סיימתי אבחון מוטיבציה — הנה מה שעלה:',
+    retakeReminderLabel: 'תזמן חזרה',
+    retakeReminderSubject: 'תזכורת: אבחון מוטיבציה עוד 3 חודשים',
     conversationTips: {
       employee: {
         autonomy: '"היי [שם המנהל], הייתי רוצה לקבוע זמן לדבר על תהליכי העבודה שלי. אני מרגיש שאוכל לתרום יותר אם תהיה לי יותר גמישות בדרך הביצוע."',
@@ -224,8 +246,8 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
           high: { analysis: 'You have a strong sense of freedom and high ownership over your tasks and projects.', actions: ['Continue initiating new projects', 'Serve as a role model for self-management in the team'], aiTips: 'Leverage your freedom to research new tools that can upgrade team performance. This is the time to lead initiatives that go beyond your formal job description.' }
         },
         manager: {
-          low: { analysis: 'Employee feels restricted. A lack of autonomy leads to rapid burnout.', actions: ["Define the 'what' and release the 'how'", "Involve the employee in decision-making processes"] },
-          high: { analysis: 'Employee feels fully trusted. This is a powerful growth engine.', actions: ['Delegate more complex authorities', 'Avoid over-involvement in routine tasks'] }
+          low: { analysis: 'Employee feels restricted. A lack of autonomy leads to rapid burnout.', actions: ["Define the 'what' and release the 'how'", "Involve the employee in decision-making processes"], aiTips: 'This week, pick one task and let the employee manage it fully autonomously — no check-ins. This builds trust and breaks the micromanagement pattern.' },
+          high: { analysis: 'Employee feels fully trusted. This is a powerful growth engine.', actions: ['Delegate more complex authorities', 'Avoid over-involvement in routine tasks'], aiTips: 'Leverage the high trust this employee has earned — invite them to represent the team in an external meeting or lead an independent team project.' }
         }
       },
       competence: {
@@ -235,8 +257,8 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
           high: { analysis: 'You feel professional, sharp, and highly capable of delivering quality results for the team.', actions: ["Seek new 'stretch' challenges that push your limits", "Serve as a mentor for other team members"], aiTips: 'This is the perfect time to request a "Stretch Assignment" that exposes you to new areas of the organization. Your ability to teach others is the best way to further refine your own expertise.' }
         },
         manager: {
-          low: { analysis: 'Employee is experiencing frustration or fear of failure.', actions: ['Break tasks into small, achievable goals', 'Provide constructive and immediate feedback'] },
-          high: { analysis: 'Employee is confident in their abilities and delivers high-quality results.', actions: ['Explore promotion or expanded responsibility', 'Praise their specific professional skills'] }
+          low: { analysis: 'Employee is experiencing frustration or fear of failure.', actions: ['Break tasks into small, achievable goals', 'Provide constructive and immediate feedback'], aiTips: 'In your next 1:1, ask: "What one tool or training would make you feel most confident right now?" — then act on the answer within a week.' },
+          high: { analysis: 'Employee is confident in their abilities and delivers high-quality results.', actions: ['Explore promotion or expanded responsibility', 'Praise their specific professional skills'], aiTips: 'High-competence employees need challenge to stay engaged. Consider offering a "stretch assignment" — a project that goes beyond their current formal role.' }
         }
       },
       relatedness: {
@@ -246,11 +268,33 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
           high: { analysis: 'You feel like an integral part of the team and receive genuine support from your colleagues.', actions: ['Strengthen existing connections', 'Be a bridge for others who might feel excluded'], aiTips: 'Use your strong connections to help new hires integrate. Your sense of meaning will grow as you become the "glue" that keeps the team united.' }
         },
         manager: {
-          low: { analysis: 'Employee feels isolated. Lack of belonging harms commitment.', actions: ['Schedule personal 1:1 meetings (not just task-focused)', 'Include them in collaborative thinking groups'] },
-          high: { analysis: 'Employee is well-connected to the organizational culture and the team.', actions: ['Continue fostering a safe and supportive environment', 'Express public appreciation for their team contribution'] }
+          low: { analysis: 'Employee feels isolated. Lack of belonging harms commitment.', actions: ['Schedule personal 1:1 meetings (not just task-focused)', 'Include them in collaborative thinking groups'], aiTips: 'Dedicate 5 minutes at the start of your next team meeting to a personal "check-in" — not about tasks, just "how are you doing?". It shifts the dynamic.' },
+          high: { analysis: 'Employee is well-connected to the organizational culture and the team.', actions: ['Continue fostering a safe and supportive environment', 'Express public appreciation for their team contribution'], aiTips: 'High belonging is an asset — use it. Ask this employee to sponsor a new team member\'s onboarding and be a "culture ambassador" for the team.' }
         }
       }
     },
+    roleSelectTitle: 'Choose your role',
+    roleSelectGreeting: 'Hi, {name}!',
+    soloLabel: 'Solo Contributor',
+    soloSubLabel: 'Individual',
+    soloDesc: 'Doing the work, part of a team',
+    managerLabel: 'Manager',
+    managerSubLabel: 'Team Lead',
+    managerDesc: 'Leading people who do the work',
+    startAsSolo: 'Start as Solo Contributor',
+    startAsManager: 'Start as Manager',
+    continueSolo: 'Continue as Solo Contributor',
+    continueManager: 'Continue as Manager',
+    resumeTitle: 'Assessment in progress',
+    resumeDesc: 'You started this assessment earlier. Want to continue where you left off?',
+    resumeContinue: 'Continue',
+    resumeStartFresh: 'Start fresh',
+    whatsNextTitle: "What's next?",
+    copyReportLabel: 'Copy your report',
+    shareWithTeamLabel: 'Share with your team',
+    shareWithTeamIntro: 'I just took a motivation assessment — here\'s what came up:',
+    retakeReminderLabel: 'Set a retake reminder',
+    retakeReminderSubject: 'Reminder: Motivation reassessment in 3 months',
     conversationTips: {
       employee: {
         autonomy: '"Hi [Manager], I\'d like to discuss my workflows. I feel I could contribute more with more flexibility."',
