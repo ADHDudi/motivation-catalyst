@@ -2,6 +2,19 @@ export type Language = 'he' | 'en';
 export type CategoryKey = 'autonomy' | 'competence' | 'relatedness';
 export type UserRole = 'solo' | 'manager';
 
+declare global {
+  interface Window {
+    firebase: any;
+  }
+}
+
+export interface FeedbackData {
+  rating: number; // 1 for thumbs down, 5 for thumbs up (or boolean, but user asked for "option to use this feedback")
+  comment: string;
+  timestamp: any; // Firestore timestamp
+  results: Results;
+}
+
 export interface LocalizedText {
   he: string;
   en: string;
@@ -88,34 +101,50 @@ export interface TranslationData {
   conversationTitle: string;
   conversationIntro: string;
   followMe: string;
+  categoryIntroBtn: string;
+  categoryIntroLabel: string;
+  categoryIntroDesc: Record<CategoryKey, string>;
+  // Phase 1: rating labels (mobile pills)
+  rating1Label: string;
+  rating2Label: string;
+  rating3Label: string;
+  rating4Label: string;
+  rating5Label: string;
+  // Phase 1: role selector
+  roleSelectGreeting: string;
+  roleSelectIntro: string;
+  roleSolo: string;
+  roleSoloDesc: string;
+  roleManager: string;
+  roleManagerDesc: string;
+  roleSelectCta: string;
+  roleSelectContinueAs: string;
+  // Phase 1: resume banner
+  resumeBannerTitle: string;
+  resumeBannerText: string;
+  resumeContinue: string;
+  resumeStartFresh: string;
+  // Phase 1: what's next strip
+  whatsNextTitle: string;
+  whatsNextCopyTitle: string;
+  whatsNextCopyDesc: string;
+  whatsNextShareTitle: string;
+  whatsNextShareDesc: string;
+  whatsNextRetakeTitle: string;
+  whatsNextRetakeDesc: string;
+  whatsNextRetakeSubject: string;
+  whatsNextRetakeBody: string;
+  // Phase 1: role labels on analysis screen
+  roleSoloLabel: string;
+  roleManagerLabel: string;
+  // Phase 1: share
+  shareIntroLine: string;
   categories: Record<CategoryKey, string>;
   deepAnalysis: Record<CategoryKey, DeepAnalysisCategory>;
   conversationTips: {
     employee: Record<CategoryKey | 'high', string>;
     manager: Record<CategoryKey | 'high', string>;
   };
-  roleSelectTitle: string;
-  roleSelectGreeting: string;
-  soloLabel: string;
-  soloSubLabel: string;
-  soloDesc: string;
-  managerLabel: string;
-  managerSubLabel: string;
-  managerDesc: string;
-  startAsSolo: string;
-  startAsManager: string;
-  continueSolo: string;
-  continueManager: string;
-  resumeTitle: string;
-  resumeDesc: string;
-  resumeContinue: string;
-  resumeStartFresh: string;
-  whatsNextTitle: string;
-  copyReportLabel: string;
-  shareWithTeamLabel: string;
-  shareWithTeamIntro: string;
-  retakeReminderLabel: string;
-  retakeReminderSubject: string;
 }
 
 export interface DeepAnalysisCategory {
@@ -146,3 +175,9 @@ export interface FormData {
 export type Answers = Record<number, number>;
 
 export type Results = Record<CategoryKey, string>;
+
+export interface MotivationAnalysisResult {
+  autonomy: { analysis: string; tip: string; adhd_tip?: string };
+  competence: { analysis: string; tip: string; adhd_tip?: string };
+  relatedness: { analysis: string; tip: string; adhd_tip?: string };
+}

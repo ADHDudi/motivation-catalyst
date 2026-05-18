@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { UserCheck, ShieldCheck, ArrowRight } from 'lucide-react';
+import React from 'react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Logo from '../components/Logo';
 import { TranslationData, FormData, Language, UserRole } from '../types';
 
@@ -7,44 +7,30 @@ interface RoleSelectViewProps {
   t: TranslationData;
   lang: Language;
   setLang: (lang: Language) => void;
-  userRole: UserRole;
   formData: FormData;
-  onRoleSelect: (role: UserRole) => void;
+  userRole: UserRole;
+  setUserRole: (role: UserRole) => void;
+  onConfirm: () => void;
+  onBack: () => void;
 }
 
-const RoleSelectView: React.FC<RoleSelectViewProps> = ({ t, lang, setLang, userRole, formData, onRoleSelect }) => {
-  const [selectedRole, setSelectedRole] = useState<UserRole>(userRole);
+const RoleSelectView: React.FC<RoleSelectViewProps> = ({
+  t,
+  lang,
+  setLang,
+  formData,
+  userRole,
+  setUserRole,
+  onConfirm,
+  onBack,
+}) => {
+  const greeting = t.roleSelectGreeting.replace('{name}', formData.employeeName || '👋');
+  const BackIcon = t.dir === 'rtl' ? ArrowRight : ArrowLeft;
+  const FwdIcon = t.dir === 'rtl' ? ArrowLeft : ArrowRight;
 
-  const greeting = t.roleSelectGreeting.replace('{name}', formData.employeeName);
-
-  const isContinue = userRole === selectedRole;
-
-  let ctaLabel: string;
-  if (selectedRole === 'solo') {
-    ctaLabel = isContinue ? t.continueSolo : t.startAsSolo;
-  } else {
-    ctaLabel = isContinue ? t.continueManager : t.startAsManager;
-  }
-
-  const cards: { role: UserRole; label: string; subLabel: string; desc: string; Icon: React.ElementType; iconBg: string; iconText: string }[] = [
-    {
-      role: 'solo',
-      label: t.soloLabel,
-      subLabel: t.soloSubLabel,
-      desc: t.soloDesc,
-      Icon: UserCheck,
-      iconBg: 'bg-[#78A9D6]/10',
-      iconText: 'text-[#78A9D6]',
-    },
-    {
-      role: 'manager',
-      label: t.managerLabel,
-      subLabel: t.managerSubLabel,
-      desc: t.managerDesc,
-      Icon: ShieldCheck,
-      iconBg: 'bg-[#E46B3F]/10',
-      iconText: 'text-[#E46B3F]',
-    },
+  const roles: { key: UserRole; label: string; desc: string }[] = [
+    { key: 'solo', label: t.roleSolo, desc: t.roleSoloDesc },
+    { key: 'manager', label: t.roleManager, desc: t.roleManagerDesc },
   ];
 
   return (
@@ -52,67 +38,82 @@ const RoleSelectView: React.FC<RoleSelectViewProps> = ({ t, lang, setLang, userR
       className={`w-full max-w-lg mx-auto bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col min-h-[100dvh] md:min-h-0 text-${t.dir === 'rtl' ? 'right' : 'left'}`}
       dir={t.dir}
     >
-      {/* Top bar */}
-      <div className="flex justify-between items-center px-8 pt-10 pb-4">
-        <button
-          onClick={() => setLang(lang === 'he' ? 'en' : 'he')}
-          className="bg-slate-50 text-slate-400 p-3 rounded-2xl text-[10px] font-black transition-all active:scale-90"
-        >
-          {lang === 'he' ? 'EN' : 'עב'}
-        </button>
-        <Logo size="sm" />
-      </div>
+      {/* Header */}
+      <div className="p-8 pt-12 bg-white">
+        <div className="flex justify-between items-center mb-8">
+          <button
+            onClick={onBack}
+            className="p-2 text-slate-300 hover:text-slate-600 active:scale-90"
+            aria-label="Back"
+          >
+            <BackIcon size={24} />
+          </button>
+          <Logo size="sm" />
+          <button
+            onClick={() => setLang(lang === 'he' ? 'en' : 'he')}
+            className="bg-slate-50 text-slate-400 p-3 rounded-2xl text-[10px] font-black transition-all active:scale-90"
+            aria-label="Toggle language"
+          >
+            {lang === 'he' ? 'EN' : 'עב'}
+          </button>
+        </div>
 
-      {/* Greeting */}
-      <div className="px-8 pt-4 pb-6 text-center">
-        <h1 className="text-3xl font-black text-[#324FA2] leading-tight mb-2">{greeting}</h1>
-        <p className="text-slate-500 font-bold text-base">{t.roleSelectTitle}</p>
+        <h2 className="text-2xl font-black leading-tight mb-2" style={{ color: 'var(--b2c-deep)' }}>
+          {greeting}
+        </h2>
+        <p className="text-sm font-bold text-slate-400 leading-relaxed">{t.roleSelectIntro}</p>
       </div>
 
       {/* Role cards */}
-      <div className="flex-1 px-8 pb-4 flex flex-col gap-4">
-        {cards.map(({ role, label, subLabel, desc, Icon, iconBg, iconText }) => {
-          const isSelected = selectedRole === role;
+      <div className="flex-1 px-8 pb-12 flex flex-col gap-4 justify-center">
+        {roles.map(role => {
+          const isSelected = userRole === role.key;
           return (
             <button
-              key={role}
+              key={role.key}
               type="button"
-              onClick={() => setSelectedRole(role)}
-              className={
+              onClick={() => setUserRole(role.key)}
+              aria-pressed={isSelected}
+              className={`w-full p-6 rounded-3xl border-2 text-start transition-all active:scale-[0.98] ${
                 isSelected
-                  ? 'bg-[#324FA2]/5 border-2 border-[#324FA2] rounded-3xl p-6 flex items-center gap-4 cursor-pointer w-full text-start transition-all'
-                  : 'bg-white border-2 border-slate-100 rounded-3xl p-6 flex items-center gap-4 cursor-pointer hover:border-[#324FA2]/30 transition-all w-full text-start'
-              }
+                  ? 'border-[var(--b2c-azure)] shadow-lg'
+                  : 'border-slate-100 hover:border-slate-200 shadow-sm'
+              }`}
+              style={isSelected ? { backgroundColor: 'var(--b2c-mist)' } : { backgroundColor: 'white' }}
             >
-              <div
-                className={`p-3 rounded-2xl shrink-0 ${isSelected ? 'bg-[#324FA2] text-white' : `${iconBg} ${iconText}`}`}
-              >
-                <Icon size={28} strokeWidth={2} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2 flex-wrap">
-                  <span className="text-xl font-black text-[#324FA2]">{label}</span>
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{subLabel}</span>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <p
+                    className="text-lg font-black leading-tight mb-1"
+                    style={{ color: isSelected ? 'var(--b2c-deep)' : 'var(--b2c-ink)' }}
+                  >
+                    {role.label}
+                  </p>
+                  <p className="text-sm font-bold text-slate-400 leading-snug">{role.desc}</p>
                 </div>
-                <p className="text-sm text-slate-500 font-bold leading-snug mt-1">{desc}</p>
+                <div
+                  className={`shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                    isSelected ? 'border-[var(--b2c-azure)]' : 'border-slate-200'
+                  }`}
+                  style={isSelected ? { backgroundColor: 'var(--b2c-azure)' } : {}}
+                >
+                  {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                </div>
               </div>
             </button>
           );
         })}
 
-        {/* CTA button */}
         <button
           type="button"
-          onClick={() => onRoleSelect(selectedRole)}
-          className="w-full py-5 bg-[#324FA2] text-white font-black text-lg rounded-[30px] flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all mt-6"
+          onClick={onConfirm}
+          className="mt-4 w-full text-white font-bold text-[15px] py-4 rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.15)] hover:shadow-lg transition-all flex items-center justify-center gap-3"
+          style={{ backgroundImage: 'var(--gradient-b2c)' }}
         >
-          {ctaLabel}
-          <ArrowRight size={22} className={t.dir === 'rtl' ? 'rotate-180' : ''} />
+          {t.roleSelectCta}
+          <FwdIcon size={18} />
         </button>
       </div>
-
-      {/* Bottom spacer for mobile safe area */}
-      <div className="pb-8" />
     </div>
   );
 };
