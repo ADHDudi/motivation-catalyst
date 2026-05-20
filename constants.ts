@@ -4,24 +4,99 @@ export const APP_ID = 'motivation-catalyst-v1';
 export const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz_7fB9S7C_Xm7Kq1yX_REPLACE_ME/exec';
 
 export const QUESTIONS: Question[] = [
-  { id: 1, category: 'autonomy', text: { he: "אני מרגיש שיש לי אפשרות לבחור כיצד לבצע את עבודתי.", en: "I can choose how to perform my work." }, weight: 1 },
-  { id: 2, category: 'autonomy', text: { he: "אני מרגיש לחוץ לעבוד בדרכים שלא נראות לי טבעיות.", en: "I feel pressured to work in unnatural ways." }, weight: -1 },
-  { id: 3, category: 'autonomy', text: { he: "יש לי תחושת חופש ובחירה בתפקיד שלי.", en: "I feel freedom and choice in my role." }, weight: 1 },
-  { id: 10, category: 'autonomy', text: { he: "אני מרגיש שיש לי השפעה על החלטות הנוגעות לעבודתי.", en: "I have influence over work decisions." }, weight: 1 },
-  { id: 11, category: 'autonomy', text: { he: "דעתי נשמעת ונלקחת בחשבון על ידי הממונים עלי.", en: "My opinion is heard by superiors." }, weight: 1 },
-  { id: 12, category: 'autonomy', text: { he: "אני מרגיש כבול על ידי נהלים נוקשים.", en: "I feel bound by rigid procedures." }, weight: -1 },
-  { id: 4, category: 'competence', text: { he: "אני מרגיש בטוח ביכולת שלי לבצע את המשימות היטב.", en: "I am confident in my ability to perform well." }, weight: 1 },
-  { id: 5, category: 'competence', text: { he: "לעיתים קרובות אני מרגיש לא כשיר לעמוד בדרישות.", en: "I often feel inadequate to meet demands." }, weight: -1 },
-  { id: 6, category: 'competence', text: { he: "יש לי הזדמנות להשתמש בכישורים הטובים ביותר שלי.", en: "I use my best skills every day." }, weight: 1 },
-  { id: 13, category: 'competence', text: { he: "אני מרגיש שאני לומד ומתפתח מקצועית.", en: "I am learning and developing professionally." }, weight: 1 },
-  { id: 14, category: 'competence', text: { he: "אני בטוח ביכולתי למצוא פתרון לאתגרים.", en: "I am confident finding solutions to challenges." }, weight: 1 },
-  { id: 15, category: 'competence', text: { he: "לפעמים אני חושש שאין לי את הכישורים הנדרשים.", en: "Sometimes I worry I lack necessary skills." }, weight: -1 },
-  { id: 7, category: 'relatedness', text: { he: "אני מרגיש תחושת שייכות עם האנשים בעבודה.", en: "I feel a sense of belonging with colleagues." }, weight: 1 },
-  { id: 8, category: 'relatedness', text: { he: "אני מרגיש בודד או מבודד כשאני בעבודה.", en: "I feel lonely or isolated at work." }, weight: -1 },
-  { id: 9, category: 'relatedness', text: { he: "אני מרגיש שלאנשים שאני עובד איתם אכפת ממני.", en: "People I work with care about me." }, weight: 1 },
-  { id: 16, category: 'relatedness', text: { he: "אני מרגיש בנוח לשתף את חבריי לצוות בקשיים.", en: "I feel comfortable sharing difficulties." }, weight: 1 },
-  { id: 17, category: 'relatedness', text: { he: "האווירה בצוות שלי היא תומכת וחברית.", en: "The team atmosphere is supportive." }, weight: 1 },
-  { id: 18, category: 'relatedness', text: { he: "אני מרגיש לעיתים שאני 'מחוץ לעניינים' חברתית.", en: "I sometimes feel socially 'out of the loop'." }, weight: -1 },
+  // ── AUTONOMY ──────────────────────────────────────────────────────────────
+  {
+    id: 1, category: 'autonomy', weight: 1,
+    text: { he: "אני מרגיש שיש לי אפשרות לבחור כיצד לבצע את עבודתי.", en: "I can choose how to perform my work." },
+    managerText: { he: "אני נותן לחברי הצוות שלי את החופש לבחור כיצד הם מבצעים את עבודתם.", en: "I give my team members the freedom to choose how they perform their work." },
+  },
+  {
+    id: 2, category: 'autonomy', weight: -1,
+    text: { he: "אני מרגיש לחוץ לעבוד בדרכים שלא נראות לי טבעיות.", en: "I feel pressured to work in unnatural ways." },
+    managerText: { he: "אני מרגיש לחוץ לדחוף את הצוות שלי לעבוד בדרכים שלא מתאימות להם.", en: "I feel pressured to push my team to work in ways that don't suit them." },
+  },
+  {
+    id: 3, category: 'autonomy', weight: 1,
+    text: { he: "יש לי תחושת חופש ובחירה בתפקיד שלי.", en: "I feel freedom and choice in my role." },
+    managerText: { he: "חברי הצוות שלי חופשיים לקחת אחריות ולקבל החלטות בתפקידם.", en: "My team members feel free to take ownership and make decisions in their roles." },
+  },
+  {
+    id: 10, category: 'autonomy', weight: 1,
+    text: { he: "אני מרגיש שיש לי השפעה על החלטות הנוגעות לעבודתי.", en: "I have influence over work decisions." },
+    managerText: { he: "אני מערב באופן פעיל את הצוות שלי בהחלטות הנוגעות לעבודתם.", en: "I actively involve my team in decisions that affect their work." },
+  },
+  {
+    id: 11, category: 'autonomy', weight: 1,
+    text: { he: "דעתי נשמעת ונלקחת בחשבון על ידי הממונים עלי.", en: "My opinion is heard by superiors." },
+    managerText: { he: "אני דואג שקולו של כל חבר צוות נשמע ונלקח ברצינות.", en: "I make sure every team member's voice is heard and genuinely considered." },
+  },
+  {
+    id: 12, category: 'autonomy', weight: -1,
+    text: { he: "אני מרגיש כבול על ידי נהלים נוקשים.", en: "I feel bound by rigid procedures." },
+    managerText: { he: "הצוות שלי מרגיש כבול בנהלים ותהליכים שאני מאכף.", en: "My team feels constrained by the processes and procedures I enforce." },
+  },
+  // ── COMPETENCE ────────────────────────────────────────────────────────────
+  {
+    id: 4, category: 'competence', weight: 1,
+    text: { he: "אני מרגיש בטוח ביכולת שלי לבצע את המשימות היטב.", en: "I am confident in my ability to perform well." },
+    managerText: { he: "אני בטוח ביכולתי לאמן ולפתח את כישורי הצוות שלי.", en: "I am confident in my ability to coach and develop my team's skills." },
+  },
+  {
+    id: 5, category: 'competence', weight: -1,
+    text: { he: "לעיתים קרובות אני מרגיש לא כשיר לעמוד בדרישות.", en: "I often feel inadequate to meet demands." },
+    managerText: { he: "לעיתים קרובות אני חושש שהצוות שלי חסר את הכישורים או התמיכה הנדרשים.", en: "I often worry my team lacks the skills or support needed to meet expectations." },
+  },
+  {
+    id: 6, category: 'competence', weight: 1,
+    text: { he: "יש לי הזדמנות להשתמש בכישורים הטובים ביותר שלי.", en: "I use my best skills every day." },
+    managerText: { he: "אני יוצר הזדמנויות לכל חבר צוות להשתמש ביכולות החזקות שלו.", en: "I create opportunities for each team member to use their strongest abilities." },
+  },
+  {
+    id: 13, category: 'competence', weight: 1,
+    text: { he: "אני מרגיש שאני לומד ומתפתח מקצועית.", en: "I am learning and developing professionally." },
+    managerText: { he: "אני משקיע באופן פעיל בלמידה ובצמיחה המקצועית של חברי הצוות שלי.", en: "I actively invest in my team members' professional learning and growth." },
+  },
+  {
+    id: 14, category: 'competence', weight: 1,
+    text: { he: "אני בטוח ביכולתי למצוא פתרון לאתגרים.", en: "I am confident finding solutions to challenges." },
+    managerText: { he: "אני מאמן את הצוות שלי להתמודד עם אתגרים ולמצוא פתרונות בעצמם.", en: "I coach my team to tackle challenges and find their own solutions." },
+  },
+  {
+    id: 15, category: 'competence', weight: -1,
+    text: { he: "לפעמים אני חושש שאין לי את הכישורים הנדרשים.", en: "Sometimes I worry I lack necessary skills." },
+    managerText: { he: "לפעמים אני חושש שאיני מספק לצוות שלי את ההכוונה הנכונה לצמיחתם.", en: "I sometimes worry I'm not providing my team with the right guidance to grow." },
+  },
+  // ── RELATEDNESS ───────────────────────────────────────────────────────────
+  {
+    id: 7, category: 'relatedness', weight: 1,
+    text: { he: "אני מרגיש תחושת שייכות עם האנשים בעבודה.", en: "I feel a sense of belonging with colleagues." },
+    managerText: { he: "אני בונה באופן פעיל תחושת שייכות וחיבור בקרב הצוות שלי.", en: "I actively build a sense of belonging and connection among my team." },
+  },
+  {
+    id: 8, category: 'relatedness', weight: -1,
+    text: { he: "אני מרגיש בודד או מבודד כשאני בעבודה.", en: "I feel lonely or isolated at work." },
+    managerText: { he: "חלק מחברי הצוות נראים מנותקים או מבודדים מהשאר.", en: "Some team members appear disconnected or isolated from the rest of the group." },
+  },
+  {
+    id: 9, category: 'relatedness', weight: 1,
+    text: { he: "אני מרגיש שלאנשים שאני עובד איתם אכפת ממני.", en: "People I work with care about me." },
+    managerText: { he: "אני מבהיר לכל חבר צוות שאכפת לי באמת מהרווחה שלו.", en: "I make it clear to each team member that I genuinely care about their wellbeing." },
+  },
+  {
+    id: 16, category: 'relatedness', weight: 1,
+    text: { he: "אני מרגיש בנוח לשתף את חבריי לצוות בקשיים.", en: "I feel comfortable sharing difficulties." },
+    managerText: { he: "חברי הצוות שלי מרגישים בטוחים מבחינה נפשית לשתף אותי בבעיות וקשיים.", en: "My team members feel psychologically safe to share problems or struggles with me." },
+  },
+  {
+    id: 17, category: 'relatedness', weight: 1,
+    text: { he: "האווירה בצוות שלי היא תומכת וחברית.", en: "The team atmosphere is supportive." },
+    managerText: { he: "אני מטפח אווירת צוות תומכת ושיתופית באמת.", en: "I nurture a team atmosphere that is genuinely supportive and collaborative." },
+  },
+  {
+    id: 18, category: 'relatedness', weight: -1,
+    text: { he: "אני מרגיש לעיתים שאני 'מחוץ לעניינים' חברתית.", en: "I sometimes feel socially 'out of the loop'." },
+    managerText: { he: "אני שם לב כשחברי צוות נראים מחוץ לשיחות או החלטות חשובות.", en: "I notice when team members seem left out of important conversations or decisions." },
+  },
 ];
 
 export const BRAND_HEX: BrandColors = {
