@@ -468,6 +468,7 @@ const App = () => {
           answers={answers}
           onAnswer={handleAnswer}
           onBack={handleBack}
+          userRole={userRole}
         />
       )}
       {step === 'analysis' && results && (
