@@ -8,8 +8,8 @@ test.describe('Feedback Mechanism', () => {
         // or just speed-run the assessment
         await page.goto('/');
 
-        // Wait for welcome screen to be visible
-        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' }).or(page.getByRole('heading', { name: 'The Motivation Catalyst' }))).toBeVisible({ timeout: 10000 });
+        // Wait for welcome screen to be visible — email input is always present
+        await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 10000 });
 
         // Use demo mode to bypass authentication - enter "dudi" as email to trigger demo buttons
         const emailInput = page.locator('input[type="email"]');
