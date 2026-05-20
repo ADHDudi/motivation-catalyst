@@ -24,6 +24,7 @@ export interface Question {
   id: number;
   category: CategoryKey;
   text: LocalizedText;
+  managerText?: LocalizedText;
   weight: number;
 }
 
