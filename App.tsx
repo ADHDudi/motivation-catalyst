@@ -313,7 +313,12 @@ const App = () => {
       return acc;
     }, {} as any);
 
-    syncData('submission', { answers: data, results: calculatedResults, insights: insightsSummary });
+    syncData('submission', {
+      answers: data,
+      results: calculatedResults,
+      insights: insightsSummary,
+      questionVariant: userRole === 'manager' ? 'manager' : 'employee',
+    });
   };
 
   const handleDemo = (type: 'high' | 'mid' | 'at-risk') => {
