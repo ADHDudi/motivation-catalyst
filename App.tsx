@@ -378,7 +378,7 @@ const App = () => {
       text += `\n`;
     });
 
-    text += `\nGenerated via MotivationOS`;
+    text += `\nGenerated via MotivationOS — https://justaiit.web.app/he#app=motivation-catalyst`;
     return text;
   };
 
