@@ -235,7 +235,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
               const staticData = t.deepAnalysis[cat][roleKey][scoreVal < 3.5 ? 'low' : 'high'];
 
               const aiTip = aiInsights ? aiInsights[cat].tip : null;
-              const adhdTip = aiInsights?.aiInsights?.[cat]?.adhd_tip ?? null;
+              const adhdTip = aiInsights?.[cat]?.adhd_tip ?? null;
               const displayTip = aiTip || staticData.aiTips;
               const isDynamic = !!aiTip;
 
