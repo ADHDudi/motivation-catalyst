@@ -26,6 +26,15 @@ interface SavedProgress {
 const LS_ROLE = 'mc_role';
 const LS_LANG = 'mc_lang';
 const LS_PROGRESS = 'mc_progress';
+const LS_RESULTS = 'mc_last_results';
+
+interface SavedResults {
+  results: Results;
+  answers: Answers;
+  userRole: UserRole;
+  lang: Language;
+  savedAt: string; // ISO date string
+}
 
 const readSavedRole = (): UserRole => {
   try {
@@ -69,6 +78,9 @@ const App = () => {
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSuccess, setAuthSuccess] = useState<string | null>(null);
   const [hasSavedProgress, setHasSavedProgress] = useState<boolean>(() => readSavedProgress() !== null);
+  const [hasSavedResults, setHasSavedResults] = useState<boolean>(() => {
+    try { return !!localStorage.getItem(LS_RESULTS); } catch { return false; }
+  });
 
   const t = TRANSLATIONS[lang];
 
@@ -279,6 +291,22 @@ const App = () => {
     setHasSavedProgress(false);
   };
 
+  const handleViewLastAnalysis = () => {
+    try {
+      const raw = localStorage.getItem(LS_RESULTS);
+      if (!raw) return;
+      const saved: SavedResults = JSON.parse(raw);
+      setResults(saved.results);
+      setAnswers(saved.answers);
+      setUserRole(saved.userRole);
+      setLang(saved.lang);
+      setStep('analysis');
+    } catch {
+      // corrupted data — proceed to role-select
+      setStep('role-select');
+    }
+  };
+
   const calculateResults = (inputAnswers: Answers | null = null) => {
     const data = inputAnswers || answers;
     const cats: Record<CategoryKey, number> = { autonomy: 0, competence: 0, relatedness: 0 };
@@ -299,6 +327,19 @@ const App = () => {
     const calculatedResults = final as Results;
     setResults(calculatedResults);
     setStep('analysis');
+
+    // Save completed results for "view last analysis" feature
+    try {
+      const toSave: SavedResults = {
+        results: calculatedResults,
+        answers: data,
+        userRole,
+        lang,
+        savedAt: new Date().toISOString(),
+      };
+      localStorage.setItem(LS_RESULTS, JSON.stringify(toSave));
+      setHasSavedResults(true);
+    } catch { /* noop */ }
 
     // Assessment complete — clear in-flight progress
     clearSavedProgress();
@@ -433,6 +474,8 @@ const App = () => {
           hasSavedProgress={hasSavedProgress}
           onResume={handleResume}
           onDiscardProgress={handleDiscardProgress}
+          hasSavedResults={hasSavedResults}
+          onViewLastAnalysis={handleViewLastAnalysis}
         />
       )}
       {step === 'role-select' && (

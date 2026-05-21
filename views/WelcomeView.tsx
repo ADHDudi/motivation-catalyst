@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle, ShieldCheck, Target, Zap, ArrowRight, RotateCcw, X } from 'lucide-react';
+import { AlertCircle, ShieldCheck, Target, Zap, ArrowRight, RotateCcw, X, BarChart2 } from 'lucide-react';
 
 const MotivationOSHeroIcon: React.FC = () => (
   <svg width="48" height="48" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -30,6 +30,8 @@ interface WelcomeViewProps {
   hasSavedProgress?: boolean;
   onResume?: () => void;
   onDiscardProgress?: () => void;
+  hasSavedResults?: boolean;
+  onViewLastAnalysis?: () => void;
 }
 
 type AuthMode = 'signin' | 'signup' | 'forgot';
@@ -51,6 +53,8 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
   hasSavedProgress,
   onResume,
   onDiscardProgress,
+  hasSavedResults,
+  onViewLastAnalysis,
 }) => {
   const [authMode, setAuthMode] = React.useState<AuthMode>('signin');
   const [password, setPassword] = React.useState('');
@@ -122,6 +126,33 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
       </div>
 
       <div className="flex-1 px-8 pb-12 relative z-10 overflow-y-auto">
+        {hasSavedResults && onViewLastAnalysis && (
+          <div className="mb-6 p-5 rounded-[28px] border-2 shadow-sm" style={{ backgroundColor: 'var(--b2c-mist)', borderColor: 'var(--b2c-azure)', borderOpacity: 0.2 }}>
+            <div className="flex items-start gap-3 mb-4">
+              <div className="shrink-0 w-10 h-10 rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--b2c-deep)' }}>
+                <BarChart2 size={18} className="text-white" strokeWidth={2.5} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-black text-base leading-tight mb-1" style={{ color: 'var(--b2c-deep)' }}>
+                  {lang === 'he' ? 'ניתוח קודם זמין' : 'Previous analysis available'}
+                </h3>
+                <p className="text-xs text-slate-500 font-bold leading-snug">
+                  {lang === 'he' ? 'יש לך ניתוח מוטיבציה קודם. רוצה לצפות בו?' : 'You have a previous motivation analysis. Want to view it?'}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => onViewLastAnalysis()}
+              className="w-full py-3 text-white font-black text-sm rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2"
+              style={{ backgroundImage: 'var(--gradient-b2c)' }}
+            >
+              {lang === 'he' ? 'צפה בניתוח' : 'View analysis'}
+              <ArrowRight size={16} className={t.dir === 'rtl' ? 'rotate-180' : ''} />
+            </button>
+          </div>
+        )}
+
         {hasSavedProgress && onResume && onDiscardProgress && (
           <div className="mb-6 p-5 rounded-[28px] border-2 shadow-sm" style={{ backgroundColor: 'var(--b2c-mist)', borderColor: 'var(--b2c-azure)', borderOpacity: 0.2 }}>
             <div className="flex items-start gap-3 mb-4">
