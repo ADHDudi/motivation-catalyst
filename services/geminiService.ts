@@ -72,20 +72,13 @@ export const generateMotivationAnalysis = async (
     managerName: string,
     lang: 'en' | 'he' = 'en'
 ): Promise<MotivationAnalysisResult> => {
-    try {
-        const functions = getFunctions();
-        const generateAnalysis = functions.httpsCallable("generateMotivationAnalysis");
-
-        const result = await generateAnalysis({
-            responses,
-            employeeName,
-            managerName,
-            lang
-        });
-
-        return result.data as MotivationAnalysisResult;
-    } catch (error) {
-        console.warn("Cloud Function Error (Motivation):", error);
-        throw error;
-    }
+    const url = 'https://us-central1-motivation-catalyst-david.cloudfunctions.net/generateMotivationAnalysis';
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: { responses, employeeName, managerName, lang } }),
+    });
+    if (!res.ok) throw new Error(`Cloud Function error: ${res.status}`);
+    const json = await res.json();
+    return json.result as MotivationAnalysisResult;
 };
