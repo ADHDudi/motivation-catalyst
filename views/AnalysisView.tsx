@@ -5,7 +5,7 @@ import { QUESTIONS } from '../constants';
 import {
   UserCheck, ShieldCheck, Copy, BrainCircuit, Sparkles,
   CheckCircle2, AlertCircle, ThumbsUp, ThumbsDown,
-  Clipboard, Share2, BellRing, ArrowRight, Send
+  Clipboard, Share2, ArrowRight, Send
 } from 'lucide-react';
 import Logo from '../components/Logo';
 import { Link } from 'react-router-dom';
@@ -26,7 +26,6 @@ interface AnalysisViewProps {
   onReset: () => void;
   copyToClipboard: (text: string) => void;
   generateFullReportText: (variant?: 'self' | 'share') => string;
-  onRetakeReminder: () => void;
   statusMsg: string;
   onSocialClick?: (platform: string) => void;
   answers: Answers;
@@ -123,7 +122,7 @@ const WhatsNextCard: React.FC<WhatsNextCardProps> = ({ title, desc, icon: Icon, 
 
 const AnalysisView: React.FC<AnalysisViewProps> = ({
   t, lang, setLang, userRole, formData, results, onReset,
-  copyToClipboard, generateFullReportText, onRetakeReminder, statusMsg, answers
+  copyToClipboard, generateFullReportText, statusMsg, answers
 }) => {
   const [feedbackState, setFeedbackState] = useState<'idle' | 'commenting' | 'submitted'>('idle');
   const [comment, setComment] = useState('');
@@ -292,14 +291,6 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
               icon={Share2}
               accent="var(--b2c-azure)"
               onClick={() => copyToClipboard(generateFullReportText('share'))}
-              dir={t.dir}
-            />
-            <WhatsNextCard
-              title={t.whatsNextRetakeTitle}
-              desc={t.whatsNextRetakeDesc}
-              icon={BellRing}
-              accent="#90BC6E"
-              onClick={onRetakeReminder}
               dir={t.dir}
             />
           </div>

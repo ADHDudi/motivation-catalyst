@@ -259,10 +259,6 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
     whatsNextCopyDesc: 'העתק את הדוח המלא והדבק לאן שנוח לך - יומן, פנקס, מסמך.',
     whatsNextShareTitle: 'שתף עם מנהל/צוות',
     whatsNextShareDesc: 'העתק עם פתיח מוכן לשליחה לאדם שחשוב לך לעדכן.',
-    whatsNextRetakeTitle: 'תזכורת לחזרה',
-    whatsNextRetakeDesc: 'שלח לעצמך מייל עם תזכורת לבצע את האבחון שוב בעוד 3 חודשים.',
-    whatsNextRetakeSubject: 'תזכורת: לבצע אבחון מוטיבציה שוב',
-    whatsNextRetakeBody: 'היי, ביצעת אבחון מוטיבציה לפני 3 חודשים. זה זמן טוב לבדוק איפה אתה עומד עכשיו. https://motivation-catalyst-david.web.app',
     // --- Phase 1: share ---
     shareIntroLine: 'היי, ביצעתי אבחון מוטיבציה לפי מודל SDT. הנה התובנות שעלו:',
     // --- Phase 1: rating labels (mobile pills) ---
@@ -410,10 +406,6 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
     whatsNextCopyDesc: 'Copy the full report and paste it wherever works for you — journal, notes, doc.',
     whatsNextShareTitle: 'Share with your manager / team',
     whatsNextShareDesc: 'Copy with a ready-made intro line to send to someone who should know.',
-    whatsNextRetakeTitle: 'Retake reminder',
-    whatsNextRetakeDesc: 'Email yourself a reminder to retake this assessment in 3 months.',
-    whatsNextRetakeSubject: 'Reminder: retake your motivation assessment',
-    whatsNextRetakeBody: 'Hi, you took a motivation assessment 3 months ago. Time to check in on how you\'re doing now. https://motivation-catalyst-david.web.app',
     // --- Phase 1: share ---
     shareIntroLine: 'Hi, I just took a Self-Determination Theory motivation assessment. Here\'s what came up:',
     // --- Phase 1: rating labels (mobile pills) ---
