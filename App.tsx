@@ -388,33 +388,50 @@ const App = () => {
 
   const generateFullReportText = (variant: 'self' | 'share' = 'self') => {
     if (!results) return '';
-    let text = '';
-    if (variant === 'share') {
-      text += `${t.shareIntroLine}\n\n`;
-    }
-    text += `${t.profileTitle} - ${formData.employeeName}\n`;
-    text += `===============================\n\n`;
 
-    const labels = {
-      analysis: lang === 'he' ? 'ניתוח' : 'Analysis',
-      actions: lang === 'he' ? 'פעולות מומלצות' : 'Recommended Actions',
-      aiTips: lang === 'he' ? 'טיפ AI אסטרטגי' : 'Strategic AI Tip',
-    };
+    const isSelf = variant === 'self';
+    const isHe = lang === 'he';
+    const name = formData.employeeName || (isHe ? 'משתמש' : 'User');
 
-    const roleKey: 'employee' | 'manager' = userRole === 'manager' ? 'manager' : 'employee';
+    // Self → personal actions the user can take (employee branch)
+    // Share → guidance for manager/team on how to work with the user (manager branch)
+    const dataKey: 'employee' | 'manager' = isSelf ? 'employee' : 'manager';
+
+    const labels = isSelf
+      ? {
+          header:   isHe ? `הפרופיל שלי — ${name}` : `My Motivation Profile — ${name}`,
+          intro:    isHe
+            ? `עשיתי אבחון מוטיבציה לפי מודל SDT. אלה התובנות שלי ומה שאני מתכנן לעשות:`
+            : `I completed an SDT motivation assessment. Here are my insights and what I plan to do:`,
+          insight:  isHe ? 'תובנה' : 'Insight',
+          actions:  isHe ? 'מה שאני יכול לעשות' : 'What I can do',
+          aiTip:    isHe ? 'טיפ AI אישי' : 'My AI tip',
+        }
+      : {
+          header:   isHe ? `הפרופיל של ${name} — איך לעבוד איתי` : `${name}'s Motivation Profile — How to work with me`,
+          intro:    isHe
+            ? `היי, עשיתי אבחון מוטיבציה לפי מודל SDT. הנה מה שיעזור לי — מה שאני מבקש מהמנהל/צוות:`
+            : `Hi, I completed an SDT motivation assessment. Here's what helps me — what I'm asking from my manager / team:`,
+          insight:  isHe ? 'ההקשר' : 'Context',
+          actions:  isHe ? 'מה שיעזור לי מהצוות / מנהל' : 'How you can support me',
+          aiTip:    isHe ? 'טיפ AI לצוות' : 'AI tip for the team',
+        };
+
+    let text = `${labels.header}\n`;
+    text += `===============================\n`;
+    text += `${labels.intro}\n\n`;
 
     (['autonomy', 'competence', 'relatedness'] as CategoryKey[]).forEach(cat => {
       const score = results[cat];
-      const scoreNum = parseFloat(score);
-      const isLow = scoreNum < 3.5;
-      const data = t.deepAnalysis[cat][roleKey][isLow ? 'low' : 'high'];
+      const isLow = parseFloat(score) < 3.5;
+      const data = t.deepAnalysis[cat][dataKey][isLow ? 'low' : 'high'];
 
       text += `💠 ${t.categories[cat].toUpperCase()} (${score}/5.0)\n`;
       text += `-------------------------------\n`;
-      text += `   • ${labels.analysis}: ${data.analysis}\n`;
-      text += `   • ${labels.actions}: ${data.actions.join(', ')}\n`;
+      text += `   • ${labels.insight}: ${data.analysis}\n`;
+      text += `   • ${labels.actions}: ${data.actions.join(' | ')}\n`;
       if (data.aiTips) {
-        text += `   • ${labels.aiTips}: ${data.aiTips}\n`;
+        text += `   • ${labels.aiTip}: ${data.aiTips}\n`;
       }
       text += `\n`;
     });
