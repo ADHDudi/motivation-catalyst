@@ -38,7 +38,7 @@ test.describe('Feedback Mechanism', () => {
         await thumbsUpBtn.click();
 
         // Verify comment box appears after thumbs up is clicked
-        const commentBox = page.getByPlaceholder('נשמח לשמוע עוד', { exact: false }).or(page.getByPlaceholder('Tell us more'));
+        const commentBox = page.getByPlaceholder('מה עבד', { exact: false }).or(page.getByPlaceholder('What worked'));
         await expect(commentBox).toBeVisible();
 
         // Fill in a comment
