@@ -92,9 +92,9 @@ cd ..
 echo "🔥 Deploying to Firebase..."
 # Use local firebase if possible, otherwise rely on globally installed
 if [ -f "./node_modules/.bin/firebase" ]; then
-  ./node_modules/.bin/firebase deploy
+  ./node_modules/.bin/firebase deploy --project motivation-catalyst-david
 else
-  firebase deploy
+  firebase deploy --project motivation-catalyst-david
 fi
 
 echo "✅ Deployment complete!"

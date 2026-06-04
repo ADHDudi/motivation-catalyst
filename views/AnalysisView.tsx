@@ -52,7 +52,7 @@ const CategoryInsight: React.FC<CategoryInsightProps> = ({ categoryKey, score, t
   const title = `${t.categories[categoryKey]} (${score})`;
 
   return (
-    <AccordionItem title={title} style={{ backgroundColor: bgColor }}>
+    <AccordionItem title={title} style={{ backgroundColor: bgColor }} defaultOpen={true}>
       <div className={`leading-relaxed mb-4 ${textColor}`}>
         <div className="text-[10px] uppercase tracking-widest font-black opacity-60 mb-1">{lang === 'he' ? 'ניתוח' : 'Analysis'}</div>
         <div className="text-base font-medium">{data.analysis}</div>

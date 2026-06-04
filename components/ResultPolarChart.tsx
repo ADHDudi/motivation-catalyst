@@ -12,15 +12,32 @@ const ResultPolarChart: React.FC<ResultPolarChartProps> = ({ scores, t }) => {
   if (!scores) return null;
 
   // SVG geometry
-  const size = 400;
+  const size = 420;
   const center = size / 2;
-  const maxRadius = 100;
-  const MIN_VISIBLE_RATIO = 0.18; // floor so very low scores still render a visible wedge
+  const maxRadius = 160;
+  const innerRadius = 55;
+  const ringWidth = (maxRadius - innerRadius) / 5; // 5 levels
 
   const getCoords = (angle: number, radius: number) => ({
     x: center + radius * Math.cos((angle - 90) * Math.PI / 180),
     y: center + radius * Math.sin((angle - 90) * Math.PI / 180)
   });
+
+  const getArcPath = (startAngle: number, endAngle: number, rInner: number, rOuter: number) => {
+    const startOuter = getCoords(startAngle, rOuter);
+    const endOuter = getCoords(endAngle, rOuter);
+    const startInner = getCoords(startAngle, rInner);
+    const endInner = getCoords(endAngle, rInner);
+    const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+
+    return `
+      M ${startOuter.x} ${startOuter.y}
+      A ${rOuter} ${rOuter} 0 ${largeArc} 1 ${endOuter.x} ${endOuter.y}
+      L ${endInner.x} ${endInner.y}
+      A ${rInner} ${rInner} 0 ${largeArc} 0 ${startInner.x} ${startInner.y}
+      Z
+    `;
+  };
 
   const cats = [
     { key: 'autonomy' as const, start: 0, end: 120, color: COLORS.autonomy.hex, english: 'Autonomy' },
@@ -29,128 +46,154 @@ const ResultPolarChart: React.FC<ResultPolarChartProps> = ({ scores, t }) => {
   ];
 
   return (
-    <div className="flex flex-col items-center my-6 w-full">
-      <div className="flex justify-center w-full overflow-visible">
-        <svg viewBox={`0 0 ${size} ${size}`} className="w-full max-w-[400px] overflow-visible">
-          {/* Background guide circle (max ring) */}
-          <circle cx={center} cy={center} r={maxRadius} fill="#F8FAFC" stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4 4" />
-
-          {/* Concentric guide rings at 1..4 for a visual sense of scale */}
-          {[1, 2, 3, 4].map(n => (
-            <circle
-              key={`ring-${n}`}
-              cx={center}
-              cy={center}
-              r={(n / 5) * maxRadius}
-              fill="none"
-              stroke="#e2e8f0"
-              strokeWidth="0.5"
-              opacity="0.4"
-            />
-          ))}
-
-          {/* Category wedges */}
+    <div className="flex flex-col items-center my-8 w-full animate-in zoom-in-95 duration-500">
+      <div className="flex justify-center w-full overflow-visible relative">
+        <svg viewBox={`0 0 ${size} ${size}`} className="w-full max-w-[420px] overflow-visible drop-shadow-xl">
+          
+          {/* Background and Foreground Wedges */}
           {cats.map(cat => {
             const scoreValue = parseFloat(scores[cat.key]);
-            const trueRatio = scoreValue / 5;
-            const ratio = Math.max(trueRatio, MIN_VISIBLE_RATIO); // floor for visibility
-            const radius = ratio * maxRadius;
-            const trueRadius = trueRatio * maxRadius;
-            const start = getCoords(cat.start, radius);
-            const end = getCoords(cat.end, radius);
-            const largeArc = cat.end - cat.start > 180 ? 1 : 0;
+            // Draw 5 discrete background blocks
+            const blocks = [];
+            for (let level = 1; level <= 5; level++) {
+              const rInner = innerRadius + (level - 1) * ringWidth;
+              const rOuter = innerRadius + level * ringWidth;
+              const isFilled = scoreValue >= level;
+              const isPartial = !isFilled && scoreValue > level - 1;
+              
+              let fill = hexToRgba(cat.color, 0.1); // Empty state
+              if (isFilled) fill = cat.color; // Full state
+
+              // Full background block
+              blocks.push(
+                <path
+                  key={`${cat.key}-bg-${level}`}
+                  d={getArcPath(cat.start, cat.end, rInner, rOuter)}
+                  fill={fill}
+                />
+              );
+
+              // If partial, overlay a partially filled wedge
+              if (isPartial) {
+                const partialRadius = rInner + (scoreValue - Math.floor(scoreValue)) * ringWidth;
+                blocks.push(
+                  <path
+                    key={`${cat.key}-fg-${level}`}
+                    d={getArcPath(cat.start, cat.end, rInner, partialRadius)}
+                    fill={cat.color}
+                  />
+                );
+              }
+            }
+            return <g key={cat.key}>{blocks}</g>;
+          })}
+
+          {/* White Grid Overlay (creates the separated segments look) */}
+          <g stroke="white" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            {/* Concentric rings */}
+            {[0, 1, 2, 3, 4, 5].map(level => (
+              <circle
+                key={`grid-ring-${level}`}
+                cx={center}
+                cy={center}
+                r={innerRadius + level * ringWidth}
+              />
+            ))}
+            {/* Radial dividers */}
+            {cats.map(cat => {
+              const outer = getCoords(cat.start, maxRadius);
+              const inner = getCoords(cat.start, innerRadius);
+              return (
+                <line
+                  key={`grid-line-${cat.key}`}
+                  x1={inner.x}
+                  y1={inner.y}
+                  x2={outer.x}
+                  y2={outer.y}
+                />
+              );
+            })}
+          </g>
+
+          {/* Outer Category Labels */}
+          {cats.map(cat => {
+            const midLabel = getCoords((cat.start + cat.end) / 2, maxRadius + 30);
+            const scoreValue = parseFloat(scores[cat.key]);
+            const catName = t.categories[cat.key];
+            const showEnglish = t.dir === 'rtl';
+
+            // Calculate rotation for text so it curves around or is at least angled
+            const angle = (cat.start + cat.end) / 2;
+            let textRotation = angle;
+            // Keep text upright
+            if (textRotation > 90 && textRotation < 270) {
+              textRotation += 180;
+            }
 
             return (
-              <g key={cat.key}>
-                <path
-                  d={`M ${center} ${center} L ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y} Z`}
-                  fill={hexToRgba(cat.color, 0.4)}
-                  stroke="white"
-                  strokeWidth="2"
-                />
-
-                {/* Inline score label inside the wedge */}
-                {(() => {
-                  const mid = getCoords((cat.start + cat.end) / 2, Math.max(radius * 0.7, 24));
-                  return (
-                    <text
-                      x={mid.x}
-                      y={mid.y}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fill="white"
-                      className="font-black text-sm drop-shadow-md pointer-events-none"
-                    >
-                      {scoreValue.toFixed(1)}
-                    </text>
-                  );
-                })()}
-
-                {/* Axis-vertex score badge — always at fixed outer radius for legibility */}
-                {(() => {
-                  const badgePos = getCoords((cat.start + cat.end) / 2, maxRadius + 22);
-                  return (
-                    <g pointerEvents="none">
-                      <circle cx={badgePos.x} cy={badgePos.y} r={14} fill="white" stroke={cat.color} strokeWidth="2" />
-                      <text
-                        x={badgePos.x}
-                        y={badgePos.y}
-                        textAnchor="middle"
-                        dominantBaseline="central"
-                        fill={cat.color}
-                        className="font-black text-[10px]"
-                      >
-                        {scoreValue.toFixed(1)}
-                      </text>
-                    </g>
-                  );
-                })()}
-
-                {/* Outer category labels — localized name only (English in parentheses for RTL) */}
-                {(() => {
-                  const midLabel = getCoords((cat.start + cat.end) / 2, maxRadius + 55);
-                  const catName = t.categories[cat.key];
-                  const showEnglish = t.dir === 'rtl';
-                  return (
-                    <text
-                      x={midLabel.x}
-                      y={midLabel.y}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fill={cat.color}
-                      className="font-black text-[15px] shadow-sm select-none"
-                    >
-                      {catName}{showEnglish && <tspan className="text-[12px] opacity-70" dy="0"> ({cat.english.toUpperCase()})</tspan>}
-                    </text>
-                  );
-                })()}
-
-                {/* Small decorative dot at TRUE score position when wedge was floored — keeps truth visible */}
-                {trueRatio > 0 && trueRatio < MIN_VISIBLE_RATIO && (() => {
-                  const dotPos = getCoords((cat.start + cat.end) / 2, trueRadius);
-                  return (
-                    <circle cx={dotPos.x} cy={dotPos.y} r={3} fill={cat.color} opacity="0.6" />
-                  );
-                })()}
+              <g key={`label-${cat.key}`} transform={`translate(${midLabel.x}, ${midLabel.y})`}>
+                <text
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill={cat.color}
+                  className="font-black text-[16px] tracking-wide"
+                >
+                  {catName}
+                </text>
+                {showEnglish && (
+                  <text
+                    y="16"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill={cat.color}
+                    className="font-black text-[11px] opacity-70 tracking-widest uppercase"
+                  >
+                    {cat.english}
+                  </text>
+                )}
+                {/* Score badge next to/below label */}
+                <g transform={`translate(0, ${showEnglish ? 36 : 24})`}>
+                  <rect x="-20" y="-12" width="40" height="24" rx="12" fill={cat.color} />
+                  <text
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fill="white"
+                    className="font-black text-[12px]"
+                  >
+                    {scoreValue.toFixed(1)}
+                  </text>
+                </g>
               </g>
             );
           })}
+
+          {/* Center Hole Styling (matches the image's empty/photo center) */}
+          <circle cx={center} cy={center} r={innerRadius - 4} fill="white" />
+          <circle cx={center} cy={center} r={innerRadius - 8} fill="#F8FAFC" />
+          <text
+            x={center}
+            y={center}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            className="font-black text-slate-300 text-xs tracking-widest uppercase"
+          >
+            {t.profileTitle || 'Score'}
+          </text>
         </svg>
       </div>
 
       {/* Mobile numeric summary row — at-a-glance scores below the chart */}
-      <div className="flex md:hidden gap-2 mt-2 w-full max-w-sm flex-wrap justify-center" dir="ltr">
+      <div className="flex md:hidden gap-3 mt-8 w-full max-w-sm flex-wrap justify-center" dir="ltr">
         {cats.map(cat => {
           const v = parseFloat(scores[cat.key]).toFixed(1);
           return (
             <div
               key={`pill-${cat.key}`}
-              className="px-3 py-1.5 rounded-full text-xs font-black flex items-center gap-2"
-              style={{ backgroundColor: hexToRgba(cat.color, 0.1), color: cat.color }}
+              className="px-4 py-2 rounded-2xl text-xs font-black flex items-center gap-2 shadow-sm border border-slate-100 bg-white"
             >
-              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: cat.color }} />
-              <span className="uppercase tracking-wide">{t.categories[cat.key]}</span>
-              <span className="bg-white px-1.5 py-0.5 rounded-full">{v}</span>
+              <span className="w-2.5 h-2.5 rounded-full shadow-inner" style={{ backgroundColor: cat.color }} />
+              <span className="uppercase tracking-wider text-slate-600">{t.categories[cat.key]}</span>
+              <span className="bg-slate-50 px-2 py-1 rounded-lg text-slate-800 border border-slate-100">{v}</span>
             </div>
           );
         })}
