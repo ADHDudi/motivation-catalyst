@@ -29,10 +29,10 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({ t, lang, setLang, curre
   };
 
   return (
-    <div className={`w-full max-w-lg mx-auto bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[100dvh] md:h-auto text-${t.dir === 'rtl' ? 'right' : 'left'} relative`} dir={t.dir}>
-      <div className="p-8 pt-12 bg-white">
+    <div className={`w-full max-w-lg mx-auto bg-white/90 backdrop-blur-md rounded-[40px] shadow-2xl shadow-slate-200/50 overflow-hidden flex flex-col h-[100dvh] md:h-[85vh] md:my-8 text-${t.dir === 'rtl' ? 'right' : 'left'} relative animate-fade-in`} dir={t.dir}>
+      <div className="p-8 pt-12 bg-transparent">
         <div className="flex justify-between items-center mb-8">
-          <button onClick={onBack} className="p-2 text-slate-300 hover:text-slate-600 active:scale-90" aria-label="Back">
+          <button onClick={onBack} className="p-2 text-slate-300 hover:text-slate-600 active:scale-90 transition-transform" aria-label="Back">
             <ChevronLeft size={24} className={t.dir === 'rtl' ? 'rotate-180' : ''} />
           </button>
           <Logo size="sm" />
@@ -45,15 +45,15 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({ t, lang, setLang, curre
           </button>
         </div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[10px] font-black text-slate-300 uppercase">{t.questionProgress} {currentQuestionIndex + 1} / {QUESTIONS.length}</h2>
-          <span className="text-[10px] font-black px-4 py-1 rounded-full uppercase" style={{ backgroundColor: hexToRgba(COLORS[q.category].hex, 0.1), color: COLORS[q.category].hex }}>{t.categories[q.category]}</span>
+          <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.questionProgress} {currentQuestionIndex + 1} / {QUESTIONS.length}</h2>
+          <span className="text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest" style={{ backgroundColor: hexToRgba(COLORS[q.category].hex, 0.1), color: COLORS[q.category].hex }}>{t.categories[q.category]}</span>
         </div>
-        <div className="h-2 w-full bg-slate-50 rounded-full overflow-hidden border border-slate-100">
+        <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
           <div className="h-full transition-all duration-500 ease-out" style={{ backgroundColor: 'var(--b2c-azure)', width: `${progress}%` }} />
         </div>
       </div>
 
-      <div className="flex-1 p-6 sm:p-10 flex flex-col justify-center bg-[#F8FAFC]/50">
+      <div className="flex-1 p-6 sm:p-10 flex flex-col justify-center bg-[#F8FAFC]/30">
         <p className="text-2xl sm:text-3xl font-black leading-tight mb-8 sm:mb-12" style={{ color: 'var(--b2c-ink)' }}>{q.text[lang]}</p>
 
         {/* Mobile (<sm): stacked wide pills with labels for comfortable thumb targets */}
@@ -65,11 +65,11 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({ t, lang, setLang, curre
                 key={v}
                 onClick={() => onAnswer(q.id, v)}
                 aria-pressed={selected}
-                className={`w-full min-h-[56px] rounded-2xl border-2 font-black text-base transition-all active:scale-[0.98] flex items-center px-5 gap-4 ${
-                  selected ? RATING_COLORS[v].selected : RATING_COLORS[v].unselected
+                className={`w-full min-h-[56px] rounded-2xl border-2 font-black text-base transition-all duration-200 active:scale-95 flex items-center px-5 gap-4 ${
+                  selected ? RATING_COLORS[v].selected + ' shadow-md' : RATING_COLORS[v].unselected
                 }`}
               >
-                <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-lg font-black ${selected ? 'bg-white/20' : ''}`}>
+                <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-lg font-black transition-colors ${selected ? 'bg-white/25 text-white' : 'text-slate-500'}`}>
                   {v}
                 </span>
                 <span className="flex-1 text-start">{ratingLabels[v]}</span>

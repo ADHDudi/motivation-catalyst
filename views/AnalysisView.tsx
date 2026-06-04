@@ -53,8 +53,9 @@ const CategoryInsight: React.FC<CategoryInsightProps> = ({ categoryKey, score, t
 
   return (
     <AccordionItem title={title} style={{ backgroundColor: bgColor }}>
-      <div className={`text-sm leading-relaxed mb-3 ${textColor}`}>
-        <span className="font-bold opacity-75">{lang === 'he' ? 'ניתוח:' : 'Analysis:'}</span> {data.analysis}
+      <div className={`leading-relaxed mb-4 ${textColor}`}>
+        <div className="text-[10px] uppercase tracking-widest font-black opacity-60 mb-1">{lang === 'he' ? 'ניתוח' : 'Analysis'}</div>
+        <div className="text-base font-medium">{data.analysis}</div>
       </div>
       <ul className="space-y-2">
         {data.actions.map((action, idx) => (
@@ -195,7 +196,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
   const roleLabel = isManager ? t.roleManagerLabel : t.roleSoloLabel;
 
   return (
-    <div className={`w-full max-w-4xl mx-auto bg-white md:rounded-[60px] shadow-2xl overflow-hidden text-${t.dir === 'rtl' ? 'right' : 'left'} pb-12`} dir={t.dir}>
+    <div className={`w-full max-w-4xl mx-auto bg-white/95 backdrop-blur-xl md:rounded-[60px] shadow-2xl shadow-slate-200/50 overflow-hidden text-${t.dir === 'rtl' ? 'right' : 'left'} pb-12 animate-fade-in`} dir={t.dir}>
       <div className="p-8 md:p-12 pt-16">
         <div className="flex justify-between items-center mb-10">
           <button onClick={() => setLang(lang === 'he' ? 'en' : 'he')} className="bg-slate-50 p-3 rounded-2xl text-[10px] font-black transition-all active:scale-90" style={{ color: 'var(--b2c-azure)' }} aria-label="Toggle language">
@@ -210,7 +211,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         <ResultPolarChart scores={results} t={t} />
 
         {/* Single, role-branched insights panel */}
-        <div className="mt-10">
+        <div className="mt-12">
           <AnalysisSection
             title={sectionTitle}
             icon={sectionIcon}
@@ -224,7 +225,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         </div>
 
         {/* AI INSIGHTS — role-aware */}
-        <div className="mt-8 p-8 rounded-[40px] border-4 relative overflow-hidden" style={{ backgroundColor: 'var(--b2c-mist)', borderColor: 'var(--b2c-azure)', borderOpacity: 0.2 }}>
+        <div className="mt-12 p-8 rounded-[40px] border-4 relative overflow-hidden" style={{ backgroundColor: 'var(--b2c-mist)', borderColor: 'var(--b2c-azure)', borderOpacity: 0.2 }}>
           <div className="absolute top-[-10px] left-[-10px] opacity-10" style={{ color: 'var(--b2c-deep)' }}><BrainCircuit size={100} /></div>
           <div className="flex items-center gap-4 mb-6 relative z-10">
             <div className="p-3 bg-white rounded-2xl shadow-md" style={{ color: 'var(--b2c-azure)' }}><Sparkles size={24} /></div>
@@ -272,7 +273,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         </div>
 
         {/* WHAT'S NEXT — 3-step strip */}
-        <div className="mt-10">
+        <div className="mt-12">
           <h3 className="font-black text-xl mb-5 flex items-center gap-3" style={{ color: 'var(--b2c-deep)' }}>
             <Sparkles size={20} style={{ color: 'var(--b2c-orange, #1F7AFF)' }} />
             {t.whatsNextTitle}

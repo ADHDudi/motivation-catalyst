@@ -373,7 +373,12 @@ const App = () => {
       text += `\n`;
     });
 
-    text += `\nGenerated via MotivationOS`;
+    const appUrl = 'https://motivation-catalyst-david.web.app';
+    const cta = lang === 'he'
+      ? `\n\n---\nגלו מה מניע אתכם בעבודה. עשו את האבחון חינם:\n${appUrl}`
+      : `\n\n---\nDiscover what drives you at work. Take the free assessment:\n${appUrl}`;
+    
+    text += cta;
     return text;
   };
 
