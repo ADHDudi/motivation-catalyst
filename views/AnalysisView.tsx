@@ -196,7 +196,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
   const roleLabel = isManager ? t.roleManagerLabel : t.roleSoloLabel;
 
   return (
-    <div className={`w-full max-w-4xl mx-auto bg-white/95 backdrop-blur-xl md:rounded-[60px] shadow-2xl shadow-slate-200/50 overflow-hidden text-${t.dir === 'rtl' ? 'right' : 'left'} pb-12 animate-fade-in`} dir={t.dir}>
+    <div className={`w-full max-w-4xl mx-auto md:my-auto bg-white/95 backdrop-blur-xl md:rounded-[60px] shadow-2xl shadow-slate-200/50 overflow-hidden text-${t.dir === 'rtl' ? 'right' : 'left'} pb-12 animate-fade-in`} dir={t.dir}>
       <div className="p-8 md:p-12 pt-16">
         <div className="flex justify-between items-center mb-10">
           <button onClick={() => setLang(lang === 'he' ? 'en' : 'he')} className="bg-slate-50 p-3 rounded-2xl text-[10px] font-black transition-all active:scale-90" style={{ color: 'var(--b2c-azure)' }} aria-label="Toggle language">

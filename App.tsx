@@ -91,7 +91,7 @@ const App = () => {
     setHasSavedProgress(true);
   }, [answers, currentQuestionIndex, step, formData, userRole, lang]);
 
-  // Sync authenticated user data into formData
+  // Sync authenticated user data into formData and advance step if returning from redirect
   useEffect(() => {
     const unsubscribe = onAuthStateChange((user) => {
       if (user) {
@@ -100,6 +100,8 @@ const App = () => {
           employeeName: user.displayName || prev.employeeName,
           employeeEmail: user.email || prev.employeeEmail,
         }));
+        // If we're on the welcome screen and auth state changes to signed-in (e.g. returning from redirect), move forward
+        setStep(prevStep => prevStep === 'welcome' ? 'role-select' : prevStep);
       }
     });
     return () => unsubscribe();
@@ -422,7 +424,7 @@ const App = () => {
   };
 
   const mainApp = (
-    <div className="min-h-screen md:py-12 md:px-6 font-sans text-slate-900 selection:bg-[#38BDF8]/30" style={{ backgroundColor: 'var(--b2c-ice)' }}>
+    <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center md:py-12 md:px-6 font-sans text-slate-900 selection:bg-[#38BDF8]/30" style={{ backgroundColor: 'var(--b2c-ice)' }}>
       {step === 'welcome' && (
         <WelcomeView
           t={t}

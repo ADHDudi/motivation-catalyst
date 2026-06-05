@@ -104,7 +104,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
 
   return (
     <div
-      className={`w-full max-w-lg mx-auto bg-white/90 backdrop-blur-md rounded-[40px] shadow-2xl shadow-slate-200/50 overflow-hidden flex flex-col min-h-[100dvh] md:min-h-[85vh] md:my-8 text-${t.dir === 'rtl' ? 'right' : 'left'} animate-fade-in`}
+      className={`w-full max-w-lg mx-auto bg-white/90 backdrop-blur-md rounded-[40px] shadow-2xl shadow-slate-200/50 overflow-hidden flex flex-col min-h-[100dvh] md:min-h-0 md:h-auto md:my-auto text-${t.dir === 'rtl' ? 'right' : 'left'} animate-fade-in`}
       dir={t.dir}
     >
       <div className="p-8 pt-12 text-center relative bg-transparent overflow-hidden text-slate-900">

@@ -29,7 +29,7 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({ t, lang, setLang, curre
   };
 
   return (
-    <div className={`w-full max-w-lg mx-auto bg-white/90 backdrop-blur-md rounded-[40px] shadow-2xl shadow-slate-200/50 overflow-hidden flex flex-col h-[100dvh] md:h-[85vh] md:my-8 text-${t.dir === 'rtl' ? 'right' : 'left'} relative animate-fade-in`} dir={t.dir}>
+    <div className={`w-full max-w-lg mx-auto bg-white/90 backdrop-blur-md rounded-[40px] shadow-2xl shadow-slate-200/50 overflow-hidden flex flex-col h-[100dvh] md:min-h-0 md:h-auto md:my-auto text-${t.dir === 'rtl' ? 'right' : 'left'} relative animate-fade-in`} dir={t.dir}>
       <div className="p-8 pt-12 bg-transparent">
         <div className="flex justify-between items-center mb-8">
           <button onClick={onBack} className="p-2 text-slate-300 hover:text-slate-600 active:scale-90 transition-transform" aria-label="Back">
