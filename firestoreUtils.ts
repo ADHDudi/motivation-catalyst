@@ -14,7 +14,8 @@ export const saveFeedback = async (feedback: FeedbackData): Promise<void> => {
         await db.collection('feedback').add({
             ...feedback,
             timestamp: window.firebase.firestore.FieldValue.serverTimestamp(),
-            userAgent: navigator.userAgent
+            userAgent: navigator.userAgent,
+            isRead: false
         });
         console.log('Feedback saved successfully');
     } catch (error) {
