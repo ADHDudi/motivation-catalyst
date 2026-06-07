@@ -28,6 +28,7 @@ interface WelcomeViewProps {
   authError: string | null;
   authSuccess: string | null;
   hasSavedProgress?: boolean;
+  isAuthenticated?: boolean;
   onResume?: () => void;
   onDiscardProgress?: () => void;
 }
@@ -49,6 +50,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
   authError,
   authSuccess,
   hasSavedProgress,
+  isAuthenticated,
   onResume,
   onDiscardProgress,
 }) => {
@@ -198,6 +200,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
           </>
         )}
 
+        {!isAuthenticated && (
         <form onSubmit={handleSubmit} className="w-[95%] mx-auto block space-y-0 relative z-10">
           {modeHeading && (
             <h2 className="text-xl font-black text-center mb-6" style={{ color: 'var(--b2c-ink)' }}>{modeHeading}</h2>
@@ -333,22 +336,6 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
             </div>
           )}
         </form>
-
-        {formData.employeeName.toLowerCase() === 'dudi' && (
-          <div className="mt-12 p-6 bg-slate-50 rounded-[30px] border-4 border-dashed border-slate-200 flex flex-col items-center">
-            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-4">DEMO MODE</span>
-            <div className="flex gap-4">
-              {['high', 'mid', 'at-risk'].map(m => (
-                <button
-                  key={m}
-                  onClick={() => onDemo(m as any)}
-                  className="px-4 py-2 bg-white rounded-full text-[10px] font-black text-[#324FA2] border border-slate-100 active:scale-95 uppercase"
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
-          </div>
         )}
 
         {/* Legal footer */}

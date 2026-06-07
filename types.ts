@@ -9,10 +9,24 @@ declare global {
 }
 
 export interface FeedbackData {
-  rating: number; // 1 for thumbs down, 5 for thumbs up (or boolean, but user asked for "option to use this feedback")
+  rating: number; // 1 for thumbs down, 5 for thumbs up
   comment: string;
   timestamp: any; // Firestore timestamp
   results: Results;
+  isRead?: boolean; // Ensure old code matches db update
+}
+
+export interface UserFeedback {
+  id: string;
+  userId?: string | null;
+  userEmail?: string | null;
+  userName?: string | null;
+  feedbackText: string;
+  rating?: number;
+  source: string;
+  sessionId?: string | null;
+  read: boolean;
+  createdAt: any; // Firestore Timestamp
 }
 
 export interface LocalizedText {

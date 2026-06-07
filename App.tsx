@@ -6,6 +6,8 @@ import RoleSelectView from './views/RoleSelectView';
 import AssessmentView from './views/AssessmentView';
 import AnalysisView from './views/AnalysisView';
 import CategoryIntroCard from './components/CategoryIntroCard';
+import FloatingFeedbackBtn from './components/FloatingFeedbackBtn';
+import AdminFeedbackPanel from './components/AdminFeedbackPanel';
 import { Language, FormData, Answers, Results, CategoryKey, UserRole } from './types';
 import { signInWithGoogle, onAuthStateChange, signInWithEmail, signUpWithEmail, sendPasswordReset } from './authUtils';
 
@@ -69,6 +71,9 @@ const App = () => {
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSuccess, setAuthSuccess] = useState<string | null>(null);
   const [hasSavedProgress, setHasSavedProgress] = useState<boolean>(() => readSavedProgress() !== null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
 
   const t = TRANSLATIONS[lang];
 
@@ -95,17 +100,30 @@ const App = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChange((user) => {
       if (user) {
+        setIsAuthenticated(true);
+        setCurrentUser(user);
         setFormData(prev => ({
           ...prev,
           employeeName: user.displayName || prev.employeeName,
           employeeEmail: user.email || prev.employeeEmail,
         }));
-        // If we're on the welcome screen and auth state changes to signed-in (e.g. returning from redirect), move forward
-        setStep(prevStep => prevStep === 'welcome' ? 'role-select' : prevStep);
+        // If we're on the welcome screen and auth state changes to signed-in, check for progress
+        setStep(prevStep => {
+          if (prevStep === 'welcome') {
+             // Let them stay on welcome if they have progress, so they can click "Resume"
+             // Otherwise go to role-select
+             return hasSavedProgress ? 'welcome' : 'role-select';
+          }
+          return prevStep;
+        });
+      } else {
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+        setStep('welcome'); // Force unauthenticated users to welcome screen
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [hasSavedProgress]);
 
   // --- Auth helpers ---
 
@@ -266,6 +284,7 @@ const App = () => {
   };
 
   const handleResume = () => {
+    if (!isAuthenticated) return;
     const p = readSavedProgress();
     if (!p) return;
     setFormData(p.formData);
@@ -423,8 +442,19 @@ const App = () => {
     syncData('interaction', { action: 'social_click', platform });
   };
 
+  const isAdmin = currentUser?.email === 'tsur.david@gmail.com';
+
   const mainApp = (
-    <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center md:py-12 md:px-6 font-sans text-slate-900 selection:bg-[#38BDF8]/30" style={{ backgroundColor: 'var(--b2c-ice)' }}>
+    <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center md:py-12 md:px-6 font-sans text-slate-900 selection:bg-[#38BDF8]/30 relative" style={{ backgroundColor: 'var(--b2c-ice)' }}>
+      {isAdmin && (
+        <button
+          onClick={() => setIsAdminPanelOpen(true)}
+          className="absolute top-6 left-6 z-50 px-4 py-2 bg-slate-900 text-white text-xs font-black rounded-xl hover:bg-slate-800 transition-colors shadow-lg flex items-center gap-2"
+        >
+          Manage Feedback
+        </button>
+      )}
+
       {step === 'welcome' && (
         <WelcomeView
           t={t}
@@ -441,6 +471,7 @@ const App = () => {
           authError={authError}
           authSuccess={authSuccess}
           hasSavedProgress={hasSavedProgress}
+          isAuthenticated={isAuthenticated}
           onResume={handleResume}
           onDiscardProgress={handleDiscardProgress}
         />
@@ -494,6 +525,20 @@ const App = () => {
           answers={answers}
         />
       )}
+
+      {isAuthenticated && (
+        <FloatingFeedbackBtn
+          userId={currentUser?.uid}
+          userEmail={currentUser?.email}
+          userName={currentUser?.displayName || formData.employeeName}
+          source={`Step: ${step}`}
+        />
+      )}
+
+      <AdminFeedbackPanel
+        isOpen={isAdminPanelOpen}
+        onClose={() => setIsAdminPanelOpen(false)}
+      />
     </div>
   );
 
