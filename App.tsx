@@ -6,6 +6,7 @@ import RoleSelectView from './views/RoleSelectView';
 import AssessmentView from './views/AssessmentView';
 import AnalysisView from './views/AnalysisView';
 import CategoryIntroCard from './components/CategoryIntroCard';
+import AppHeader from './components/AppHeader';
 import FloatingFeedbackBtn from './components/FloatingFeedbackBtn';
 import AdminFeedbackPanel from './components/AdminFeedbackPanel';
 import { Language, FormData, Answers, Results, CategoryKey, UserRole } from './types';
@@ -446,13 +447,15 @@ const App = () => {
 
   const mainApp = (
     <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center md:py-12 md:px-6 font-sans text-slate-900 selection:bg-[#38BDF8]/30 relative" style={{ backgroundColor: 'var(--b2c-ice)' }}>
-      {isAdmin && (
-        <button
-          onClick={() => setIsAdminPanelOpen(true)}
-          className="absolute top-6 left-6 z-50 px-4 py-2 bg-slate-900 text-white text-xs font-black rounded-xl hover:bg-slate-800 transition-colors shadow-lg flex items-center gap-2"
-        >
-          Manage Feedback
-        </button>
+      {isAuthenticated && (
+        <AppHeader
+          userName={currentUser?.displayName || formData.employeeName}
+          userPhotoUrl={currentUser?.photoURL}
+          isAdmin={isAdmin}
+          onManageFeedback={() => setIsAdminPanelOpen(true)}
+          lang={lang}
+          setLang={setLang}
+        />
       )}
 
       {step === 'welcome' && (
