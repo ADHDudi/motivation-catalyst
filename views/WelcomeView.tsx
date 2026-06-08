@@ -19,7 +19,7 @@ interface WelcomeViewProps {
   setLang: (lang: Language) => void;
   formData: FormData;
   setFormData: (data: FormData) => void;
-  onStart: (e: React.FormEvent) => void;
+  onStart: (e?: React.FormEvent | React.MouseEvent) => void;
   onDemo: (type: 'high' | 'mid' | 'at-risk') => void;
   onGoogleLogin: () => void;
   onEmailSignIn: (email: string, password: string) => Promise<void>;
@@ -336,6 +336,23 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
             </div>
           )}
         </form>
+        )}
+
+        {isAuthenticated && !hasSavedProgress && (
+          <div className="w-[95%] mx-auto flex flex-col items-center justify-center space-y-4 relative z-10 mt-4 mb-8">
+            <button
+              type="button"
+              onClick={(e) => onStart(e)}
+              className="w-full text-white font-bold text-[15px] py-4 min-h-[48px] rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.15)] hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
+              style={{ backgroundImage: 'var(--gradient-b2c)' }}
+            >
+              {lang === 'he' ? 'התחל אבחון חדש' : 'Start New Assessment'}
+              <ArrowRight size={16} className={t.dir === 'rtl' ? 'rotate-180' : ''} />
+            </button>
+            <p className="text-sm font-bold text-slate-500 text-center">
+              {lang === 'he' ? `מחובר כ- ${formData.employeeEmail}` : `Signed in as ${formData.employeeEmail}`}
+            </p>
+          </div>
         )}
 
         {/* Legal footer */}

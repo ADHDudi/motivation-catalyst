@@ -251,13 +251,13 @@ const App = () => {
   // --- Logic Helpers ---
 
   const handleReset = () => {
-    setStep('welcome');
+    setStep(isAuthenticated ? 'role-select' : 'welcome');
     setAnswers({});
     setResults(null);
     setCurrentQuestionIndex(0);
     setCategoryIntro(null);
     setPendingNextIndex(0);
-    setFormData({ employeeName: '', employeeEmail: '', managerName: '', managerEmail: '' });
+    setFormData(prev => ({ ...prev, managerName: '', managerEmail: '' }));
     clearSavedProgress();
     setHasSavedProgress(false);
     // Preserve userRole and lang — those are the user's preferences, not assessment data.
@@ -268,11 +268,11 @@ const App = () => {
     setCurrentQuestionIndex(pendingNextIndex);
   };
 
-  const handleStart = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleStart = (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
     setAuthError(null);
     setAuthSuccess(null);
-    if (!formData.employeeName) return;
+    if (!isAuthenticated && !formData.employeeName) return;
     setStep('role-select');
   };
 
