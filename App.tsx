@@ -443,7 +443,7 @@ const App = () => {
     syncData('interaction', { action: 'social_click', platform });
   };
 
-  const isAdmin = currentUser?.email === 'tsur.david@gmail.com';
+  const isAdmin = currentUser?.email?.toLowerCase() === 'tsur.david@gmail.com';
 
   const mainApp = (
     <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center md:py-12 md:px-6 font-sans text-slate-900 selection:bg-[#38BDF8]/30 relative" style={{ backgroundColor: 'var(--b2c-ice)' }}>
