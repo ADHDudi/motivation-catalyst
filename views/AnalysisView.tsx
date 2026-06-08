@@ -14,7 +14,7 @@ import AccordionItem from '../components/AccordionItem';
 import { TranslationData, Results, Language, CategoryKey, UserRole } from '../types';
 import { COLORS } from '../constants';
 import { hexToRgba, getOpacityForScore, getTextColorForScore } from '../utils';
-import { saveFeedback } from '../firestoreUtils';
+import InlineFeedback from '../components/InlineFeedback';
 
 interface AnalysisViewProps {
   t: TranslationData;
@@ -126,10 +126,6 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
   t, lang, setLang, userRole, formData, results, onReset,
   copyToClipboard, generateFullReportText, onRetakeReminder, statusMsg, answers
 }) => {
-  const [feedbackState, setFeedbackState] = useState<'idle' | 'commenting' | 'submitted'>('idle');
-  const [comment, setComment] = useState('');
-  const [rating, setRating] = useState<number>(0);
-
   const [aiInsights, setAiInsights] = useState<MotivationAnalysisResult | null>(null);
   const [lastAiLang, setLastAiLang] = useState<Language | null>(null);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
@@ -169,22 +165,6 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
 
     fetchAIInsights();
   }, [results, lang, answers, formData, aiInsights]);
-
-  const handleThumbClick = (selectedRating: number) => {
-    setRating(selectedRating);
-    if (feedbackState === 'idle') setFeedbackState('commenting');
-  };
-
-  const handleSubmitFeedback = async () => {
-    if (!results) return;
-    try {
-      await saveFeedback({ rating, comment, timestamp: null, results });
-    } catch (e) {
-      console.error('Failed to submit feedback', e);
-    } finally {
-      setFeedbackState('submitted');
-    }
-  };
 
   if (!results) return null;
 
@@ -307,37 +287,14 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         </div>
 
         {/* FEEDBACK MECHANISM */}
-        <div className="mt-10 p-8 bg-slate-50 rounded-[40px] border-2 border-dashed border-slate-200 text-center relative overflow-hidden transition-all duration-300">
-          {feedbackState === 'submitted' ? (
-            <div className="animate-in zoom-in-95">
-              <div className="p-4 bg-[#90BC6E]/10 rounded-full inline-block mb-3 text-[#90BC6E]"><CheckCircle2 size={32} /></div>
-              <p className="font-black" style={{ color: 'var(--b2c-deep)' }}>{t.feedbackThanks}</p>
-            </div>
-          ) : (
-            <>
-              <h4 className="font-black text-lg mb-6" style={{ color: 'var(--b2c-deep)' }}>{t.feedbackTitle}</h4>
-              <div className="flex justify-center gap-6 mb-6">
-                <button onClick={() => handleThumbClick(5)} className={`p-4 bg-white rounded-full shadow-sm hover:bg-[#90BC6E] hover:text-white transition-all active:scale-95 border border-slate-100 ${rating === 5 ? 'bg-[#90BC6E] text-white ring-4 ring-[#90BC6E]/30' : ''}`} aria-label="Helpful"><ThumbsUp size={24} /></button>
-                <button onClick={() => handleThumbClick(1)} className={`p-4 bg-white rounded-full shadow-sm hover:text-white transition-all active:scale-95 border border-slate-100 ${rating === 1 ? 'text-white ring-4 ring-[var(--b2c-azure)]/30' : ''}`} style={rating === 1 ? { backgroundColor: 'var(--b2c-azure)' } : {}} aria-label="Not helpful"><ThumbsDown size={24} /></button>
-              </div>
-
-              {feedbackState === 'commenting' && (
-                <div className="animate-in slide-in-from-bottom-2 fade-in max-w-sm mx-auto">
-                  <textarea
-                    className="w-full p-4 rounded-2xl bg-white border border-slate-200 text-sm focus:outline-none mb-3 min-h-[80px] transition-colors"
-                    style={{ '--tw-border-opacity': '1' } as React.CSSProperties & { '--tw-border-opacity': string }}
-                    placeholder={t.feedbackComment}
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                  />
-                  <button onClick={handleSubmitFeedback} className="px-6 py-2 text-white rounded-full text-sm font-bold flex items-center gap-2 mx-auto transition-colors" style={{ backgroundImage: 'var(--gradient-b2c)' }}>
-                    {t.sendFeedback} <Send size={14} className={t.dir === 'rtl' ? 'rotate-180' : ''} />
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+        <InlineFeedback
+          source="Analysis Results"
+          lang={lang}
+          results={results}
+          userId={undefined}
+          userEmail={formData?.employeeEmail}
+          userName={formData?.employeeName}
+        />
 
         <div className="mt-20 pt-10 border-t-4 border-dashed border-slate-50 flex flex-col items-center gap-8">
           {/* Powered by JustAIIt */}

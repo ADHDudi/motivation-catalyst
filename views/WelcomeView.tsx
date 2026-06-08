@@ -12,6 +12,7 @@ const MotivationOSHeroIcon: React.FC = () => (
 );
 import { Link } from 'react-router-dom';
 import { TranslationData, FormData, Language } from '../types';
+import InlineFeedback from '../components/InlineFeedback';
 
 interface WelcomeViewProps {
   t: TranslationData;
@@ -337,6 +338,9 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
           )}
         </form>
         )}
+
+        {/* FEEDBACK MECHANISM */}
+        <InlineFeedback source="Welcome Screen" lang={lang} />
 
         {/* Legal footer */}
         <div className="mt-10 pt-6 border-t border-slate-100 flex flex-wrap gap-4 justify-center text-xs font-bold text-slate-300">

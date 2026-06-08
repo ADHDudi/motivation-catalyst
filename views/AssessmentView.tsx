@@ -4,6 +4,7 @@ import Logo from '../components/Logo';
 import { QUESTIONS, COLORS, RATING_COLORS } from '../constants';
 import { hexToRgba } from '../utils';
 import { TranslationData, Answers, Language } from '../types';
+import InlineFeedback from '../components/InlineFeedback';
 
 interface AssessmentViewProps {
   t: TranslationData;
@@ -100,6 +101,10 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({ t, lang, setLang, curre
         <div className="flex justify-between px-2 mt-8 uppercase font-black">
           <span className="text-sm md:text-base text-rose-500">{t.disagree}</span>
           <span className="text-sm md:text-base text-emerald-500">{t.agree}</span>
+        </div>
+
+        <div className="mt-12">
+          <InlineFeedback source="Assessment Flow" lang={lang} />
         </div>
       </div>
     </div>

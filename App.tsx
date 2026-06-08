@@ -7,7 +7,6 @@ import AssessmentView from './views/AssessmentView';
 import AnalysisView from './views/AnalysisView';
 import CategoryIntroCard from './components/CategoryIntroCard';
 import AppHeader from './components/AppHeader';
-import FloatingFeedbackBtn from './components/FloatingFeedbackBtn';
 import AdminFeedbackPanel from './components/AdminFeedbackPanel';
 import { Language, FormData, Answers, Results, CategoryKey, UserRole } from './types';
 import { signInWithGoogle, onAuthStateChange, signInWithEmail, signUpWithEmail, sendPasswordReset } from './authUtils';
@@ -528,13 +527,6 @@ const App = () => {
           answers={answers}
         />
       )}
-
-      <FloatingFeedbackBtn
-        userId={currentUser?.uid}
-        userEmail={currentUser?.email}
-        userName={currentUser?.displayName || formData.employeeName}
-        source={`Step: ${step}`}
-      />
 
       <AdminFeedbackPanel
         isOpen={isAdminPanelOpen}
