@@ -529,14 +529,12 @@ const App = () => {
         />
       )}
 
-      {isAuthenticated && (
-        <FloatingFeedbackBtn
-          userId={currentUser?.uid}
-          userEmail={currentUser?.email}
-          userName={currentUser?.displayName || formData.employeeName}
-          source={`Step: ${step}`}
-        />
-      )}
+      <FloatingFeedbackBtn
+        userId={currentUser?.uid}
+        userEmail={currentUser?.email}
+        userName={currentUser?.displayName || formData.employeeName}
+        source={`Step: ${step}`}
+      />
 
       <AdminFeedbackPanel
         isOpen={isAdminPanelOpen}
