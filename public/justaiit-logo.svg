@@ -1,52 +1,61 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 120" width="600" height="120">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="100%" height="100%">
   <defs>
+    <!-- Frame Gradient (violet to cyan, identical to app branding) -->
+    <linearGradient id="frame-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8C50F0" />
+      <stop offset="50%" stop-color="#1F7AFF" />
+      <stop offset="100%" stop-color="#3CDCF0" />
+    </linearGradient>
+
+    <!-- Sparkle Gradient (vibrant purple/pink/magenta) -->
+    <linearGradient id="sparkle-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8C50F0" />
+      <stop offset="100%" stop-color="#D946EF" />
+    </linearGradient>
+
+    <!-- Styling for Text to look identical to logo -->
     <style>
-      .powered-by-text {
-        font-family: 'Inter', system-ui, sans-serif;
-        font-size: 16px;
-        font-weight: 600;
-        fill: #64748b;
-        letter-spacing: 0.5px;
-      }
-      .brand-text {
-        font-family: 'Space Grotesk', system-ui, sans-serif;
-        font-size: 24px;
+      .logo-text {
+        font-family: 'Space Grotesk', 'Heebo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         font-weight: 900;
-        fill: #8c50f0;
-        letter-spacing: -0.5px;
-      }
-      .url-text {
-        font-family: 'Inter', system-ui, sans-serif;
-        font-size: 12px;
-        font-weight: 500;
-        fill: #94a3b8;
-        letter-spacing: 0.3px;
-      }
-      .logo-box {
-        filter: drop-shadow(0 2px 4px rgba(140, 80, 240, 0.15));
+        fill: #000000;
       }
     </style>
   </defs>
 
-  <!-- Logo Boxes (Just AI It brand colors) -->
-  <g class="logo-box">
-    <!-- Box 1: Deep Purple -->
-    <rect x="180" y="20" width="18" height="18" rx="3" fill="#a014f0"/>
+  <!-- Group centered vertically around Y = 48 -->
+  <g>
+    <!-- "JUST" Text -->
+    <text x="144" y="48" class="logo-text" font-size="28" text-anchor="end" dominant-baseline="central" letter-spacing="-0.5">JUST</text>
 
-    <!-- Box 2: Brand Purple -->
-    <rect x="200" y="20" width="18" height="18" rx="3" fill="#8c50f0"/>
+    <!-- Rounded Rectangle Box with top-right gap -->
+    <!-- Center: (182, 48) -->
+    <!-- Box width: 50, height: 50. X ranges 157 to 207. Y ranges 23 to 73 -->
+    <!-- Corner radius: 9 -->
+    <!-- Stroke width: 3.5 -->
+    <!-- Top right corner center line is at (207, 23) -->
+    <path 
+      d="M 193,23 L 166,23 A 9,9 0 0 0 157,32 L 157,64 A 9,9 0 0 0 166,73 L 198,73 A 9,9 0 0 0 207,64 L 207,37" 
+      fill="none" 
+      stroke="url(#frame-grad)" 
+      stroke-width="3.5" 
+      stroke-linecap="round" 
+      stroke-linejoin="round" 
+    />
 
-    <!-- Box 3: Brand Blue -->
-    <rect x="220" y="20" width="18" height="18" rx="3" fill="#5078ff"/>
+    <!-- Sparkle shape at top-right corner -->
+    <!-- Path centered at (207, 23) with radius 14 -->
+    <path 
+      d="M 207,9 Q 207,23 221,23 Q 207,23 207,37 Q 207,23 193,23 Q 207,23 207,9 Z" 
+      fill="url(#sparkle-grad)" 
+    />
 
-    <!-- Box 4: Cyan -->
-    <rect x="240" y="20" width="18" height="18" rx="3" fill="#3cdcf0"/>
+    <!-- "AI" inside the box -->
+    <!-- Centered at X = 182, Y = 48 -->
+    <text x="182" y="48" class="logo-text" font-size="22" text-anchor="middle" dominant-baseline="central" letter-spacing="-0.5">AI</text>
+
+    <!-- "IT" Text -->
+    <!-- Starts at X = 220 -->
+    <text x="220" y="48" class="logo-text" font-size="28" text-anchor="start" dominant-baseline="central" letter-spacing="-0.5">IT</text>
   </g>
-
-  <!-- Text Elements -->
-  <text x="10" y="48" class="powered-by-text">Powered by:</text>
-
-  <text x="180" y="85" class="brand-text">Just AI It</text>
-
-  <text x="180" y="105" class="url-text">www.just-ai.it</text>
 </svg>

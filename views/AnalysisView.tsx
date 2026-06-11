@@ -559,18 +559,24 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         {/* ── Footer ── */}
         <div className="mt-16 pt-8 border-t-4 border-dashed border-slate-50 flex flex-col items-center gap-6">
           {/* Powered by JustAIIt */}
-          <a
-            href="https://justaiit.web.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 active:scale-95 no-underline shadow-lg"
-            style={{ background: 'linear-gradient(135deg, #a014f0 0%, #8c50f0 28%, #5078ff 58%, #3cdcf0 100%)' }}
-          >
-            <span className="text-xs font-black text-white uppercase tracking-widest">
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               {isHe ? 'מונע על ידי' : 'Powered by'}
             </span>
-            <span className="text-sm font-black text-white tracking-tighter">Just AI It</span>
-          </a>
+            <a
+              href="https://justaiit.web.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-all hover:scale-105 active:scale-95 block h-10"
+              title="Just AI It"
+            >
+              <img
+                src="/justaiit-logo.svg"
+                alt="Just AI It"
+                className="h-10 w-auto opacity-90 hover:opacity-100 transition-opacity"
+              />
+            </a>
+          </div>
 
           <button
             onClick={onReset}
