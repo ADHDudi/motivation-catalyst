@@ -50,6 +50,11 @@ rsync -av --exclude node_modules --exclude .git --exclude dist . "$DEPLOY_DIR/" 
 echo "⚙️  Building and Deploying from $DEPLOY_DIR..."
 cd "$DEPLOY_DIR"
 
+# Allow .env to be deployed by removing it from the isolated .gitignore
+if [ -f ".gitignore" ]; then
+  sed -i '' '/functions\/.env/d' .gitignore || true
+fi
+
 # Force dependency sync and local cache to avoid EPERM
 export FIREBASE_CHECK_UPDATES=false
 export XDG_CONFIG_HOME="$DEPLOY_DIR/.config"
