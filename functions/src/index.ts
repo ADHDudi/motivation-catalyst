@@ -72,6 +72,7 @@ interface GenerateInsightsRequest {
 }
 
 export const generateInsights = onCall(
+    { timeoutSeconds: 300, memory: "512MiB" },
     async (request: CallableRequest<GenerateInsightsRequest>) => {
         const { founderAName, founderBName, allComparisonDetails, feedbackContext, lang = "en" } = request.data;
 
@@ -193,6 +194,7 @@ interface GenerateMotivationAnalysisRequest {
 }
 
 export const generateMotivationAnalysis = onCall(
+    { timeoutSeconds: 300, memory: "512MiB" },
     async (request: CallableRequest<GenerateMotivationAnalysisRequest>) => {
         const { responses, employeeName, managerName, lang = "en" } = request.data;
 

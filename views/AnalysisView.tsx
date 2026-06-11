@@ -323,12 +323,20 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
           category: q.category
         }));
 
-        const analysis = await generateMotivationAnalysis(
-          responses,
-          formData.employeeName,
-          formData.managerName,
-          lang
+        // Race against a 90s timeout so the spinner never gets stuck
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('AI request timed out')), 90000)
         );
+
+        const analysis = await Promise.race([
+          generateMotivationAnalysis(
+            responses,
+            formData.employeeName,
+            formData.managerName,
+            lang
+          ),
+          timeoutPromise
+        ]);
 
         setAiInsights(analysis);
         setLastAiLang(lang);
