@@ -59,7 +59,7 @@
       - generic [ref=e115]:
         - img [ref=e116]
         - generic [ref=e119]: טיפ AI
-        - 'generic "Failed to generate analysis: GEMINI_API_KEY environment variable is not set" [ref=e120]':
+        - 'generic "Failed to generate analysis: {\"error\":{\"code\":404,\"message\":\"This model models/gemini-2.0-flash is no longer available. Please update your code to use a newer model for the latest features and improvements.\",\"status\":\"NOT_FOUND\"}}" [ref=e120]':
           - img [ref=e121]
           - text: סטטי
       - paragraph [ref=e123]: נסה שיטת "ניהול יומן חוסם" (Time Blocking) כדי לייצר לעצמך מרחב עבודה עצמאי. בשיחה הבאה עם המנהל, הצע משימה אחת שאתה לוקח עליה אחריות מלאה מהתחלה ועד הסוף.
