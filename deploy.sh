@@ -70,13 +70,11 @@ fi
 # Inject API Key from local functions/.env file or environment variable
 if [ -n "$GEMINI_API_KEY" ]; then
   echo "GEMINI_API_KEY=$GEMINI_API_KEY" > "$DEPLOY_DIR/functions/.env"
-elif [ -f "functions/.env" ]; then
-  cat "functions/.env" > "$DEPLOY_DIR/functions/.env"
-else
-  touch "$DEPLOY_DIR/functions/.env"
+elif [ ! -f "functions/.env" ]; then
+  touch "functions/.env"
 fi
 # Check if GEMINI_API_KEY is available in functions/.env or environment
-if [ ! -f "$DEPLOY_DIR/functions/.env" ] && [ -z "$GEMINI_API_KEY" ]; then
+if [ ! -f "functions/.env" ] && [ -z "$GEMINI_API_KEY" ]; then
   echo "⚠️  WARNING: GEMINI_API_KEY not found in functions/.env or environment variables."
   echo "The deployment might fail or the function might not work correctly."
 fi
