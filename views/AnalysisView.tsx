@@ -308,10 +308,18 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
   }, [handleSwipe]);
 
   /* ── AI fetch ── */
+  const aiRequestRef = useRef<string | null>(null);
+
   useEffect(() => {
+    let isCancelled = false;
+
     const fetchAIInsights = async () => {
       if (!results) return;
       if (aiInsights && lastAiLang === lang) return;
+
+      const requestSignature = `${lang}-${JSON.stringify(answers)}`;
+      if (aiRequestRef.current === requestSignature) return;
+      aiRequestRef.current = requestSignature;
 
       setIsLoadingAI(true);
       setAiError(null);
@@ -338,17 +346,28 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
           timeoutPromise
         ]);
 
-        setAiInsights(analysis);
-        setLastAiLang(lang);
+        if (!isCancelled) {
+          setAiInsights(analysis);
+          setLastAiLang(lang);
+        }
       } catch (e) {
-        console.warn('Failed to generate AI insights', e);
-        setAiError(e instanceof Error ? e.message : String(e));
+        if (!isCancelled) {
+          console.warn('Failed to generate AI insights', e);
+          setAiError(e instanceof Error ? e.message : String(e));
+          aiRequestRef.current = null; // allow retry
+        }
       } finally {
-        setIsLoadingAI(false);
+        if (!isCancelled) {
+          setIsLoadingAI(false);
+        }
       }
     };
 
     fetchAIInsights();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [results, lang, answers, formData, aiInsights]);
 
   /* ── early return ── */
