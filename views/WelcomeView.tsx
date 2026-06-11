@@ -338,6 +338,23 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
         </form>
         )}
 
+        {formData.employeeName.toLowerCase() === 'dudi' && (
+          <div className="mt-8 p-6 bg-slate-50 rounded-[30px] border-4 border-dashed border-slate-200 flex flex-col items-center relative z-10">
+            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-4">DEMO MODE</span>
+            <div className="flex gap-4">
+              {['high', 'mid', 'at-risk'].map(m => (
+                <button
+                  key={m}
+                  onClick={() => onDemo(m as any)}
+                  className="px-4 py-2 bg-white rounded-full text-[10px] font-black text-[#324FA2] border border-slate-100 active:scale-95 uppercase"
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {isAuthenticated && !hasSavedProgress && (
           <div className="w-[95%] mx-auto flex flex-col items-center justify-center space-y-4 relative z-10 mt-4 mb-8">
             <button

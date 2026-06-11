@@ -1,0 +1,61 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - button "EN" [ref=e9] [cursor=pointer]
+    - img [ref=e12]
+    - heading "MotivationOS" [level=1] [ref=e18]
+    - paragraph [ref=e20]: Workplace Insights
+  - generic [ref=e21]:
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - img [ref=e24]
+        - heading "מרגישים תקועים?" [level=3] [ref=e28]
+      - paragraph [ref=e29]: חוסר מוטיבציה, תחושה של דריכה במקום ושחיקה בעבודה הן לא גזירת גורל. לפעמים פשוט חסר לנו המרכיב הנכון ב"כימיה" המקצועית שלנו.
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - img [ref=e32]
+        - 'heading "הפתרון: מדע המוטיבציה" [level=3] [ref=e35]'
+      - paragraph [ref=e36]: מודל ה-SDT הוא שיטה מוכחת מחקרית המבוססת על עשורים של מחקר פסיכולוגי. המודל נחשב ל"תקן הזהב" במדעי ההתנהגות ומזהה את הצרכים הבסיסיים שחייבים להתקיים כדי שתרגישו חיוניות ומשמעות בעבודה.
+    - generic [ref=e37]:
+      - heading "למה כדאי לכם לבצע את האבחון?" [level=3] [ref=e38]:
+        - img [ref=e39]
+        - text: למה כדאי לכם לבצע את האבחון?
+      - list [ref=e43]:
+        - listitem [ref=e44]:
+          - img [ref=e45]
+          - text: מבוסס על מעל 40 שנות מחקר אמפירי הנתמך במאות מחקרים אקדמיים.
+        - listitem [ref=e47]:
+          - img [ref=e48]
+          - text: בשימוש על ידי חברות Fortune 500 וארגונים גלובליים למיטוב מחוברות.
+        - listitem [ref=e50]:
+          - img [ref=e51]
+          - text: בהירות לגבי המרכיבים המדויקים שחסרים לכם למוטיבציה שיא.
+        - listitem [ref=e53]:
+          - img [ref=e54]
+          - text: טיפים פרקטיים המתרגמים תיאוריה פסיכולוגית לצעדים בני-יישום.
+        - listitem [ref=e56]:
+          - img [ref=e57]
+          - text: כלי מדויק ומקצועי לשיתוף הצרכים שלכם עם המנהל/ת.
+    - generic [ref=e59]:
+      - button "Google Icon התחבר עם גוגל" [ref=e60] [cursor=pointer]:
+        - img "Google Icon" [ref=e61]
+        - text: התחבר עם גוגל
+      - generic [ref=e64]: או
+      - generic [ref=e66]:
+        - textbox "כתובת אימייל" [active] [ref=e67]: dudi
+        - textbox "סיסמה" [ref=e68]
+      - button "שכחת סיסמה?" [ref=e70] [cursor=pointer]
+      - button "התחבר" [ref=e71] [cursor=pointer]
+      - generic [ref=e72]:
+        - text: אין לך חשבון?
+        - button "הרשם" [ref=e73] [cursor=pointer]
+    - generic [ref=e74]:
+      - link "תנאי שימוש" [ref=e75] [cursor=pointer]:
+        - /url: /terms
+      - link "מדיניות פרטיות" [ref=e76] [cursor=pointer]:
+        - /url: /privacy
+      - link "נגישות" [ref=e77] [cursor=pointer]:
+        - /url: /accessibility
+```

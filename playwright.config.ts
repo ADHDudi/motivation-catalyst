@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const FIREBASE_URL = 'https://motivation-catalyst-david.web.app';
-const LOCAL_URL = 'http://localhost:5173';
+const LOCAL_URL = 'http://localhost:5188';
 
 export default defineConfig({
     testDir: './tests',
@@ -14,6 +14,13 @@ export default defineConfig({
         // Default to localhost for local testing, Firebase URL for CI
         baseURL: process.env.BASE_URL || (process.env.CI ? FIREBASE_URL : LOCAL_URL),
         trace: 'on-first-retry',
+    },
+    webServer: {
+        command: 'npm run dev -- --port 5188',
+        url: 'http://localhost:5188',
+        reuseExistingServer: !process.env.CI,
+        stdout: 'ignore',
+        stderr: 'pipe',
     },
     projects: [
         {
