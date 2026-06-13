@@ -26,6 +26,15 @@ interface SavedProgress {
 const LS_ROLE = 'mc_role';
 const LS_LANG = 'mc_lang';
 const LS_PROGRESS = 'mc_progress';
+const LS_RESULTS = 'mc_last_results';
+
+interface SavedResults {
+  results: Results;
+  answers: Answers;
+  userRole: UserRole;
+  lang: Language;
+  savedAt: string; // ISO date string
+}
 
 const readSavedRole = (): UserRole => {
   try {
@@ -69,6 +78,9 @@ const App = () => {
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSuccess, setAuthSuccess] = useState<string | null>(null);
   const [hasSavedProgress, setHasSavedProgress] = useState<boolean>(() => readSavedProgress() !== null);
+  const [hasSavedResults, setHasSavedResults] = useState<boolean>(() => {
+    try { return !!localStorage.getItem(LS_RESULTS); } catch { return false; }
+  });
 
   const t = TRANSLATIONS[lang];
 
@@ -279,6 +291,22 @@ const App = () => {
     setHasSavedProgress(false);
   };
 
+  const handleViewLastAnalysis = () => {
+    try {
+      const raw = localStorage.getItem(LS_RESULTS);
+      if (!raw) return;
+      const saved: SavedResults = JSON.parse(raw);
+      setResults(saved.results);
+      setAnswers(saved.answers);
+      setUserRole(saved.userRole);
+      setLang(saved.lang);
+      setStep('analysis');
+    } catch {
+      // corrupted data — proceed to role-select
+      setStep('role-select');
+    }
+  };
+
   const calculateResults = (inputAnswers: Answers | null = null) => {
     const data = inputAnswers || answers;
     const cats: Record<CategoryKey, number> = { autonomy: 0, competence: 0, relatedness: 0 };
@@ -300,6 +328,19 @@ const App = () => {
     setResults(calculatedResults);
     setStep('analysis');
 
+    // Save completed results for "view last analysis" feature
+    try {
+      const toSave: SavedResults = {
+        results: calculatedResults,
+        answers: data,
+        userRole,
+        lang,
+        savedAt: new Date().toISOString(),
+      };
+      localStorage.setItem(LS_RESULTS, JSON.stringify(toSave));
+      setHasSavedResults(true);
+    } catch { /* noop */ }
+
     // Assessment complete — clear in-flight progress
     clearSavedProgress();
     setHasSavedProgress(false);
@@ -313,7 +354,12 @@ const App = () => {
       return acc;
     }, {} as any);
 
-    syncData('submission', { answers: data, results: calculatedResults, insights: insightsSummary });
+    syncData('submission', {
+      answers: data,
+      results: calculatedResults,
+      insights: insightsSummary,
+      questionVariant: userRole === 'manager' ? 'manager' : 'employee',
+    });
   };
 
   const handleDemo = (type: 'high' | 'mid' | 'at-risk') => {
@@ -342,38 +388,55 @@ const App = () => {
 
   const generateFullReportText = (variant: 'self' | 'share' = 'self') => {
     if (!results) return '';
-    let text = '';
-    if (variant === 'share') {
-      text += `${t.shareIntroLine}\n\n`;
-    }
-    text += `${t.profileTitle} - ${formData.employeeName}\n`;
-    text += `===============================\n\n`;
 
-    const labels = {
-      analysis: lang === 'he' ? 'ניתוח' : 'Analysis',
-      actions: lang === 'he' ? 'פעולות מומלצות' : 'Recommended Actions',
-      aiTips: lang === 'he' ? 'טיפ AI אסטרטגי' : 'Strategic AI Tip',
-    };
+    const isSelf = variant === 'self';
+    const isHe = lang === 'he';
+    const name = formData.employeeName || (isHe ? 'משתמש' : 'User');
 
-    const roleKey: 'employee' | 'manager' = userRole === 'manager' ? 'manager' : 'employee';
+    // Self → personal actions the user can take (employee branch)
+    // Share → guidance for manager/team on how to work with the user (manager branch)
+    const dataKey: 'employee' | 'manager' = isSelf ? 'employee' : 'manager';
+
+    const labels = isSelf
+      ? {
+          header:   isHe ? `הפרופיל שלי — ${name}` : `My Motivation Profile — ${name}`,
+          intro:    isHe
+            ? `עשיתי אבחון מוטיבציה לפי מודל SDT. אלה התובנות שלי ומה שאני מתכנן לעשות:`
+            : `I completed an SDT motivation assessment. Here are my insights and what I plan to do:`,
+          insight:  isHe ? 'תובנה' : 'Insight',
+          actions:  isHe ? 'מה שאני יכול לעשות' : 'What I can do',
+          aiTip:    isHe ? 'טיפ AI אישי' : 'My AI tip',
+        }
+      : {
+          header:   isHe ? `הפרופיל של ${name} — איך לעבוד איתי` : `${name}'s Motivation Profile — How to work with me`,
+          intro:    isHe
+            ? `היי, עשיתי אבחון מוטיבציה לפי מודל SDT. הנה מה שיעזור לי — מה שאני מבקש מהמנהל/צוות:`
+            : `Hi, I completed an SDT motivation assessment. Here's what helps me — what I'm asking from my manager / team:`,
+          insight:  isHe ? 'ההקשר' : 'Context',
+          actions:  isHe ? 'מה שיעזור לי מהצוות / מנהל' : 'How you can support me',
+          aiTip:    isHe ? 'טיפ AI לצוות' : 'AI tip for the team',
+        };
+
+    let text = `${labels.header}\n`;
+    text += `===============================\n`;
+    text += `${labels.intro}\n\n`;
 
     (['autonomy', 'competence', 'relatedness'] as CategoryKey[]).forEach(cat => {
       const score = results[cat];
-      const scoreNum = parseFloat(score);
-      const isLow = scoreNum < 3.5;
-      const data = t.deepAnalysis[cat][roleKey][isLow ? 'low' : 'high'];
+      const isLow = parseFloat(score) < 3.5;
+      const data = t.deepAnalysis[cat][dataKey][isLow ? 'low' : 'high'];
 
       text += `💠 ${t.categories[cat].toUpperCase()} (${score}/5.0)\n`;
       text += `-------------------------------\n`;
-      text += `   • ${labels.analysis}: ${data.analysis}\n`;
-      text += `   • ${labels.actions}: ${data.actions.join(', ')}\n`;
+      text += `   • ${labels.insight}: ${data.analysis}\n`;
+      text += `   • ${labels.actions}: ${data.actions.join(' | ')}\n`;
       if (data.aiTips) {
-        text += `   • ${labels.aiTips}: ${data.aiTips}\n`;
+        text += `   • ${labels.aiTip}: ${data.aiTips}\n`;
       }
       text += `\n`;
     });
 
-    text += `\nGenerated via MotivationOS`;
+    text += `\nGenerated via MotivationOS — https://justaiit.web.app/he#app=motivation-catalyst`;
     return text;
   };
 
@@ -403,14 +466,6 @@ const App = () => {
     }
   };
 
-  const handleRetakeReminder = () => {
-    const email = formData.employeeEmail;
-    if (!email) return;
-    const subject = encodeURIComponent(t.whatsNextRetakeSubject);
-    const body = encodeURIComponent(t.whatsNextRetakeBody);
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-    syncData('interaction', { action: 'retake_reminder' });
-  };
 
   const handleSocialClick = (platform: string) => {
     syncData('interaction', { action: 'social_click', platform });
@@ -436,6 +491,8 @@ const App = () => {
           hasSavedProgress={hasSavedProgress}
           onResume={handleResume}
           onDiscardProgress={handleDiscardProgress}
+          hasSavedResults={hasSavedResults}
+          onViewLastAnalysis={handleViewLastAnalysis}
         />
       )}
       {step === 'role-select' && (
@@ -468,6 +525,7 @@ const App = () => {
           answers={answers}
           onAnswer={handleAnswer}
           onBack={handleBack}
+          userRole={userRole}
         />
       )}
       {step === 'analysis' && results && (
@@ -481,7 +539,6 @@ const App = () => {
           onReset={handleReset}
           copyToClipboard={copyToClipboard}
           generateFullReportText={generateFullReportText}
-          onRetakeReminder={handleRetakeReminder}
           statusMsg={statusMsg}
           onSocialClick={handleSocialClick}
           answers={answers}

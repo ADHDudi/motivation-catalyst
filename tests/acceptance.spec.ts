@@ -44,7 +44,8 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
-        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' })).toBeVisible({ timeout: 10000 });
+        // Wait for the welcome screen — email input is always present on the welcome screen
+        await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 10000 });
     });
 
     // ─── ONBOARDING / SIGN IN ────────────────────────────────────────────────
@@ -52,8 +53,8 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
     test('AC-01 | Demo mode — navigates directly to analysis screen', async ({ page }) => {
         await goToAnalysisViaDemo(page);
 
-        // Confirm we left the welcome screen
-        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' })).not.toBeVisible();
+        // Confirm we left the welcome screen (email input gone)
+        await expect(page.locator('input[type="email"]')).not.toBeVisible();
         // Analysis screen should be visible
         await expect(page.getByRole('heading', { name: /פרופיל מוטיבציה/i })).toBeVisible();
     });
@@ -91,11 +92,14 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
         await expect(page.getByRole('heading', { name: /תובנות לצמיחה/i })).toBeVisible({ timeout: 10000 });
     });
 
-    test('AC-06 | Analysis — Manager Recommendations section visible', async ({ page }) => {
+    test('AC-06 | Analysis — solo demo shows Personal Insights (not Manager Recommendations)', async ({ page }) => {
+        // Demo mode always uses the solo role, so only "Personal Insights" panel is shown.
+        // "Manager Recommendations" should NOT appear for solo users.
         await goToAnalysisViaDemo(page);
         await completeAssessment(page);
 
-        await expect(page.getByRole('heading', { name: /המלצות לניהול/i })).toBeVisible({ timeout: 10000 });
+        await expect(page.getByRole('heading', { name: /תובנות לצמיחה/i })).toBeVisible({ timeout: 10000 });
+        await expect(page.getByRole('heading', { name: /המלצות לניהול/i })).not.toBeVisible();
     });
 
     test('AC-07 | Analysis — AI Deep Analysis section visible', async ({ page }) => {
@@ -105,11 +109,12 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
         await expect(page.getByRole('heading', { name: /ניתוח AI מעמיק/i })).toBeVisible({ timeout: 10000 });
     });
 
-    test('AC-08 | Analysis — Copy Full Report button present and clickable', async ({ page }) => {
+    test('AC-08 | Analysis — Copy Insights button present and clickable', async ({ page }) => {
         await goToAnalysisViaDemo(page);
         await completeAssessment(page);
 
-        const copyBtn = page.getByRole('button', { name: /העתק דוח מלא/i });
+        // The copy button in the insights section has aria-label t.copyEmployee = 'העתק תובנות'
+        const copyBtn = page.getByRole('button', { name: /העתק תובנות/i });
         await expect(copyBtn).toBeVisible({ timeout: 10000 });
         await copyBtn.scrollIntoViewIfNeeded();
         await copyBtn.click();
@@ -126,7 +131,10 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
         await startOverBtn.scrollIntoViewIfNeeded();
         await startOverBtn.click();
 
-        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' })).toBeVisible({ timeout: 5000 });
+        // handleReset sets step back to 'welcome' — email input becomes visible again
+        await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 5000 });
+        // Welcome screen heading (MotivationOS) is also visible
+        await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible({ timeout: 5000 });
     });
 
     // ─── LANGUAGE ────────────────────────────────────────────────────────────
@@ -144,9 +152,11 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
 
         await expect(page.getByRole('heading', { name: /פרופיל מוטיבציה/i })).toBeVisible({ timeout: 10000 });
 
-        await page.getByRole('button', { name: 'EN' }).click();
+        // The language toggle button in AnalysisView has aria-label="Toggle language"
+        await page.getByRole('button', { name: 'Toggle language' }).click();
 
         await expect(page.getByRole('heading', { name: /Motivation Profile/i })).toBeVisible();
+        // English translation for solo-role insights panel is 'Insights' (t.userInsights)
         await expect(page.getByRole('heading', { name: 'Insights', exact: true })).toBeVisible();
     });
 
@@ -156,10 +166,11 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
 
         await expect(page.getByRole('heading', { name: /פרופיל מוטיבציה/i })).toBeVisible({ timeout: 10000 });
 
-        await page.getByRole('button', { name: 'EN' }).click();
+        // The language toggle button in AnalysisView has aria-label="Toggle language"
+        await page.getByRole('button', { name: 'Toggle language' }).click();
         await expect(page.getByRole('heading', { name: /Motivation Profile/i })).toBeVisible();
 
-        await page.getByRole('button', { name: 'עב' }).click();
+        await page.getByRole('button', { name: 'Toggle language' }).click();
         await expect(page.getByRole('heading', { name: /פרופיל מוטיבציה/i })).toBeVisible();
     });
 });

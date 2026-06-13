@@ -3,7 +3,7 @@ import { ChevronLeft } from 'lucide-react';
 import Logo from '../components/Logo';
 import { QUESTIONS, COLORS, RATING_COLORS } from '../constants';
 import { hexToRgba } from '../utils';
-import { TranslationData, Answers, Language } from '../types';
+import { TranslationData, Answers, Language, UserRole } from '../types';
 
 interface AssessmentViewProps {
   t: TranslationData;
@@ -13,9 +13,10 @@ interface AssessmentViewProps {
   answers: Answers;
   onAnswer: (questionId: number, value: number) => void;
   onBack: () => void;
+  userRole: UserRole;
 }
 
-const AssessmentView: React.FC<AssessmentViewProps> = ({ t, lang, setLang, currentQuestionIndex, answers, onAnswer, onBack }) => {
+const AssessmentView: React.FC<AssessmentViewProps> = ({ t, lang, setLang, currentQuestionIndex, answers, onAnswer, onBack, userRole }) => {
   const q = QUESTIONS[currentQuestionIndex];
   if (!q) return null;
   const progress = ((currentQuestionIndex + 1) / QUESTIONS.length) * 100;
@@ -54,7 +55,9 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({ t, lang, setLang, curre
       </div>
 
       <div className="flex-1 p-6 sm:p-10 flex flex-col justify-center bg-[#F8FAFC]/50">
-        <p className="text-2xl sm:text-3xl font-black leading-tight mb-8 sm:mb-12" style={{ color: 'var(--b2c-ink)' }}>{q.text[lang]}</p>
+        <p className="text-2xl sm:text-3xl font-black leading-tight mb-8 sm:mb-12" style={{ color: 'var(--b2c-ink)' }}>
+          {userRole === 'manager' && q.managerText ? q.managerText[lang] : q.text[lang]}
+        </p>
 
         {/* Mobile (<sm): stacked wide pills with labels for comfortable thumb targets */}
         <div className="flex flex-col gap-3 sm:hidden">

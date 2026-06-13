@@ -8,8 +8,8 @@ test.describe('Feedback Mechanism', () => {
         // or just speed-run the assessment
         await page.goto('/');
 
-        // Wait for welcome screen to be visible
-        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' }).or(page.getByRole('heading', { name: 'The Motivation Catalyst' }))).toBeVisible({ timeout: 10000 });
+        // Wait for welcome screen to be visible — email input is always present
+        await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 10000 });
 
         // Use demo mode to bypass authentication - enter "dudi" as email to trigger demo buttons
         const emailInput = page.locator('input[type="email"]');
@@ -38,7 +38,7 @@ test.describe('Feedback Mechanism', () => {
         await thumbsUpBtn.click();
 
         // Verify comment box appears after thumbs up is clicked
-        const commentBox = page.getByPlaceholder('נשמח לשמוע עוד', { exact: false }).or(page.getByPlaceholder('Tell us more'));
+        const commentBox = page.getByPlaceholder('מה עבד', { exact: false }).or(page.getByPlaceholder('What worked'));
         await expect(commentBox).toBeVisible();
 
         // Fill in a comment

@@ -27,3 +27,7 @@ dist-ssr
 functions/lib
 functions/node_modules
 functions/.env
+
+# Local env (API keys — never commit)
+.env
+.env.local
