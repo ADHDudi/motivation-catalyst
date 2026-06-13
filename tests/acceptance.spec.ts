@@ -49,7 +49,7 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
                 status: 200,
                 contentType: 'application/json',
                 body: JSON.stringify({
-                    result: {
+                    data: {
                         autonomy: {
                             tip: "טיפ AI מדומה לאוטונומיה",
                             adhd_tip: "טיפ קשב מדומה לאוטונומיה"
@@ -238,5 +238,25 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
         // Ensure that the "Static" / "סטטי" badge (which shows on error) is NOT visible
         const staticBadge = page.getByText('סטטי', { exact: true }).or(page.getByText('Static', { exact: true }));
         await expect(staticBadge.first()).not.toBeVisible();
+    });
+
+    test('AC-14 | Analysis — Generating spinner disappears and does not get stuck', async ({ page }) => {
+        // Remove the mocked Cloud Function route to allow the real backend request
+        await page.unroute('**/generateMotivationAnalysis');
+        
+        await goToAnalysisViaDemo(page);
+        await completeAssessment(page);
+
+        // Wait for the analysis screen to be visible
+        await expect(page.getByRole('heading', { name: /פרופיל מוטיבציה/i })).toBeVisible({ timeout: 10000 });
+
+        const generatingIndicator = page.getByText('מייצר...', { exact: true }).or(page.getByText('Generating...', { exact: true }));
+        
+        // Ensure the spinner disappears, proving the fetch resolved or rejected and didn't get stuck forever
+        await expect(generatingIndicator.first()).toBeHidden({ timeout: 40000 });
+        
+        // Verify we got a result (either Personalized or Static fallback)
+        const badge = page.getByText('מותאם', { exact: true }).or(page.getByText('סטטי', { exact: true })).or(page.getByText('Personalized', { exact: true })).or(page.getByText('Static', { exact: true }));
+        await expect(badge.first()).toBeVisible({ timeout: 10000 });
     });
 });

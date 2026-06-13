@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useReducer, lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { QUESTIONS, TRANSLATIONS, COLORS, APP_ID, WEBHOOK_URL } from './constants';
 import WelcomeView from './views/WelcomeView';
@@ -9,6 +9,8 @@ import CategoryIntroCard from './components/CategoryIntroCard';
 import AppHeader from './components/AppHeader';
 import AdminFeedbackPanel from './components/AdminFeedbackPanel';
 import { Language, FormData, Answers, Results, CategoryKey, UserRole } from './types';
+import { calculateScores, isLow } from './motivationCalculator';
+import { transition, initialAssessmentState } from './assessmentEngine';
 import { signInWithGoogle, onAuthStateChange, signInWithEmail, signUpWithEmail, sendPasswordReset } from './authUtils';
 
 const TermsView = lazy(() => import('./views/legal/TermsView'));
@@ -60,14 +62,12 @@ const clearSavedProgress = () => {
 const App = () => {
   const [lang, setLang] = useState<Language>(readSavedLang);
   const [step, setStep] = useState<Step>('welcome');
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [assessmentState, dispatchAssessment] = useReducer(transition, initialAssessmentState);
+  const [analysisAnswers, setAnalysisAnswers] = useState<Answers>({});
   const [formData, setFormData] = useState<FormData>({ employeeName: '', employeeEmail: '', managerName: '', managerEmail: '' });
   const [userRole, setUserRoleState] = useState<UserRole>(readSavedRole);
-  const [answers, setAnswers] = useState<Answers>({});
   const [results, setResults] = useState<Results | null>(null);
   const [statusMsg, setStatusMsg] = useState('');
-  const [categoryIntro, setCategoryIntro] = useState<CategoryKey | null>(null);
-  const [pendingNextIndex, setPendingNextIndex] = useState<number>(0);
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSuccess, setAuthSuccess] = useState<string | null>(null);
   const [hasSavedProgress, setHasSavedProgress] = useState<boolean>(() => readSavedProgress() !== null);
@@ -90,11 +90,16 @@ const App = () => {
   // Persist in-flight progress on every answer change (only while taking the assessment)
   useEffect(() => {
     if (step !== 'assessment') return;
+    if (assessmentState.type === 'complete') return;
+    const answers = assessmentState.answers;
     if (Object.keys(answers).length === 0) return;
+    const currentQuestionIndex = assessmentState.type === 'answering'
+      ? assessmentState.currentQuestionIndex
+      : assessmentState.pendingIndex;
     const payload: SavedProgress = { formData, userRole, lang, answers, currentQuestionIndex };
     try { localStorage.setItem(LS_PROGRESS, JSON.stringify(payload)); } catch { /* noop */ }
     setHasSavedProgress(true);
-  }, [answers, currentQuestionIndex, step, formData, userRole, lang]);
+  }, [assessmentState, step, formData, userRole, lang]);
 
   // Sync authenticated user data into formData and advance step if returning from redirect
   useEffect(() => {
@@ -252,23 +257,14 @@ const App = () => {
 
   const handleReset = () => {
     setStep(isAuthenticated ? 'role-select' : 'welcome');
-    setAnswers({});
     setResults(null);
-    setCurrentQuestionIndex(0);
-    setCategoryIntro(null);
-    setPendingNextIndex(0);
     setFormData(prev => ({ ...prev, managerName: '', managerEmail: '' }));
     clearSavedProgress();
     setHasSavedProgress(false);
     // Preserve userRole and lang — those are the user's preferences, not assessment data.
   };
 
-  const handleCategoryReady = () => {
-    setCategoryIntro(null);
-    setCurrentQuestionIndex(pendingNextIndex);
-  };
-
-  const handleStart = (e?: React.FormEvent | React.MouseEvent) => {
+const handleStart = (e?: React.FormEvent | React.MouseEvent) => {
     if (e) e.preventDefault();
     setAuthError(null);
     setAuthSuccess(null);
@@ -277,9 +273,7 @@ const App = () => {
   };
 
   const handleRoleConfirm = () => {
-    setCurrentQuestionIndex(0);
-    setAnswers({});
-    setCategoryIntro('autonomy');
+    dispatchAssessment({ type: 'START' });
     setStep('assessment');
   };
 
@@ -290,8 +284,7 @@ const App = () => {
     setFormData(p.formData);
     setUserRole(p.userRole);
     setLang(p.lang);
-    setAnswers(p.answers);
-    setCurrentQuestionIndex(p.currentQuestionIndex);
+    dispatchAssessment({ type: 'RESUME', currentQuestionIndex: p.currentQuestionIndex, answers: p.answers });
     setStep('assessment');
   };
 
@@ -300,25 +293,10 @@ const App = () => {
     setHasSavedProgress(false);
   };
 
-  const calculateResults = (inputAnswers: Answers | null = null) => {
-    const data = inputAnswers || answers;
-    const cats: Record<CategoryKey, number> = { autonomy: 0, competence: 0, relatedness: 0 };
-    const counts: Record<CategoryKey, number> = { autonomy: 0, competence: 0, relatedness: 0 };
-
-    QUESTIONS.forEach(q => {
-      const val = data[q.id] || 3;
-      cats[q.category] += (q.weight === 1 ? val : 6 - val);
-      counts[q.category]++;
-    });
-
-    const final: Partial<Results> = {};
-    Object.keys(COLORS).forEach(k => {
-      const key = k as CategoryKey;
-      final[key] = (cats[key] / counts[key]).toFixed(1);
-    });
-
-    const calculatedResults = final as Results;
+  const handleAssessmentComplete = (completedAnswers: Answers) => {
+    const calculatedResults = calculateScores(completedAnswers);
     setResults(calculatedResults);
+    setAnalysisAnswers(completedAnswers);
     setStep('analysis');
 
     // Assessment complete — clear in-flight progress
@@ -328,13 +306,13 @@ const App = () => {
     // Prepare full insights data for the sheet (role-aware)
     const roleKey: 'employee' | 'manager' = userRole === 'manager' ? 'manager' : 'employee';
     const insightsSummary = (['autonomy', 'competence', 'relatedness'] as CategoryKey[]).reduce((acc, cat) => {
-      const score = parseFloat(calculatedResults[cat]);
-      const insight = t.deepAnalysis[cat][roleKey][score < 3.5 ? 'low' : 'high'];
+      const score = calculatedResults[cat];
+      const insight = t.deepAnalysis[cat][roleKey][isLow(score) ? 'low' : 'high'];
       acc[cat] = { score, analysis: insight.analysis, actions: insight.actions };
       return acc;
     }, {} as any);
 
-    syncData('submission', { answers: data, results: calculatedResults, insights: insightsSummary });
+    syncData('submission', { answers: completedAnswers, results: calculatedResults, insights: insightsSummary });
   };
 
   const handleDemo = (type: 'high' | 'mid' | 'at-risk') => {
@@ -345,8 +323,7 @@ const App = () => {
       else if (type === 'at-risk') demo[q.id] = q.weight === 1 ? 1 : 5;
       else demo[q.id] = 3;
     });
-    setAnswers(demo);
-    calculateResults(demo);
+    handleAssessmentComplete(demo);
   };
 
   const copyToClipboard = (text: string) => {
@@ -380,11 +357,9 @@ const App = () => {
 
     (['autonomy', 'competence', 'relatedness'] as CategoryKey[]).forEach(cat => {
       const score = results[cat];
-      const scoreNum = parseFloat(score);
-      const isLow = scoreNum < 3.5;
-      const data = t.deepAnalysis[cat][roleKey][isLow ? 'low' : 'high'];
+      const data = t.deepAnalysis[cat][roleKey][isLow(score) ? 'low' : 'high'];
 
-      text += `💠 ${t.categories[cat].toUpperCase()} (${score}/5.0)\n`;
+      text += `💠 ${t.categories[cat].toUpperCase()} (${score.toFixed(1)}/5.0)\n`;
       text += `-------------------------------\n`;
       text += `   • ${labels.analysis}: ${data.analysis}\n`;
       text += `   • ${labels.actions}: ${data.actions.join(', ')}\n`;
@@ -404,29 +379,20 @@ const App = () => {
   };
 
   const handleAnswer = (questionId: number, value: number) => {
-    const newAnswers = { ...answers, [questionId]: value };
-    setAnswers(newAnswers);
-    const nextIndex = currentQuestionIndex + 1;
-    if (nextIndex < QUESTIONS.length) {
-      const currentCat = QUESTIONS[currentQuestionIndex].category;
-      const nextCat = QUESTIONS[nextIndex].category;
-      if (nextCat !== currentCat) {
-        setPendingNextIndex(nextIndex);
-        setCategoryIntro(nextCat);
-      } else {
-        setCurrentQuestionIndex(nextIndex);
-      }
-    } else {
-      calculateResults(newAnswers);
+    const event = { type: 'ANSWER_QUESTION' as const, questionId, value };
+    const nextState = transition(assessmentState, event);
+    dispatchAssessment(event);
+    if (nextState.type === 'complete') {
+      handleAssessmentComplete(nextState.answers);
     }
   };
 
   const handleBack = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(i => i - 1);
-    } else {
+    if (assessmentState.type === 'answering' && assessmentState.currentQuestionIndex === 0) {
       setStep('role-select');
+      return;
     }
+    dispatchAssessment({ type: 'BACK' });
   };
 
   const handleRetakeReminder = () => {
@@ -490,22 +456,22 @@ const App = () => {
           onBack={() => setStep('welcome')}
         />
       )}
-      {step === 'assessment' && categoryIntro && (
+      {step === 'assessment' && assessmentState.type === 'categoryIntro' && (
         <CategoryIntroCard
-          category={categoryIntro}
+          category={assessmentState.showingIntroFor}
           t={t}
           lang={lang}
-          sectionNumber={categoryIntro === 'competence' ? 2 : 3}
-          onReady={handleCategoryReady}
+          sectionNumber={assessmentState.showingIntroFor === 'competence' ? 2 : 3}
+          onReady={() => dispatchAssessment({ type: 'CATEGORY_INTRO_READY' })}
         />
       )}
-      {step === 'assessment' && !categoryIntro && (
+      {step === 'assessment' && assessmentState.type === 'answering' && (
         <AssessmentView
           t={t}
           lang={lang}
           setLang={setLang}
-          currentQuestionIndex={currentQuestionIndex}
-          answers={answers}
+          currentQuestionIndex={assessmentState.currentQuestionIndex}
+          answers={assessmentState.answers}
           onAnswer={handleAnswer}
           onBack={handleBack}
         />
@@ -524,7 +490,7 @@ const App = () => {
           onRetakeReminder={handleRetakeReminder}
           statusMsg={statusMsg}
           onSocialClick={handleSocialClick}
-          answers={answers}
+          answers={analysisAnswers}
         />
       )}
 

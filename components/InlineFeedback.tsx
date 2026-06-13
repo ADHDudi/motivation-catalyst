@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Zap, Send, Gift, Sparkles } from 'lucide-react';
 import { saveFeedback } from '../firestoreUtils';
 import { Results } from '../types';
+import { getPriorityCategory } from '../motivationCalculator';
 
 interface InlineFeedbackProps {
   source: string;
@@ -26,16 +27,10 @@ const InlineFeedback: React.FC<InlineFeedbackProps> = ({
 
   const getRewardTip = () => {
     if (results) {
-      const scores = [
-        { cat: 'Autonomy', val: parseFloat(results.autonomy) },
-        { cat: 'Competence', val: parseFloat(results.competence) },
-        { cat: 'Relatedness', val: parseFloat(results.relatedness) }
-      ];
-      scores.sort((a, b) => a.val - b.val);
-      const lowest = scores[0].cat;
-      if (lowest === 'Autonomy') return lang === 'he' ? "טיפ בונוס: נסו להגדיר שעות 'ללא הפרעות' ביומן כדי להחזיר לעצמכם תחושת שליטה." : "Bonus Tip: Try blocking out 'do not disturb' hours in your calendar to regain a sense of control.";
-      if (lowest === 'Competence') return lang === 'he' ? "טיפ בונוס: בקשו משוב ספציפי על פרויקט אחד השבוע כדי לחזק את תחושת המסוגלות." : "Bonus Tip: Ask for specific feedback on one project this week to boost your sense of mastery.";
-      if (lowest === 'Relatedness') return lang === 'he' ? "טיפ בונוס: קבעו הפסקת קפה קצרה עם קולגה רק כדי לקשקש ולא על עבודה." : "Bonus Tip: Schedule a short coffee break with a colleague just to chat, no work talk.";
+      const lowest = getPriorityCategory(results);
+      if (lowest === 'autonomy') return lang === 'he' ? "טיפ בונוס: נסו להגדיר שעות 'ללא הפרעות' ביומן כדי להחזיר לעצמכם תחושת שליטה." : "Bonus Tip: Try blocking out 'do not disturb' hours in your calendar to regain a sense of control.";
+      if (lowest === 'competence') return lang === 'he' ? "טיפ בונוס: בקשו משוב ספציפי על פרויקט אחד השבוע כדי לחזק את תחושת המסוגלות." : "Bonus Tip: Ask for specific feedback on one project this week to boost your sense of mastery.";
+      if (lowest === 'relatedness') return lang === 'he' ? "טיפ בונוס: קבעו הפסקת קפה קצרה עם קולגה רק כדי לקשקש ולא על עבודה." : "Bonus Tip: Schedule a short coffee break with a colleague just to chat, no work talk.";
     }
     return lang === 'he' ? "טיפ בונוס: פצלו משימות גדולות לפרקי זמן של 25 דקות כדי לשמור על מיקוד ואנרגיה!" : "Bonus Tip: Break large tasks into 25-minute sprints to maintain focus and energy!";
   };

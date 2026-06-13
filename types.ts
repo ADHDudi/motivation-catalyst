@@ -188,7 +188,7 @@ export interface FormData {
 
 export type Answers = Record<number, number>;
 
-export type Results = Record<CategoryKey, string>;
+export type Results = Record<CategoryKey, number>;
 
 export interface MotivationAnalysisResult {
   autonomy: { analysis: string; tip: string; adhd_tip?: string };

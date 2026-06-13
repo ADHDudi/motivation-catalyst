@@ -52,7 +52,7 @@ const ResultPolarChart: React.FC<ResultPolarChartProps> = ({ scores, t }) => {
           
           {/* Background and Foreground Wedges */}
           {cats.map(cat => {
-            const scoreValue = parseFloat(scores[cat.key]);
+            const scoreValue = scores[cat.key];
             // Draw 5 discrete background blocks
             const blocks = [];
             for (let level = 1; level <= 5; level++) {
@@ -118,7 +118,7 @@ const ResultPolarChart: React.FC<ResultPolarChartProps> = ({ scores, t }) => {
           {/* Outer Category Labels */}
           {cats.map(cat => {
             const midLabel = getCoords((cat.start + cat.end) / 2, maxRadius + 30);
-            const scoreValue = parseFloat(scores[cat.key]);
+            const scoreValue = scores[cat.key];
             const catName = t.categories[cat.key];
             const showEnglish = t.dir === 'rtl';
 
@@ -185,7 +185,7 @@ const ResultPolarChart: React.FC<ResultPolarChartProps> = ({ scores, t }) => {
       {/* Mobile numeric summary row — at-a-glance scores below the chart */}
       <div className="flex md:hidden gap-3 mt-8 w-full max-w-sm flex-wrap justify-center" dir="ltr">
         {cats.map(cat => {
-          const v = parseFloat(scores[cat.key]).toFixed(1);
+          const v = scores[cat.key].toFixed(1);
           return (
             <div
               key={`pill-${cat.key}`}

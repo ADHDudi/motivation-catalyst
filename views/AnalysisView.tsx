@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import ResultPolarChart from '../components/ResultPolarChart';
 import { TranslationData, Results, Language, CategoryKey, UserRole } from '../types';
 import { COLORS } from '../constants';
+import { isLow, getPriorityCategory } from '../motivationCalculator';
 import InlineFeedback from '../components/InlineFeedback';
 
 /* ───────── props ───────── */
@@ -103,7 +104,7 @@ const AdhdTipToggle: React.FC<AdhdTipProps> = ({ tip, lang }) => {
 
 interface CategoryTabContentProps {
   categoryKey: CategoryKey;
-  score: string;
+  score: number;
   roleKey: 'employee' | 'manager';
   t: TranslationData;
   lang: Language;
@@ -117,9 +118,7 @@ const CategoryTabContent: React.FC<CategoryTabContentProps> = ({
   categoryKey, score, roleKey, t, lang,
   aiTip, adhdTip, isLoadingAI, aiError
 }) => {
-  const scoreVal = parseFloat(score);
-  const isLow = scoreVal < 3.5;
-  const data = t.deepAnalysis[categoryKey][roleKey][isLow ? 'low' : 'high'];
+  const data = t.deepAnalysis[categoryKey][roleKey][isLow(score) ? 'low' : 'high'];
   const color = COLORS[categoryKey].hex;
   const displayTip = aiTip || data.aiTips;
   const isDynamic = !!aiTip;
@@ -132,14 +131,14 @@ const CategoryTabContent: React.FC<CategoryTabContentProps> = ({
           className="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg"
           style={{ backgroundColor: color }}
         >
-          {scoreVal.toFixed(1)}
+          {score.toFixed(1)}
         </div>
         <div className="flex-1">
           <h3 className="font-black text-lg" style={{ color: 'var(--b2c-deep)' }}>
             {t.categories[categoryKey]}
           </h3>
           <p className="text-xs font-bold text-slate-400 mt-0.5">
-            {isLow
+            {isLow(score)
               ? (lang === 'he' ? 'דורש תשומת לב' : 'Needs attention')
               : (lang === 'he' ? 'חזק' : 'Strong')}
           </p>
@@ -155,7 +154,7 @@ const CategoryTabContent: React.FC<CategoryTabContentProps> = ({
         <ul className="space-y-2">
           {data.actions.map((action, idx) => (
             <li key={idx} className="flex gap-2 text-xs font-medium text-slate-600">
-              {isLow
+              {isLow(score)
                 ? <AlertCircle size={14} className="shrink-0 text-amber-500" />
                 : <CheckCircle2 size={14} className="shrink-0 text-emerald-500" />}
               {action}
@@ -265,9 +264,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
   /* ── Tab state ── */
   const weakestCategory = useMemo<CategoryKey>(() => {
     if (!results) return 'autonomy';
-    const scores = CATEGORY_TABS.map(c => ({ key: c, val: parseFloat(results[c]) }));
-    scores.sort((a, b) => a.val - b.val);
-    return scores[0].key;
+    return getPriorityCategory(results);
   }, [results]);
 
   const [activeTab, setActiveTab] = useState<TabKey>(weakestCategory);
@@ -308,21 +305,25 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
   }, [handleSwipe]);
 
   /* ── AI fetch ── */
-  const aiRequestRef = useRef<string | null>(null);
+  const lastFetchedSignature = useRef<string | null>(null);
 
   useEffect(() => {
-    let isCancelled = false;
+    // Only proceed if answers are complete
+    if (Object.keys(answers).length !== 18) return;
 
     const fetchAIInsights = async () => {
-      if (!results) return;
-      if (aiInsights && lastAiLang === lang) return;
-
       const requestSignature = `${lang}-${JSON.stringify(answers)}`;
-      if (aiRequestRef.current === requestSignature) return;
-      aiRequestRef.current = requestSignature;
+      
+      // If we already successfully fetched this exact signature, skip
+      if (aiInsights && lastAiLang === lang && lastFetchedSignature.current === requestSignature) return;
 
+      // If a request for this signature is already in flight, skip
+      if (lastFetchedSignature.current === requestSignature) return;
+
+      lastFetchedSignature.current = requestSignature;
       setIsLoadingAI(true);
       setAiError(null);
+
       try {
         const responses = QUESTIONS.map(q => ({
           id: q.id,
@@ -331,7 +332,6 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
           category: q.category
         }));
 
-        // Race against a 90s timeout so the spinner never gets stuck
         const timeoutPromise = new Promise<never>((_, reject) =>
           setTimeout(() => reject(new Error('AI request timed out')), 90000)
         );
@@ -346,29 +346,26 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
           timeoutPromise
         ]);
 
-        if (!isCancelled) {
+        // Only update state if this is still the most recent request
+        if (lastFetchedSignature.current === requestSignature) {
           setAiInsights(analysis);
           setLastAiLang(lang);
         }
-      } catch (e) {
-        if (!isCancelled) {
-          console.warn('Failed to generate AI insights', e);
-          setAiError(e instanceof Error ? e.message : String(e));
-          aiRequestRef.current = null; // allow retry
+      } catch (err) {
+        if (lastFetchedSignature.current === requestSignature) {
+          console.error('Error generating AI analysis:', err);
+          setAiError(err instanceof Error ? err.message : String(err));
+          lastFetchedSignature.current = null;
         }
       } finally {
-        if (!isCancelled) {
+        if (lastFetchedSignature.current === requestSignature) {
           setIsLoadingAI(false);
         }
       }
     };
 
     fetchAIInsights();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [results, lang, answers, formData, aiInsights]);
+  }, [results, lang, answers, formData]); // Note: removed aiInsights and lastAiLang from dependencies to prevent infinite loops
 
   /* ── early return ── */
   if (!results) return null;

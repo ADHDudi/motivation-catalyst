@@ -5,11 +5,12 @@ const LOCAL_URL = 'http://localhost:5188';
 
 export default defineConfig({
     testDir: './tests',
+    testIgnore: ['**/unit/**'],
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
     workers: process.env.CI ? 1 : undefined,
-    reporter: 'html',
+    reporter: [['html', { open: 'always' }]],
     use: {
         // Default to localhost for local testing, Firebase URL for CI
         baseURL: process.env.BASE_URL || (process.env.CI ? FIREBASE_URL : LOCAL_URL),
