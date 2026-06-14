@@ -87,7 +87,7 @@ npm run build
 
 echo "⚙️  Preparing functions..."
 cd functions
-npm install --cache ../.npm-local-cache --silent
+npm install --cache ../.npm-local-cache
 echo "🛠️  Building functions..."
 npm run build
 cd ..
