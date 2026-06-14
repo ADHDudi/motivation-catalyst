@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { firebaseConfig } from './firebaseConfig';
+import { FirebaseServiceProvider } from './services/ServiceContext';
+import { firebaseAuthService, firebaseFeedbackRepo, firebaseAnalysisService } from './services/firebaseAdapters';
 
 // Initialize Firebase for localhost development
 // In production, Firebase Hosting provides credentials via /__/firebase/init.js
@@ -21,7 +23,13 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <FirebaseServiceProvider
+        auth={firebaseAuthService}
+        feedbackRepo={firebaseFeedbackRepo}
+        analysis={firebaseAnalysisService}
+      >
+        <App />
+      </FirebaseServiceProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

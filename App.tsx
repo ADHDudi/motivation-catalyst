@@ -11,7 +11,7 @@ import AdminFeedbackPanel from './components/AdminFeedbackPanel';
 import { Language, FormData, Answers, Results, CategoryKey, UserRole } from './types';
 import { calculateScores, isLow } from './motivationCalculator';
 import { transition, initialAssessmentState } from './assessmentEngine';
-import { signInWithGoogle, onAuthStateChange, signInWithEmail, signUpWithEmail, sendPasswordReset } from './authUtils';
+import { useAuthService } from './services/ServiceContext';
 
 const TermsView = lazy(() => import('./views/legal/TermsView'));
 const PrivacyView = lazy(() => import('./views/legal/PrivacyView'));
@@ -60,6 +60,7 @@ const clearSavedProgress = () => {
 };
 
 const App = () => {
+  const authService = useAuthService();
   const [lang, setLang] = useState<Language>(readSavedLang);
   const [step, setStep] = useState<Step>('welcome');
   const [assessmentState, dispatchAssessment] = useReducer(transition, initialAssessmentState);
@@ -103,7 +104,7 @@ const App = () => {
 
   // Sync authenticated user data into formData and advance step if returning from redirect
   useEffect(() => {
-    const unsubscribe = onAuthStateChange((user) => {
+    const unsubscribe = authService.onAuthStateChange((user) => {
       if (user) {
         setIsAuthenticated(true);
         setCurrentUser(user);
@@ -149,7 +150,7 @@ const App = () => {
     setAuthError(null);
     setAuthSuccess(null);
     try {
-      const user = await signInWithGoogle();
+      const user = await authService.signInWithGoogle();
       advanceToRoleSelect(user);
     } catch (error: any) {
       const code = error?.code || '';
@@ -167,7 +168,7 @@ const App = () => {
     setAuthError(null);
     setAuthSuccess(null);
     try {
-      const user = await signInWithEmail(email, password);
+      const user = await authService.signInWithEmail(email, password);
       advanceToRoleSelect(user);
     } catch (error: any) {
       const code = error?.code || '';
@@ -189,7 +190,7 @@ const App = () => {
     setAuthError(null);
     setAuthSuccess(null);
     try {
-      const user = await signUpWithEmail(email, password);
+      const user = await authService.signUpWithEmail(email, password);
       advanceToRoleSelect(user);
     } catch (error: any) {
       const code = error?.code || '';
@@ -211,7 +212,7 @@ const App = () => {
     setAuthError(null);
     setAuthSuccess(null);
     try {
-      await sendPasswordReset(email);
+      await authService.sendPasswordReset(email);
       setAuthSuccess(lang === 'he' ? 'קישור לאיפוס סיסמה נשלח לאימייל שלך' : 'Password reset link sent — check your inbox');
     } catch (error: any) {
       const code = error?.code || '';
