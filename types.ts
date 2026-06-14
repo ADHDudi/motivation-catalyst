@@ -1,5 +1,6 @@
 export type Language = 'he' | 'en';
 export type CategoryKey = 'autonomy' | 'competence' | 'relatedness';
+export type UserRole = 'solo' | 'manager';
 
 declare global {
   interface Window {
@@ -8,10 +9,24 @@ declare global {
 }
 
 export interface FeedbackData {
-  rating: number; // 1 for thumbs down, 5 for thumbs up (or boolean, but user asked for "option to use this feedback")
+  rating: number; // 1 for thumbs down, 5 for thumbs up
   comment: string;
   timestamp: any; // Firestore timestamp
   results: Results;
+  isRead?: boolean; // Ensure old code matches db update
+}
+
+export interface UserFeedback {
+  id: string;
+  userId?: string | null;
+  userEmail?: string | null;
+  userName?: string | null;
+  feedbackText: string;
+  rating?: number;
+  source: string;
+  sessionId?: string | null;
+  read: boolean;
+  createdAt: any; // Firestore Timestamp
 }
 
 export interface LocalizedText {
@@ -100,6 +115,44 @@ export interface TranslationData {
   conversationTitle: string;
   conversationIntro: string;
   followMe: string;
+  categoryIntroBtn: string;
+  categoryIntroLabel: string;
+  categoryIntroDesc: Record<CategoryKey, string>;
+  // Phase 1: rating labels (mobile pills)
+  rating1Label: string;
+  rating2Label: string;
+  rating3Label: string;
+  rating4Label: string;
+  rating5Label: string;
+  // Phase 1: role selector
+  roleSelectGreeting: string;
+  roleSelectIntro: string;
+  roleSolo: string;
+  roleSoloDesc: string;
+  roleManager: string;
+  roleManagerDesc: string;
+  roleSelectCta: string;
+  roleSelectContinueAs: string;
+  // Phase 1: resume banner
+  resumeBannerTitle: string;
+  resumeBannerText: string;
+  resumeContinue: string;
+  resumeStartFresh: string;
+  // Phase 1: what's next strip
+  whatsNextTitle: string;
+  whatsNextCopyTitle: string;
+  whatsNextCopyDesc: string;
+  whatsNextShareTitle: string;
+  whatsNextShareDesc: string;
+  whatsNextRetakeTitle: string;
+  whatsNextRetakeDesc: string;
+  whatsNextRetakeSubject: string;
+  whatsNextRetakeBody: string;
+  // Phase 1: role labels on analysis screen
+  roleSoloLabel: string;
+  roleManagerLabel: string;
+  // Phase 1: share
+  shareIntroLine: string;
   categories: Record<CategoryKey, string>;
   deepAnalysis: Record<CategoryKey, DeepAnalysisCategory>;
   conversationTips: {
@@ -135,7 +188,7 @@ export interface FormData {
 
 export type Answers = Record<number, number>;
 
-export type Results = Record<CategoryKey, string>;
+export type Results = Record<CategoryKey, number>;
 
 export interface MotivationAnalysisResult {
   autonomy: { analysis: string; tip: string; adhd_tip?: string };

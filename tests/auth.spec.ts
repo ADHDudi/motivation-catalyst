@@ -19,7 +19,7 @@ test.describe('Authentication — Welcome Screen', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
         // Wait for the app to render
-        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' })).toBeVisible({ timeout: 10000 });
+        await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible({ timeout: 10000 });
     });
 
     // ─── WELCOME SCREEN RENDER ───────────────────────────────────────────────
@@ -42,7 +42,7 @@ test.describe('Authentication — Welcome Screen', () => {
 
         // On localhost Firebase is not initialized — auth fails and error banner appears
         // The user stays on the welcome screen (no crash)
-        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' })).toBeVisible({ timeout: 5000 });
+        await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible({ timeout: 5000 });
         await expect(page.locator('[role="alert"]')).toContainText(/שגיאת|Sign in failed|Invalid|Too many|Network/i);
     });
 
@@ -60,7 +60,7 @@ test.describe('Authentication — Welcome Screen', () => {
 
         // Form has required email field — browser prevents submission
         // Welcome screen must still be visible
-        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible();
     });
 
     test('UC-AUTH-04 | Sign In fail path — invalid email format blocked by HTML5 validation', async ({ page }) => {
@@ -68,7 +68,7 @@ test.describe('Authentication — Welcome Screen', () => {
         await page.locator('button[type="submit"]').click();
 
         // Browser email validation should prevent submission
-        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible();
     });
 
     test('UC-AUTH-05 | Sign In — password field is now functional (bug fixed)', async ({ page }) => {
@@ -80,7 +80,7 @@ test.describe('Authentication — Welcome Screen', () => {
         // Error banner must appear (Firebase not initialized on localhost = auth failure)
         await expect(page.locator('[role="alert"]')).toContainText(/שגיאת|Sign in failed|Invalid|Too many|Network/i);
         // Must NOT advance to assessment
-        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible();
     });
 
     // ─── GOOGLE SIGN IN ──────────────────────────────────────────────────────
@@ -102,7 +102,7 @@ test.describe('Authentication — Welcome Screen', () => {
 
         // On localhost Firebase is not initialized — no popup will open,
         // but the page must NOT crash (welcome screen must still be visible)
-        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible();
     });
 
     // ─── SIGN UP ─────────────────────────────────────────────────────────────
@@ -146,7 +146,7 @@ test.describe('Authentication — Welcome Screen', () => {
         await page.getByRole('button', { name: 'שכחת סיסמה?' }).click();
         await page.waitForTimeout(500);
 
-        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible();
     });
 
     test('UC-AUTH-14 | Forgot Password — button shows reset form', async ({ page }) => {
@@ -186,7 +186,7 @@ test.describe('Authentication — Welcome Screen', () => {
 
         await page.getByRole('button', { name: 'עב' }).click();
         await expect(page.getByRole('button', { name: /התחבר עם גוגל/i })).toBeVisible();
-        await expect(page.getByRole('heading', { name: 'קתליזטור למוטיבציה' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible();
     });
 
     test('UC-AUTH-19 | Sign In works in English mode — auth flow triggered', async ({ page }) => {

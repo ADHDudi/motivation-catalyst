@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MessageCircle, ChevronUp } from 'lucide-react';
 import { TranslationData, Results } from '../types';
+import { isLow, getPriorityCategory } from '../motivationCalculator';
 
 interface ConversationStarterProps {
   role: 'employee' | 'manager';
@@ -12,15 +13,9 @@ const ConversationStarter: React.FC<ConversationStarterProps> = ({ role, scores,
   const [isOpen, setIsOpen] = useState(false);
   if (!scores) return null;
 
-  const getPriorityCategory = () => {
-    const sorted = Object.entries(scores).sort(([,a], [,b]) => parseFloat(a as string) - parseFloat(b as string));
-    // Check if the highest score is high enough to warrant a 'high' conversation tip
-    // If even the lowest score is high (>=3.5), then use 'high' tip
-    if (parseFloat(sorted[0][1] as string) >= 3.5) return 'high';
-    return sorted[0][0] as 'autonomy' | 'competence' | 'relatedness'; 
-  };
-
-  const category = getPriorityCategory();
+  const lowestCategory = getPriorityCategory(scores);
+  const category: 'autonomy' | 'competence' | 'relatedness' | 'high' =
+    isLow(scores[lowestCategory]) ? lowestCategory : 'high';
   // @ts-ignore - dynamic key access
   const tip = t.conversationTips[role][category];
 

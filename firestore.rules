@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /feedback/{document} {
+      allow create: if true;
+      allow read, update: if request.auth != null && request.auth.token.email == 'tsur.david@gmail.com';
+      allow delete: if false;
+    }
+  }
+}

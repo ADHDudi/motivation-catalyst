@@ -1,0 +1,90 @@
+<h2>MotivationOS — 3 Icon Directions</h2>
+<p class="subtitle">Same name & tagline, different icon personalities. Click your favourite.</p>
+
+<div class="cards">
+
+  <!-- Option A: Three Nodes / Triangle -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: linear-gradient(135deg, #8C50F0 0%, #1F7AFF 100%); padding: 36px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 18px;">
+      <div style="width:80px;height:80px;background:rgba(255,255,255,0.15);border-radius:22px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px); box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+        <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
+          <!-- Triangle with glowing nodes at corners = 3 SDT pillars -->
+          <polygon points="23,5 42,37 4,37" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linejoin="round"/>
+          <!-- Autonomy node (top) -->
+          <circle cx="23" cy="5" r="4.5" fill="white"/>
+          <!-- Competence node (right) -->
+          <circle cx="42" cy="37" r="4.5" fill="rgba(255,255,255,0.85)"/>
+          <!-- Relatedness node (left) -->
+          <circle cx="4" cy="37" r="4.5" fill="rgba(255,255,255,0.85)"/>
+          <!-- Center dot -->
+          <circle cx="23" cy="26" r="3" fill="rgba(255,255,255,0.6)"/>
+          <!-- Inner lines to center -->
+          <line x1="23" y1="9" x2="23" y2="23" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" stroke-dasharray="2,2"/>
+          <line x1="38.5" y1="35" x2="25" y2="27" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" stroke-dasharray="2,2"/>
+          <line x1="7.5" y1="35" x2="21" y2="27" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" stroke-dasharray="2,2"/>
+        </svg>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:26px;font-weight:900;color:white;letter-spacing:-0.5px;line-height:1;">MotivationOS</div>
+        <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:3.5px;margin-top:6px;">WORKPLACE INSIGHTS</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — SDT Triangle</h3>
+      <p>Three glowing nodes at each corner = Autonomy, Competence, Relatedness. Directly mirrors the app's polar chart. Conceptually precise, scientific feel.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Three Orbiting Rings -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: linear-gradient(135deg, #8C50F0 0%, #1F7AFF 100%); padding: 36px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 18px;">
+      <div style="width:80px;height:80px;background:rgba(255,255,255,0.15);border-radius:22px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px); box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+        <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
+          <!-- Three overlapping rings = the three needs intersecting -->
+          <circle cx="23" cy="17" r="10" stroke="white" stroke-width="2" fill="rgba(255,255,255,0.1)"/>
+          <circle cx="16" cy="29" r="10" stroke="rgba(255,255,255,0.75)" stroke-width="2" fill="rgba(255,255,255,0.08)"/>
+          <circle cx="30" cy="29" r="10" stroke="rgba(255,255,255,0.75)" stroke-width="2" fill="rgba(255,255,255,0.08)"/>
+          <!-- Center overlap highlight -->
+          <circle cx="23" cy="25" r="3.5" fill="rgba(255,255,255,0.9)"/>
+        </svg>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:26px;font-weight:900;color:white;letter-spacing:-0.5px;line-height:1;">MotivationOS</div>
+        <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:3.5px;margin-top:6px;">WORKPLACE INSIGHTS</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Three Rings</h3>
+      <p>Three overlapping circles = the three SDT needs in harmony. The centre glowing dot = the intersection where motivation lives. Familiar, friendly, approachable. Works well at small sizes.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Bolt / Energy Strike -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: linear-gradient(135deg, #8C50F0 0%, #1F7AFF 100%); padding: 36px 32px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 18px;">
+      <div style="width:80px;height:80px;background:rgba(255,255,255,0.15);border-radius:22px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px); box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+        <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
+          <!-- Stacked ascending bars (like the FounderFit feel) — upward momentum -->
+          <rect x="5" y="30" width="8" height="10" rx="2.5" fill="rgba(255,255,255,0.5)"/>
+          <rect x="17" y="20" width="8" height="20" rx="2.5" fill="rgba(255,255,255,0.75)"/>
+          <rect x="29" y="10" width="8" height="30" rx="2.5" fill="white"/>
+          <!-- Upward arrow on top of tallest bar -->
+          <path d="M33 7 L37 11 L35 11 L35 10 L31 10 L31 11 L29 11 Z" fill="white"/>
+          <!-- Connecting arc -->
+          <path d="M9 29 Q23 15 33 9" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" fill="none" stroke-dasharray="2,2"/>
+        </svg>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:26px;font-weight:900;color:white;letter-spacing:-0.5px;line-height:1;">MotivationOS</div>
+        <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:3.5px;margin-top:6px;">WORKPLACE INSIGHTS</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Rising Bars</h3>
+      <p>Ascending bars with an upward arrow = growth trajectory. Closest in feel to the FounderFit reference you shared. Data-driven, corporate-friendly. Signals improvement and progress.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:20px;">All three use the same violet→blue gradient and "WORKPLACE INSIGHTS" tagline. Select one and I'll refine the full lockup.</p>

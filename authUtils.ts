@@ -8,9 +8,23 @@ export const signInWithGoogle = async (): Promise<any> => {
     
     try {
         const provider = new window.firebase.auth.GoogleAuthProvider();
+        
+        // Use redirect for mobile devices to avoid popup blocker issues
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+            await window.firebase.auth().signInWithRedirect(provider);
+            return null;
+        }
+
         const result = await window.firebase.auth().signInWithPopup(provider);
         return result.user;
-    } catch (error) {
+    } catch (error: any) {
+        if (error?.code === 'auth/popup-blocked') {
+            console.warn('Popup blocked, falling back to redirect...');
+            const provider = new window.firebase.auth.GoogleAuthProvider();
+            await window.firebase.auth().signInWithRedirect(provider);
+            return null;
+        }
         console.error("Error signing in with Google", error);
         throw error;
     }
