@@ -43,9 +43,32 @@ async function completeAssessment(page: any) {
 test.describe('Motivation Catalyst — Acceptance Tests', () => {
 
     test.beforeEach(async ({ page }) => {
+        // Mock the Cloud Function response
+        await page.route('**/generateMotivationAnalysis', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    data: {
+                        autonomy: {
+                            tip: "טיפ AI מדומה לאוטונומיה",
+                            adhd_tip: "טיפ קשב מדומה לאוטונומיה"
+                        },
+                        competence: {
+                            tip: "טיפ AI מדומה למסוגלות",
+                            adhd_tip: "טיפ קשב מדומה למסוגלות"
+                        },
+                        relatedness: {
+                            tip: "טיפ AI מדומה לשייכות",
+                            adhd_tip: "טיפ קשב מדומה לשייכות"
+                        }
+                    }
+                })
+            });
+        });
+
         await page.goto('/');
-        // Wait for the welcome screen — email input is always present on the welcome screen
-        await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 10000 });
+        await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible({ timeout: 10000 });
     });
 
     // ─── ONBOARDING / SIGN IN ────────────────────────────────────────────────
@@ -53,8 +76,8 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
     test('AC-01 | Demo mode — navigates directly to analysis screen', async ({ page }) => {
         await goToAnalysisViaDemo(page);
 
-        // Confirm we left the welcome screen (email input gone)
-        await expect(page.locator('input[type="email"]')).not.toBeVisible();
+        // Confirm we left the welcome screen
+        await expect(page.getByRole('heading', { name: 'MotivationOS' })).not.toBeVisible();
         // Analysis screen should be visible
         await expect(page.getByRole('heading', { name: /פרופיל מוטיבציה/i })).toBeVisible();
     });
@@ -80,41 +103,60 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
         await goToAnalysisViaDemo(page);
         await completeAssessment(page);
 
+        // Wait for mocked AI tip to load so the DOM is stable
+        await expect(page.getByText('טיפ AI מדומה', { exact: false }).first()).toBeVisible({ timeout: 10000 });
+
+        await page.getByRole('tab', { name: /אוטונומיה|Autonomy/i }).click();
         await expect(page.getByRole('heading', { name: /אוטונומיה/i }).first()).toBeVisible({ timeout: 10000 });
+
+        await page.getByRole('tab', { name: /מסוגלות|Competence/i }).click();
         await expect(page.getByRole('heading', { name: /מסוגלות/i }).first()).toBeVisible();
+
+        await page.getByRole('tab', { name: /שייכות|Relatedness/i }).click();
         await expect(page.getByRole('heading', { name: /שייכות/i }).first()).toBeVisible();
     });
 
-    test('AC-05 | Analysis — Personal Insights section visible', async ({ page }) => {
+    test('AC-05 | Analysis — Static Analysis block visible', async ({ page }) => {
         await goToAnalysisViaDemo(page);
         await completeAssessment(page);
 
-        await expect(page.getByRole('heading', { name: /תובנות לצמיחה/i })).toBeVisible({ timeout: 10000 });
+        // Wait for mocked AI tip to load so the DOM is stable
+        await expect(page.getByText('טיפ AI מדומה', { exact: false }).first()).toBeVisible({ timeout: 10000 });
+
+        await expect(page.getByText('ניתוח', { exact: true }).or(page.getByText('Analysis', { exact: true })).first()).toBeVisible({ timeout: 10000 });
     });
 
-    test('AC-06 | Analysis — solo demo shows Personal Insights (not Manager Recommendations)', async ({ page }) => {
-        // Demo mode always uses the solo role, so only "Personal Insights" panel is shown.
-        // "Manager Recommendations" should NOT appear for solo users.
+    test('AC-06 | Analysis — AI Tip block visible', async ({ page }) => {
         await goToAnalysisViaDemo(page);
         await completeAssessment(page);
 
-        await expect(page.getByRole('heading', { name: /תובנות לצמיחה/i })).toBeVisible({ timeout: 10000 });
-        await expect(page.getByRole('heading', { name: /המלצות לניהול/i })).not.toBeVisible();
+        // Wait for mocked AI tip to load so the DOM is stable
+        await expect(page.getByText('טיפ AI מדומה', { exact: false }).first()).toBeVisible({ timeout: 10000 });
+
+        await expect(page.getByText('טיפ AI', { exact: true }).or(page.getByText('AI Tip', { exact: true })).first()).toBeVisible({ timeout: 10000 });
     });
 
-    test('AC-07 | Analysis — AI Deep Analysis section visible', async ({ page }) => {
+    test('AC-07 | Analysis — ADHD Tip toggle visible', async ({ page }) => {
         await goToAnalysisViaDemo(page);
         await completeAssessment(page);
 
-        await expect(page.getByRole('heading', { name: /ניתוח AI מעמיק/i })).toBeVisible({ timeout: 10000 });
+        // Wait for mocked AI tip to load so the DOM is stable
+        await expect(page.getByText('טיפ AI מדומה', { exact: false }).first()).toBeVisible({ timeout: 10000 });
+
+        await expect(page.getByRole('button', { name: /טיפ מותאם קשב|ADHD Focus Tip/i })).toBeVisible({ timeout: 10000 });
     });
 
-    test('AC-08 | Analysis — Copy Insights button present and clickable', async ({ page }) => {
+    test('AC-08 | Analysis — Copy Full Report button present and clickable', async ({ page }) => {
         await goToAnalysisViaDemo(page);
         await completeAssessment(page);
 
-        // The copy button in the insights section has aria-label t.copyEmployee = 'העתק תובנות'
-        const copyBtn = page.getByRole('button', { name: /העתק תובנות/i });
+        // Wait for mocked AI tip to load so the DOM is stable
+        await expect(page.getByText('טיפ AI מדומה', { exact: false }).first()).toBeVisible({ timeout: 10000 });
+
+        // Click Actions tab first
+        await page.getByRole('tab', { name: /פעולות|Actions/i }).click();
+
+        const copyBtn = page.getByRole('button', { name: /העתק/i }).first();
         await expect(copyBtn).toBeVisible({ timeout: 10000 });
         await copyBtn.scrollIntoViewIfNeeded();
         await copyBtn.click();
@@ -127,13 +169,13 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
         await goToAnalysisViaDemo(page);
         await completeAssessment(page);
 
+        // Wait for mocked AI tip to load so the DOM is stable
+        await expect(page.getByText('טיפ AI מדומה', { exact: false }).first()).toBeVisible({ timeout: 10000 });
+
         const startOverBtn = page.getByRole('button', { name: /התחל שאלון מחדש/i });
         await startOverBtn.scrollIntoViewIfNeeded();
         await startOverBtn.click();
 
-        // handleReset sets step back to 'welcome' — email input becomes visible again
-        await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 5000 });
-        // Welcome screen heading (MotivationOS) is also visible
         await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible({ timeout: 5000 });
     });
 
@@ -150,27 +192,71 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
         await goToAnalysisViaDemo(page);
         await completeAssessment(page);
 
+        // Wait for mocked AI tip to load so the DOM is stable
+        await expect(page.getByText('טיפ AI מדומה', { exact: false }).first()).toBeVisible({ timeout: 10000 });
+
         await expect(page.getByRole('heading', { name: /פרופיל מוטיבציה/i })).toBeVisible({ timeout: 10000 });
 
-        // The language toggle button in AnalysisView has aria-label="Toggle language"
         await page.getByRole('button', { name: 'Toggle language' }).click();
 
         await expect(page.getByRole('heading', { name: /Motivation Profile/i })).toBeVisible();
-        // English translation for solo-role insights panel is 'Insights' (t.userInsights)
-        await expect(page.getByRole('heading', { name: 'Insights', exact: true })).toBeVisible();
+        await expect(page.getByRole('tab', { name: /Autonomy/i })).toBeVisible();
+        await expect(page.getByText('AI Tip', { exact: true }).first()).toBeVisible();
     });
 
     test('AC-12 | Language — toggle back to Hebrew from analysis screen', async ({ page }) => {
         await goToAnalysisViaDemo(page);
         await completeAssessment(page);
 
+        // Wait for mocked AI tip to load so the DOM is stable
+        await expect(page.getByText('טיפ AI מדומה', { exact: false }).first()).toBeVisible({ timeout: 10000 });
+
         await expect(page.getByRole('heading', { name: /פרופיל מוטיבציה/i })).toBeVisible({ timeout: 10000 });
 
-        // The language toggle button in AnalysisView has aria-label="Toggle language"
         await page.getByRole('button', { name: 'Toggle language' }).click();
         await expect(page.getByRole('heading', { name: /Motivation Profile/i })).toBeVisible();
 
         await page.getByRole('button', { name: 'Toggle language' }).click();
         await expect(page.getByRole('heading', { name: /פרופיל מוטיבציה/i })).toBeVisible();
+    });
+
+    test('AC-13 | Analysis — AI Tip is personalized (not static) when calling real backend', async ({ page }) => {
+        // Remove the mocked Cloud Function route to allow the real backend request
+        await page.unroute('**/generateMotivationAnalysis');
+        
+        await goToAnalysisViaDemo(page);
+        await completeAssessment(page);
+
+        // Wait for the analysis screen to be visible
+        await expect(page.getByRole('heading', { name: /פרופיל מוטיבציה/i })).toBeVisible({ timeout: 10000 });
+
+        // Verify the "Personalized" / "מותאם" badge is visible, meaning it succeeded.
+        // We give this a generous 30s timeout because Cloud Functions might have a cold start.
+        const personalizedBadge = page.getByText('מותאם', { exact: true }).or(page.getByText('Personalized', { exact: true }));
+        await expect(personalizedBadge.first()).toBeVisible({ timeout: 30000 });
+        
+        // Ensure that the "Static" / "סטטי" badge (which shows on error) is NOT visible
+        const staticBadge = page.getByText('סטטי', { exact: true }).or(page.getByText('Static', { exact: true }));
+        await expect(staticBadge.first()).not.toBeVisible();
+    });
+
+    test('AC-14 | Analysis — Generating spinner disappears and does not get stuck', async ({ page }) => {
+        // Remove the mocked Cloud Function route to allow the real backend request
+        await page.unroute('**/generateMotivationAnalysis');
+        
+        await goToAnalysisViaDemo(page);
+        await completeAssessment(page);
+
+        // Wait for the analysis screen to be visible
+        await expect(page.getByRole('heading', { name: /פרופיל מוטיבציה/i })).toBeVisible({ timeout: 10000 });
+
+        const generatingIndicator = page.getByText('מייצר...', { exact: true }).or(page.getByText('Generating...', { exact: true }));
+        
+        // Ensure the spinner disappears, proving the fetch resolved or rejected and didn't get stuck forever
+        await expect(generatingIndicator.first()).toBeHidden({ timeout: 40000 });
+        
+        // Verify we got a result (either Personalized or Static fallback)
+        const badge = page.getByText('מותאם', { exact: true }).or(page.getByText('סטטי', { exact: true })).or(page.getByText('Personalized', { exact: true })).or(page.getByText('Static', { exact: true }));
+        await expect(badge.first()).toBeVisible({ timeout: 10000 });
     });
 });

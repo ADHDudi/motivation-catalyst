@@ -1,21 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { generateMotivationAnalysis } from '../services/geminiService';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useAnalysisService } from '../services/ServiceContext';
 import { MotivationAnalysisResult, Answers, FormData } from '../types';
 import { QUESTIONS } from '../constants';
 import {
   UserCheck, ShieldCheck, Copy, BrainCircuit, Sparkles,
-  CheckCircle2, AlertCircle, ThumbsUp, ThumbsDown,
-  Clipboard, Share2, ArrowRight, Send, TrendingUp, Target as TargetIcon,
-  Compass, Target, Users
+  CheckCircle2, AlertCircle,
+  Clipboard, Share2, BellRing, ArrowRight, Send,
+  ChevronDown, Rocket
 } from 'lucide-react';
 import Logo from '../components/Logo';
 import { Link } from 'react-router-dom';
-import ResultBarChart from '../components/ResultBarChart';
-import AccordionItem from '../components/AccordionItem';
+import ResultPolarChart from '../components/ResultPolarChart';
 import { TranslationData, Results, Language, CategoryKey, UserRole } from '../types';
 import { COLORS } from '../constants';
-import { hexToRgba, getOpacityForScore, getTextColorForScore } from '../utils';
-import { saveFeedback } from '../firestoreUtils';
+import { isLow, getPriorityCategory } from '../motivationCalculator';
+import InlineFeedback from '../components/InlineFeedback';
+
+/* ───────── props ───────── */
 
 interface AnalysisViewProps {
   t: TranslationData;
@@ -27,81 +28,206 @@ interface AnalysisViewProps {
   onReset: () => void;
   copyToClipboard: (text: string) => void;
   generateFullReportText: (variant?: 'self' | 'share') => string;
+  onRetakeReminder: () => void;
   statusMsg: string;
   onSocialClick?: (platform: string) => void;
   answers: Answers;
 }
 
-const CATEGORY_ICON: Record<CategoryKey, React.ElementType> = {
-  autonomy: Compass,
-  competence: Target,
-  relatedness: Users,
-};
+/* ───────── tab types ───────── */
 
-interface CategoryInsightProps {
-  categoryKey: CategoryKey;
-  score: string;
-  type: 'employee' | 'manager';
-  t: TranslationData;
+type TabKey = CategoryKey | 'actions';
+const CATEGORY_TABS: CategoryKey[] = ['autonomy', 'competence', 'relatedness'];
+
+/* ───────── skeleton shimmer ───────── */
+
+const SkeletonBlock: React.FC<{ lines?: number }> = ({ lines = 3 }) => (
+  <div className="space-y-3 animate-pulse">
+    {Array.from({ length: lines }).map((_, i) => (
+      <div
+        key={i}
+        className="h-3 rounded-full bg-slate-200/80"
+        style={{ width: `${85 - i * 15}%` }}
+      />
+    ))}
+  </div>
+);
+
+/* ───────── ADHD collapsible ───────── */
+
+interface AdhdTipProps {
+  tip: string;
   lang: Language;
 }
 
-const CategoryInsight: React.FC<CategoryInsightProps> = ({ categoryKey, score, type, t, lang }) => {
-  const scoreVal = parseFloat(score);
-  const isLow = scoreVal < 3.5;
-  const data = t.deepAnalysis[categoryKey][type][isLow ? 'low' : 'high'];
-
-  const opacity = getOpacityForScore(scoreVal);
-  const mainColor = COLORS[categoryKey].hex;
-  const bgColor = hexToRgba(mainColor, opacity);
-  const textColor = getTextColorForScore(scoreVal);
-  const title = `${t.categories[categoryKey]} (${score})`;
-  const Icon = CATEGORY_ICON[categoryKey];
-  const iconColor = scoreVal < 2.5 ? '#ffffff' : mainColor;
-
+const AdhdTipToggle: React.FC<AdhdTipProps> = ({ tip, lang }) => {
+  const [open, setOpen] = useState(false);
   return (
-    <AccordionItem
-      title={title}
-      style={{ backgroundColor: bgColor }}
-      defaultOpen
-      icon={<Icon size={16} strokeWidth={2.5} style={{ color: iconColor }} />}
-    >
-      <div className={`text-sm leading-relaxed mb-3 ${textColor}`}>
-        <span className="font-bold opacity-75">{lang === 'he' ? 'ניתוח:' : 'Analysis:'}</span> {data.analysis}
-      </div>
-      <ul className="space-y-2">
-        {data.actions.map((action, idx) => (
-          <li key={idx} className={`flex gap-2 text-xs font-medium ${textColor}`}>
-            {isLow ? <AlertCircle size={14} className="shrink-0 mt-0.5" /> : <CheckCircle2 size={14} className="shrink-0 mt-0.5" />}
-            <span>{action}</span>
-          </li>
-        ))}
-      </ul>
-    </AccordionItem>
+    <div className="mt-5">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-2 px-4 py-3 rounded-2xl text-xs font-extrabold uppercase tracking-wider transition-all active:scale-[0.98]"
+        style={{
+          backgroundColor: open ? 'var(--b2c-mist)' : 'transparent',
+          color: 'var(--b2c-azure)',
+          border: '1.5px dashed var(--b2c-azure)',
+          borderColor: open ? 'var(--b2c-azure)' : 'rgba(31,122,255,0.25)',
+        }}
+      >
+        <BrainCircuit size={14} />
+        {lang === 'he' ? 'טיפ מותאם קשב (ADHD)' : 'ADHD Focus Tip'}
+        <ChevronDown
+          size={14}
+          className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          style={{ marginInlineStart: 'auto' }}
+        />
+      </button>
+      {open && (
+        <div className="mt-3 animate-in slide-in-from-top-2 fade-in duration-200">
+          <p
+            className="text-sm text-slate-600 font-medium leading-relaxed bg-white p-4 rounded-2xl border shadow-sm relative overflow-hidden"
+            style={{ borderColor: 'rgba(31,122,255,0.15)' }}
+          >
+            <span
+              className="absolute top-0 left-0 w-1 h-full rounded-full"
+              style={{ backgroundColor: 'var(--b2c-azure)' }}
+            />
+            {tip}
+          </p>
+        </div>
+      )}
+    </div>
   );
 };
 
-interface AnalysisSectionProps {
-  title: string;
-  icon: React.ElementType;
-  children: React.ReactNode;
-  onCopy: () => void;
-  copyLabel: string;
+/* ───────── category tab content ───────── */
+
+interface CategoryTabContentProps {
+  categoryKey: CategoryKey;
+  score: number;
+  roleKey: 'employee' | 'manager';
+  t: TranslationData;
+  lang: Language;
+  aiTip: string | null;
+  adhdTip: string | null;
+  isLoadingAI: boolean;
+  aiError: string | null;
 }
 
-const AnalysisSection: React.FC<AnalysisSectionProps> = ({ title, icon: Icon, children, onCopy, copyLabel }) => (
-  <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-    <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
-      <h4 className="text-lg font-black flex items-center gap-2" style={{ color: 'var(--b2c-deep)' }}>
-        <Icon size={20} style={{ color: 'var(--b2c-deep)' }} /> {title}
-      </h4>
-      <button onClick={onCopy} className="p-2 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors" title={copyLabel} style={{ color: 'var(--b2c-azure)' }} aria-label={copyLabel}>
-        <Copy size={16} />
-      </button>
+const CategoryTabContent: React.FC<CategoryTabContentProps> = ({
+  categoryKey, score, roleKey, t, lang,
+  aiTip, adhdTip, isLoadingAI, aiError
+}) => {
+  const data = t.deepAnalysis[categoryKey][roleKey][isLow(score) ? 'low' : 'high'];
+  const color = COLORS[categoryKey].hex;
+  const displayTip = aiTip || data.aiTips;
+  const isDynamic = !!aiTip;
+  const [isExpanded, setIsExpanded] = useState(() => window.innerWidth >= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) setIsExpanded(true);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4 md:space-y-5">
+      {/* Score hero */}
+      <div className="flex items-center gap-4 mb-2">
+        <div
+          className="w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-white font-black text-lg md:text-xl shadow-lg shrink-0"
+          style={{ backgroundColor: color }}
+        >
+          {score.toFixed(1)}
+        </div>
+        <div className="flex-1">
+          <h3 className="font-black text-base md:text-lg" style={{ color: 'var(--b2c-deep)' }}>
+            {t.categories[categoryKey]}
+          </h3>
+          <p className="text-[11px] md:text-xs font-bold text-slate-400 mt-0.5">
+            {isLow(score)
+              ? (lang === 'he' ? 'דורש תשומת לב' : 'Needs attention')
+              : (lang === 'he' ? 'חזק' : 'Strong')}
+          </p>
+        </div>
+      </div>
+
+      {/* AI insight (merged) - Moved UP on mobile to show actionable tip immediately */}
+      <div
+        className="p-4 md:p-5 rounded-2xl border relative overflow-hidden shadow-sm"
+        style={{
+          backgroundColor: 'var(--b2c-mist)',
+          borderColor: 'rgba(31,122,255,0.12)',
+        }}
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <Sparkles size={16} style={{ color: 'var(--b2c-azure)' }} />
+          <span className="font-black text-[11px] md:text-xs uppercase tracking-wider" style={{ color: 'var(--b2c-deep)' }}>
+            {lang === 'he' ? 'טיפ AI' : 'AI Tip'}
+          </span>
+          {isLoadingAI && (
+            <span className="text-[10px] font-bold text-slate-400 animate-pulse" style={{ marginInlineStart: 'auto' }}>
+              {lang === 'he' ? 'מייצר...' : 'Generating...'}
+            </span>
+          )}
+          {!isLoadingAI && isDynamic && (
+            <span
+              className="text-[10px] px-2 py-0.5 rounded-full font-black"
+              style={{ backgroundColor: 'rgba(31,122,255,0.1)', color: 'var(--b2c-azure)', marginInlineStart: 'auto' }}
+            >
+              {lang === 'he' ? 'מותאם' : 'Personalized'}
+            </span>
+          )}
+        </div>
+
+        {isLoadingAI && !displayTip ? (
+          <SkeletonBlock lines={3} />
+        ) : (
+          <p className="text-sm text-slate-600 font-bold leading-relaxed">{displayTip}</p>
+        )}
+
+        {/* ADHD tip — collapsed toggle */}
+        {adhdTip && <AdhdTipToggle tip={adhdTip} lang={lang} />}
+      </div>
+
+      {/* Static analysis - Collapsible on Mobile */}
+      <div className="bg-slate-50/80 rounded-2xl border border-slate-100 overflow-hidden">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full flex items-center justify-between p-4 md:pointer-events-none"
+        >
+          <div className="text-[10px] uppercase tracking-widest font-black opacity-60" style={{ color: 'var(--b2c-deep)' }}>
+            {lang === 'he' ? 'ניתוח ופעולות' : 'Analysis & Actions'}
+          </div>
+          <ChevronDown 
+            size={16} 
+            className={`md:hidden text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} 
+          />
+        </button>
+        
+        {isExpanded && (
+          <div className="px-4 pb-4 md:px-5 md:pb-5 animate-in slide-in-from-top-2 fade-in duration-200 border-t border-slate-100 md:border-none md:pt-0">
+            <p className="text-[13px] md:text-sm font-medium text-slate-600 leading-relaxed mb-4">{data.analysis}</p>
+            <ul className="space-y-2">
+              {data.actions.map((action, idx) => (
+                <li key={idx} className="flex gap-2.5 text-[13px] md:text-xs font-bold text-slate-600 leading-snug">
+                  {isLow(score)
+                    ? <AlertCircle size={14} className="shrink-0 text-amber-500 mt-0.5" />
+                    : <CheckCircle2 size={14} className="shrink-0 text-emerald-500 mt-0.5" />}
+                  {action}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
-    <div className="space-y-2">{children}</div>
-  </div>
-);
+  );
+};
+
+/* ───────── What's Next card ───────── */
 
 interface WhatsNextCardProps {
   title: string;
@@ -110,146 +236,108 @@ interface WhatsNextCardProps {
   accent: string;
   onClick: () => void;
   dir: 'rtl' | 'ltr';
-  variant?: 'primary' | 'secondary';
 }
 
-const WhatsNextCard: React.FC<WhatsNextCardProps> = ({ title, desc, icon: Icon, accent, onClick, dir, variant = 'secondary' }) => {
-  const isPrimary = variant === 'primary';
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`group w-full text-${dir === 'rtl' ? 'right' : 'left'} p-5 rounded-3xl border-2 shadow-sm hover:shadow-lg transition-all active:scale-[0.98] flex flex-col gap-3 ${
-        isPrimary
-          ? 'text-white border-transparent'
-          : 'bg-white border-slate-100 hover:border-slate-200'
-      }`}
-      style={isPrimary ? { backgroundColor: accent } : undefined}
-    >
-      <div className="flex items-center justify-between gap-3">
-        <div
-          className={`shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center ${isPrimary ? 'bg-white/15' : ''}`}
-          style={isPrimary ? { color: '#ffffff' } : { backgroundColor: `${accent}1A`, color: accent }}
-        >
-          <Icon size={20} strokeWidth={2.5} />
-        </div>
-        <ArrowRight
-          size={16}
-          className={`${isPrimary ? 'text-white/80 group-hover:text-white' : 'text-slate-300 group-hover:text-slate-500'} transition-colors ${dir === 'rtl' ? 'rotate-180' : ''}`}
-        />
+const WhatsNextCard: React.FC<WhatsNextCardProps> = ({ title, desc, icon: Icon, accent, onClick, dir }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`group w-full text-${dir === 'rtl' ? 'right' : 'left'} bg-white p-5 rounded-3xl border-2 border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex flex-col gap-3`}
+  >
+    <div className="flex items-center justify-between gap-3">
+      <div
+        className="shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center"
+        style={{ backgroundColor: `${accent}1A`, color: accent }}
+      >
+        <Icon size={20} strokeWidth={2.5} />
       </div>
-      <div>
-        <h5
-          className="font-black text-base leading-tight mb-1"
-          style={{ color: isPrimary ? '#ffffff' : 'var(--b2c-deep)' }}
-        >
-          {title}
-        </h5>
-        <p className={`text-xs font-bold leading-snug ${isPrimary ? 'text-white/85' : 'text-slate-500'}`}>{desc}</p>
-      </div>
-    </button>
-  );
-};
-
-// ── Profile Summary Card ──────────────────────────────────────────────────
-interface ProfileSummaryProps {
-  results: Results;
-  t: TranslationData;
-  lang: Language;
-}
-
-const ProfileSummary: React.FC<ProfileSummaryProps> = ({ results, t, lang }) => {
-  const cats: CategoryKey[] = ['autonomy', 'competence', 'relatedness'];
-  const scored = cats.map(c => ({ cat: c, score: parseFloat(results[c]) }));
-  const sorted = [...scored].sort((a, b) => b.score - a.score);
-  const strongest = sorted[0];
-  const focus = sorted[sorted.length - 1];
-  const range = strongest.score - focus.score;
-
-  const strongestName = t.categories[strongest.cat];
-  const focusName = t.categories[focus.cat];
-
-  const summaryTitle = lang === 'he' ? 'הפרופיל שלך' : 'Your Profile';
-  const strongestLabel = lang === 'he' ? 'החוזקה הבולטת' : 'Strongest area';
-  const focusLabel = lang === 'he' ? 'תחום למיקוד' : 'Focus area';
-
-  let interpretation: string;
-  if (range <= 0.5) {
-    interpretation = lang === 'he'
-      ? `הפרופיל שלך מאוזן — שלושת המרכיבים נמצאים ברמה דומה. שמרי/שמור על המומנטום.`
-      : `Your profile is balanced — all three dimensions sit at a similar level. Maintain the momentum.`;
-  } else if (range > 1.5) {
-    interpretation = lang === 'he'
-      ? `יש פער משמעותי בין החוזקות שלך לתחום למיקוד. ה${focusName} הוא הציר שישנה אצלך הכי הרבה.`
-      : `There's a clear gap between your strengths and your focus area. ${focusName} is the lever that will move you most.`;
-  } else {
-    interpretation = lang === 'he'
-      ? `יש לך בסיס טוב ב${strongestName}. השקעה בנושא ה${focusName} תאפשר לך לקפוץ קדימה.`
-      : `You have a solid base in ${strongestName}. Investing in ${focusName} will unlock your next step.`;
-  }
-
-  return (
-    <div className="mt-6 mb-2 p-6 rounded-3xl border-2 border-slate-100 bg-gradient-to-br from-white to-slate-50/60 shadow-sm">
-      <h3 className="font-black text-base flex items-center gap-2 mb-4" style={{ color: 'var(--b2c-deep)' }}>
-        <Sparkles size={18} style={{ color: 'var(--b2c-azure)' }} />
-        {summaryTitle}
-      </h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-        <div className="flex items-center justify-between bg-white px-4 py-3 rounded-2xl border border-slate-100">
-          <span className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-400">
-            <TrendingUp size={14} className="text-emerald-500" /> {strongestLabel}
-          </span>
-          <span className="font-black text-sm" style={{ color: COLORS[strongest.cat].hex }} dir="ltr">
-            {strongestName} · {strongest.score.toFixed(1)}
-          </span>
-        </div>
-        <div className="flex items-center justify-between bg-white px-4 py-3 rounded-2xl border border-slate-100">
-          <span className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-400">
-            <TargetIcon size={14} className="text-rose-500" /> {focusLabel}
-          </span>
-          <span className="font-black text-sm" style={{ color: COLORS[focus.cat].hex }} dir="ltr">
-            {focusName} · {focus.score.toFixed(1)}
-          </span>
-        </div>
-      </div>
-      <p className="text-sm font-bold leading-relaxed text-slate-600">{interpretation}</p>
+      <ArrowRight size={16} className={`text-slate-300 group-hover:text-slate-500 transition-colors ${dir === 'rtl' ? 'rotate-180' : ''}`} />
     </div>
-  );
-};
-
-// ── AI section skeleton (while loading) ───────────────────────────────────
-const AiSkeleton: React.FC = () => (
-  <>
-    {[0, 1, 2].map(i => (
-      <div key={i} className="bg-white/80 p-5 rounded-2xl border border-white shadow-sm">
-        <div className="h-4 w-32 bg-slate-200 rounded-full animate-pulse mb-3" />
-        <div className="h-3 w-full bg-slate-100 rounded-full animate-pulse mb-2" />
-        <div className="h-3 w-5/6 bg-slate-100 rounded-full animate-pulse" />
-      </div>
-    ))}
-  </>
+    <div>
+      <h5 className="font-black text-base leading-tight mb-1" style={{ color: 'var(--b2c-deep)' }}>{title}</h5>
+      <p className="text-xs text-slate-500 font-bold leading-snug">{desc}</p>
+    </div>
+  </button>
 );
+
+/* ═════════════════════════════════════════════════
+   MAIN COMPONENT
+   ═════════════════════════════════════════════════ */
 
 const AnalysisView: React.FC<AnalysisViewProps> = ({
   t, lang, setLang, userRole, formData, results, onReset,
-  copyToClipboard, generateFullReportText, statusMsg, answers
+  copyToClipboard, generateFullReportText, onRetakeReminder, statusMsg, answers
 }) => {
-  const [feedbackState, setFeedbackState] = useState<'idle' | 'commenting' | 'submitted'>('idle');
-  const [comment, setComment] = useState('');
-  const [rating, setRating] = useState<number>(0);
-
+  const analysisService = useAnalysisService();
+  /* ── AI state ── */
   const [aiInsights, setAiInsights] = useState<MotivationAnalysisResult | null>(null);
   const [lastAiLang, setLastAiLang] = useState<Language | null>(null);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchAIInsights = async () => {
-      if (!results) return;
-      if (aiInsights && lastAiLang === lang) return;
+  /* ── Tab state ── */
+  const weakestCategory = useMemo<CategoryKey>(() => {
+    if (!results) return 'autonomy';
+    return getPriorityCategory(results);
+  }, [results]);
 
+  const [activeTab, setActiveTab] = useState<TabKey>(weakestCategory);
+  const tabContentRef = useRef<HTMLDivElement>(null);
+  const tabBarRef = useRef<HTMLDivElement>(null);
+
+  /* ── swipe handling ── */
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const ALL_TABS: TabKey[] = [...CATEGORY_TABS, 'actions'];
+
+  const handleSwipe = useCallback(() => {
+    const diff = touchStartX.current - touchEndX.current;
+    const minSwipe = 50;
+    if (Math.abs(diff) < minSwipe) return;
+
+    const currentIdx = ALL_TABS.indexOf(activeTab);
+    const isRtl = t.dir === 'rtl';
+    const forward = isRtl ? diff < 0 : diff > 0;
+
+    if (forward && currentIdx < ALL_TABS.length - 1) {
+      setActiveTab(ALL_TABS[currentIdx + 1]);
+    } else if (!forward && currentIdx > 0) {
+      setActiveTab(ALL_TABS[currentIdx - 1]);
+    }
+  }, [activeTab, t.dir]);
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  }, []);
+
+  const onTouchEnd = useCallback(() => {
+    handleSwipe();
+  }, [handleSwipe]);
+
+  /* ── AI fetch ── */
+  const lastFetchedSignature = useRef<string | null>(null);
+
+  useEffect(() => {
+    // Only proceed if answers are complete
+    if (Object.keys(answers).length !== 18) return;
+
+    const fetchAIInsights = async () => {
+      const requestSignature = `${lang}-${JSON.stringify(answers)}`;
+      
+      // If we already successfully fetched this exact signature, skip
+      if (aiInsights && lastAiLang === lang && lastFetchedSignature.current === requestSignature) return;
+
+      // If a request for this signature is already in flight, skip
+      if (lastFetchedSignature.current === requestSignature) return;
+
+      lastFetchedSignature.current = requestSignature;
       setIsLoadingAI(true);
       setAiError(null);
+
       try {
         const responses = QUESTIONS.map(q => ({
           id: q.id,
@@ -258,246 +346,307 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
           category: q.category
         }));
 
-        const analysis = await generateMotivationAnalysis(
-          responses,
-          formData.employeeName,
-          formData.managerName,
-          lang
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('AI request timed out')), 90000)
         );
 
-        setAiInsights(analysis);
-        setLastAiLang(lang);
-      } catch (e) {
-        console.warn('Failed to generate AI insights', e);
-        setAiError(e instanceof Error ? e.message : String(e));
+        const analysis = await Promise.race([
+          analysisService.generateMotivationAnalysis(
+            responses,
+            formData.employeeName,
+            formData.managerName,
+            lang
+          ),
+          timeoutPromise
+        ]);
+
+        // Only update state if this is still the most recent request
+        if (lastFetchedSignature.current === requestSignature) {
+          setAiInsights(analysis);
+          setLastAiLang(lang);
+        }
+      } catch (err) {
+        if (lastFetchedSignature.current === requestSignature) {
+          console.error('Error generating AI analysis:', err);
+          setAiError(err instanceof Error ? err.message : String(err));
+          lastFetchedSignature.current = null;
+        }
       } finally {
-        setIsLoadingAI(false);
+        if (lastFetchedSignature.current === requestSignature) {
+          setIsLoadingAI(false);
+        }
       }
     };
 
     fetchAIInsights();
-  }, [results, lang, answers, formData, aiInsights]);
+  }, [results, lang, answers, formData]); // Note: removed aiInsights and lastAiLang from dependencies to prevent infinite loops
 
-  const handleThumbClick = (selectedRating: number) => {
-    setRating(selectedRating);
-    if (feedbackState === 'idle') setFeedbackState('commenting');
-  };
-
-  const handleSubmitFeedback = async () => {
-    if (!results) return;
-    try {
-      await saveFeedback({ rating, comment, timestamp: null, results });
-    } catch (e) {
-      console.error('Failed to submit feedback', e);
-    } finally {
-      setFeedbackState('submitted');
-    }
-  };
-
+  /* ── early return ── */
   if (!results) return null;
 
   const isManager = userRole === 'manager';
   const roleKey: 'employee' | 'manager' = isManager ? 'manager' : 'employee';
-  const sectionTitle = isManager ? t.managerRecs : t.userInsights;
-  const sectionIcon = isManager ? ShieldCheck : UserCheck;
-  const copyLabel = isManager ? t.copyManager : t.copyEmployee;
   const roleLabel = isManager ? t.roleManagerLabel : t.roleSoloLabel;
+  const isHe = lang === 'he';
 
-  const aiErrorBanner = lang === 'he'
-    ? 'תובנות סטטיות מוצגות — שירות ה-AI אינו זמין כעת'
-    : 'Showing static insights — AI generation is currently unavailable';
-  const feedbackPlaceholder = lang === 'he'
-    ? 'מה עבד? מה לא?'
-    : 'What worked? What didn\'t?';
+  /* ── tab labels ── */
+  const tabLabels: Record<TabKey, { label: string; icon: React.ElementType; color?: string }> = {
+    autonomy: { label: t.categories.autonomy, icon: UserCheck, color: COLORS.autonomy.hex },
+    competence: { label: t.categories.competence, icon: ShieldCheck, color: COLORS.competence.hex },
+    relatedness: { label: t.categories.relatedness, icon: Sparkles, color: COLORS.relatedness.hex },
+    actions: { label: isHe ? 'פעולות' : 'Actions', icon: Rocket },
+  };
+
+  /* ── tab indicator position ── */
+  const activeIdx = ALL_TABS.indexOf(activeTab);
 
   return (
-    <div className={`w-full max-w-4xl mx-auto bg-white md:rounded-[60px] shadow-2xl overflow-hidden text-${t.dir === 'rtl' ? 'right' : 'left'} pb-12`} dir={t.dir}>
-      <div className="p-8 md:p-12 pt-16">
-        <div className="flex justify-between items-center mb-10">
-          <button onClick={() => setLang(lang === 'he' ? 'en' : 'he')} className="bg-slate-50 p-3 rounded-2xl text-[10px] font-black transition-all active:scale-90" style={{ color: 'var(--b2c-azure)' }} aria-label="Toggle language">
+    <div
+      className={`w-full max-w-6xl mx-auto md:my-auto bg-white/95 backdrop-blur-xl md:rounded-[60px] shadow-2xl shadow-slate-200/50 overflow-hidden text-${t.dir === 'rtl' ? 'right' : 'left'} flex flex-col md:flex-row md:min-h-[85vh] animate-fade-in`}
+      dir={t.dir}
+    >
+      {/* ── LEFT PANE (Hero & Chart) ── */}
+      <div className="md:w-5/12 p-6 md:p-12 pt-12 md:pt-16 flex flex-col relative z-10 md:bg-slate-50/50 border-b md:border-b-0 md:border-e border-slate-100">
+        {/* ── Header ── */}
+        <div className="flex justify-between items-center mb-8">
+          <button
+            onClick={() => setLang(lang === 'he' ? 'en' : 'he')}
+            className="bg-slate-50 hover:bg-slate-100 p-3 rounded-2xl text-[10px] font-black transition-all active:scale-90"
+            style={{ color: 'var(--b2c-azure)' }}
+            aria-label="Toggle language"
+          >
             {lang === 'he' ? 'EN' : 'עב'}
           </button>
           <Logo size="sm" />
         </div>
 
-        <h2 className="text-4xl font-black text-center mb-2" style={{ color: 'var(--b2c-deep)' }}>{t.profileTitle}</h2>
-        <p className="text-center text-xs font-black uppercase tracking-widest text-slate-400 mb-6">{roleLabel}</p>
+        {/* ── Title ── */}
+        <h2 className="text-3xl md:text-4xl font-black text-center mb-1" style={{ color: 'var(--b2c-deep)' }}>
+          {t.profileTitle}
+        </h2>
+        <p className="text-center text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">
+          {roleLabel}
+        </p>
 
-        {/* Profile summary card — gives users the headline interpretation */}
-        <ProfileSummary results={results} t={t} lang={lang} />
+        {/* ── Polar Chart (Hero) ── */}
+        <div className="mt-2 md:mt-auto md:mb-auto">
+          <ResultPolarChart scores={results} t={t} />
+        </div>
+      </div>
 
-        {/* New horizontal bar chart */}
-        <ResultBarChart scores={results} t={t} />
-
-        {/* Single, role-branched insights panel */}
-        <div className="mt-10">
-          <AnalysisSection
-            title={sectionTitle}
-            icon={sectionIcon}
-            onCopy={() => copyToClipboard(generateFullReportText('self'))}
-            copyLabel={copyLabel}
+      {/* ── RIGHT PANE (Tabs & Content) ── */}
+      <div className="md:w-7/12 flex-1 p-6 md:p-12 md:pt-16 overflow-y-auto flex flex-col relative z-10">
+        
+        {/* ══════════ TAB BAR ══════════ */}
+        <div
+          ref={tabBarRef}
+          className="relative shrink-0"
+        >
+          {/* Tab buttons */}
+          <div
+            className="flex gap-1 bg-slate-100/80 p-1.5 rounded-2xl overflow-x-auto no-scrollbar"
+            role="tablist"
           >
-            {(['autonomy', 'competence', 'relatedness'] as CategoryKey[]).map(c => (
-              <CategoryInsight key={c} categoryKey={c} score={results[c]} type={roleKey} t={t} lang={lang} />
+            {ALL_TABS.map((tabKey, idx) => {
+              const tab = tabLabels[tabKey];
+              const isActive = activeTab === tabKey;
+              const isWeakest = tabKey === weakestCategory;
+              const TabIcon = tab.icon;
+
+              return (
+                <button
+                  key={tabKey}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveTab(tabKey)}
+                  className={`
+                    relative flex-1 min-w-0 flex items-center justify-center gap-1.5
+                    px-3 py-3 rounded-xl text-[11px] font-black uppercase tracking-wide
+                    transition-all duration-200 whitespace-nowrap
+                    ${isActive
+                      ? 'bg-white text-slate-800 shadow-md'
+                      : 'text-slate-400 hover:text-slate-600'}
+                  `}
+                  style={isActive && tab.color ? { color: tab.color } : undefined}
+                >
+                  <TabIcon size={14} className="shrink-0" />
+                  <span className="hidden sm:inline truncate">{tab.label}</span>
+                  {/* Weakest indicator pulse */}
+                  {isWeakest && !isActive && (
+                    <span
+                      className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full animate-pulse shadow-sm"
+                      style={{ backgroundColor: tab.color || 'var(--b2c-azure)' }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Dot indicator (mobile) */}
+          <div className="flex sm:hidden justify-center gap-1.5 mt-3">
+            {ALL_TABS.map((tabKey, idx) => (
+              <div
+                key={tabKey}
+                className={`h-1.5 rounded-full transition-all duration-200 ${
+                  activeTab === tabKey ? 'w-6' : 'w-1.5'
+                }`}
+                style={{
+                  backgroundColor: activeTab === tabKey
+                    ? (tabLabels[tabKey].color || 'var(--b2c-azure)')
+                    : '#E2E8F0'
+                }}
+              />
             ))}
-          </AnalysisSection>
+          </div>
         </div>
 
-        {/* AI INSIGHTS — section-level loading/error state, no per-category badges */}
-        <div className="mt-8 p-8 rounded-[40px] border-4 relative overflow-hidden" style={{ backgroundColor: 'var(--b2c-mist)', borderColor: 'var(--b2c-azure)', borderOpacity: 0.2 }}>
-          <div className="absolute top-[-10px] left-[-10px] opacity-10" style={{ color: 'var(--b2c-deep)' }}><BrainCircuit size={100} /></div>
-          <div className="flex items-center gap-4 mb-6 relative z-10">
-            <div className="p-3 bg-white rounded-2xl shadow-md" style={{ color: 'var(--b2c-azure)' }}><Sparkles size={24} /></div>
-            <h3 className="font-black text-2xl" style={{ color: 'var(--b2c-deep)' }}>{t.aiInsightsTitle}</h3>
-          </div>
-
-          {/* One-time announcement for AI insight readiness — accessible to screen readers */}
-          <div aria-live="polite" aria-atomic="true" className="sr-only">
-            {isLoadingAI
-              ? (lang === 'he' ? 'מייצר תובנות מותאמות אישית' : 'Generating personalized insights')
-              : aiInsights
-                ? (lang === 'he' ? 'התובנות מוכנות' : 'Personalized insights are ready')
-                : ''}
-          </div>
-
-          {aiError && !aiInsights && (
-            <div className="mb-4 px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold flex items-center gap-2 relative z-10">
-              <AlertCircle size={14} className="shrink-0" />
-              {aiErrorBanner}
-            </div>
+        {/* ══════════ TAB CONTENT ══════════ */}
+        <div
+          ref={tabContentRef}
+          className="mt-6 flex-1 min-h-[300px]"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
+          {/* Category Tabs */}
+          {CATEGORY_TABS.includes(activeTab as CategoryKey) && (
+            <CategoryTabContent
+              key={activeTab}
+              categoryKey={activeTab as CategoryKey}
+              score={results[activeTab as CategoryKey]}
+              roleKey={roleKey}
+              t={t}
+              lang={lang}
+              aiTip={aiInsights?.[activeTab as CategoryKey]?.tip ?? null}
+              adhdTip={aiInsights?.[activeTab as CategoryKey]?.adhd_tip ?? null}
+              isLoadingAI={isLoadingAI}
+              aiError={aiError}
+            />
           )}
 
-          <div className="space-y-6 relative z-10">
-            {isLoadingAI && !aiInsights
-              ? <AiSkeleton />
-              : (['autonomy', 'competence', 'relatedness'] as CategoryKey[]).map(cat => {
-                  const scoreVal = parseFloat(results[cat]);
-                  const staticData = t.deepAnalysis[cat][roleKey][scoreVal < 3.5 ? 'low' : 'high'];
-                  const aiTip = aiInsights ? aiInsights[cat].tip : null;
-                  const adhdTip = aiInsights?.[cat]?.adhd_tip ?? null;
-                  const displayTip = aiTip || staticData.aiTips;
-                  if (!displayTip) return null;
+          {/* Actions Tab */}
+          {activeTab === 'actions' && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-8 pb-8">
+              {/* Copy report button */}
+              <button
+                onClick={() => copyToClipboard(generateFullReportText('self'))}
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-slate-100 active:scale-[0.98] transition-all"
+              >
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--b2c-mist)', color: 'var(--b2c-azure)' }}>
+                  <Copy size={18} />
+                </div>
+                <div className={`flex-1 text-${t.dir === 'rtl' ? 'right' : 'left'}`}>
+                  <p className="font-black text-sm" style={{ color: 'var(--b2c-deep)' }}>
+                    {isManager ? t.copyManager : t.copyEmployee}
+                  </p>
+                  <p className="text-[10px] font-bold text-slate-400">
+                    {isHe ? 'העתק את כל הדוח' : 'Copy full report'}
+                  </p>
+                </div>
+              </button>
 
-                  const Icon = CATEGORY_ICON[cat];
-
-                  return (
-                    <div key={cat} className="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-white shadow-sm transition-all hover:shadow-md">
-                      <h4 className="font-black mb-2 flex items-center gap-2" style={{ color: 'var(--b2c-deep)' }}>
-                        <span
-                          className="shrink-0 w-6 h-6 rounded-lg flex items-center justify-center"
-                          style={{ backgroundColor: hexToRgba(COLORS[cat].hex, 0.12), color: COLORS[cat].hex }}
-                          aria-hidden="true"
-                        >
-                          <Icon size={14} strokeWidth={2.5} />
-                        </span>
-                        {t.categories[cat]}
-                      </h4>
-                      <p className="text-sm text-slate-600 font-bold leading-relaxed">{displayTip}</p>
-
-                      {adhdTip && (
-                        <div className="mt-4 pt-4 border-t border-slate-100">
-                          <h5 className="font-extrabold text-xs uppercase tracking-wider mb-2 flex items-center gap-1" style={{ color: 'var(--b2c-azure)' }}>
-                            <BrainCircuit size={14} />
-                            {lang === 'he' ? 'טיפ מותאם קשב (ADHD)' : 'ADHD Focus Tip'}
-                          </h5>
-                          <p className="text-sm text-slate-600 font-medium leading-relaxed bg-white p-3 rounded-xl border shadow-sm relative overflow-hidden" style={{ borderColor: 'var(--b2c-azure)', borderOpacity: 0.2 }}>
-                            <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: 'var(--b2c-azure)' }}></div>
-                            {adhdTip}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-          </div>
-        </div>
-
-        {/* WHAT'S NEXT — Share-with-team is the primary CTA */}
-        <div className="mt-10">
-          <h3 className="font-black text-xl mb-5 flex items-center gap-3" style={{ color: 'var(--b2c-deep)' }}>
-            <Sparkles size={20} style={{ color: 'var(--b2c-orange, #1F7AFF)' }} />
-            {t.whatsNextTitle}
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <WhatsNextCard
-              title={t.whatsNextShareTitle}
-              desc={t.whatsNextShareDesc}
-              icon={Share2}
-              accent="var(--b2c-azure)"
-              onClick={() => copyToClipboard(generateFullReportText('share'))}
-              dir={t.dir}
-              variant="primary"
-            />
-            <WhatsNextCard
-              title={t.whatsNextCopyTitle}
-              desc={t.whatsNextCopyDesc}
-              icon={Clipboard}
-              accent="var(--b2c-deep)"
-              onClick={() => copyToClipboard(generateFullReportText('self'))}
-              dir={t.dir}
-              variant="secondary"
-            />
-          </div>
-        </div>
-
-        {/* FEEDBACK — moved to be the closing question, above the footer */}
-        <div className="mt-12 p-8 bg-slate-50 rounded-[40px] border-2 border-dashed border-slate-200 text-center relative overflow-hidden transition-all duration-300">
-          {feedbackState === 'submitted' ? (
-            <div className="animate-in zoom-in-95">
-              <div className="p-4 bg-[#90BC6E]/10 rounded-full inline-block mb-3 text-[#90BC6E]"><CheckCircle2 size={32} /></div>
-              <p className="font-black" style={{ color: 'var(--b2c-deep)' }}>{t.feedbackThanks}</p>
-            </div>
-          ) : (
-            <>
-              <h4 className="font-black text-lg mb-6" style={{ color: 'var(--b2c-deep)' }}>{t.feedbackTitle}</h4>
-              <div className="flex justify-center gap-6 mb-6">
-                <button onClick={() => handleThumbClick(5)} className={`p-4 bg-white rounded-full shadow-sm hover:bg-[#90BC6E] hover:text-white transition-all active:scale-95 border border-slate-100 ${rating === 5 ? 'bg-[#90BC6E] text-white ring-4 ring-[#90BC6E]/30' : ''}`} aria-label="Helpful"><ThumbsUp size={24} /></button>
-                <button onClick={() => handleThumbClick(1)} className={`p-4 bg-white rounded-full shadow-sm hover:text-white transition-all active:scale-95 border border-slate-100 ${rating === 1 ? 'text-white ring-4 ring-[var(--b2c-azure)]/30' : ''}`} style={rating === 1 ? { backgroundColor: 'var(--b2c-azure)' } : {}} aria-label="Not helpful"><ThumbsDown size={24} /></button>
+              {/* What's Next */}
+              <div>
+                <h3 className="font-black text-lg mb-4 flex items-center gap-2" style={{ color: 'var(--b2c-deep)' }}>
+                  <Sparkles size={18} style={{ color: 'var(--b2c-azure)' }} />
+                  {t.whatsNextTitle}
+                </h3>
+                <div className="grid grid-cols-1 gap-3">
+                  <WhatsNextCard
+                    title={t.whatsNextCopyTitle}
+                    desc={t.whatsNextCopyDesc}
+                    icon={Clipboard}
+                    accent="var(--b2c-deep)"
+                    onClick={() => copyToClipboard(generateFullReportText('self'))}
+                    dir={t.dir}
+                  />
+                  <WhatsNextCard
+                    title={t.whatsNextShareTitle}
+                    desc={t.whatsNextShareDesc}
+                    icon={Share2}
+                    accent="var(--b2c-azure)"
+                    onClick={() => copyToClipboard(generateFullReportText('share'))}
+                    dir={t.dir}
+                  />
+                  <WhatsNextCard
+                    title={t.whatsNextRetakeTitle}
+                    desc={t.whatsNextRetakeDesc}
+                    icon={BellRing}
+                    accent="#90BC6E"
+                    onClick={onRetakeReminder}
+                    dir={t.dir}
+                  />
+                </div>
               </div>
 
-              {feedbackState === 'commenting' && (
-                <div className="animate-in slide-in-from-bottom-2 fade-in max-w-sm mx-auto">
-                  <textarea
-                    className="w-full p-4 rounded-2xl bg-white border border-slate-200 text-sm focus:outline-none mb-3 min-h-[80px] transition-colors"
-                    placeholder={feedbackPlaceholder}
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                  />
-                  <button onClick={handleSubmitFeedback} className="px-6 py-2 text-white rounded-full text-sm font-bold flex items-center gap-2 mx-auto transition-colors" style={{ backgroundImage: 'var(--gradient-b2c)' }}>
-                    {t.sendFeedback} <Send size={14} className={t.dir === 'rtl' ? 'rotate-180' : ''} />
-                  </button>
-                </div>
-              )}
-            </>
+              {/* Feedback */}
+              <InlineFeedback
+                source="Analysis Results"
+                lang={lang}
+                results={results}
+                userId={undefined}
+                userEmail={formData?.employeeEmail}
+                userName={formData?.employeeName}
+              />
+            </div>
           )}
         </div>
 
-        <div className="mt-20 pt-10 border-t-4 border-dashed border-slate-50 flex flex-col items-center gap-8">
+        {/* ── Footer ── */}
+        <div className="mt-8 md:mt-auto pt-8 border-t-4 border-dashed border-slate-50 flex flex-col items-center gap-6 pb-6 md:pb-0">
           {/* Powered by JustAIIt */}
-          <a href="https://justaiit.web.app/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 active:scale-95 no-underline shadow-lg" style={{ background: 'linear-gradient(135deg, #a014f0 0%, #8c50f0 28%, #5078ff 58%, #3cdcf0 100%)' }}>
-            <span className="text-xs font-black text-white uppercase tracking-widest">{lang === 'he' ? 'מונע על ידי' : 'Powered by'}</span>
-            <span className="text-sm font-black text-white tracking-tighter">Just AI It</span>
-          </a>
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              {isHe ? 'מונע על ידי' : 'Powered by'}
+            </span>
+            <a
+              href="https://justaiit.web.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-all hover:scale-105 active:scale-95 block h-10"
+              title="Just AI It"
+            >
+              <img
+                src="/justaiit-logo.svg"
+                alt="Just AI It"
+                className="h-10 w-auto opacity-90 hover:opacity-100 transition-opacity"
+              />
+            </a>
+          </div>
 
-          <button onClick={onReset} className="font-bold text-sm underline transition-colors" style={{ color: 'var(--b2c-azure)' }}>
+          <button
+            onClick={onReset}
+            className="font-bold text-sm underline transition-colors"
+            style={{ color: 'var(--b2c-azure)' }}
+          >
             {t.startOver}
           </button>
 
           {/* Legal footer */}
-          <div className="mt-8 w-full flex flex-wrap gap-4 justify-center items-center text-xs font-bold text-slate-300">
+          <div className="mt-4 w-full flex flex-wrap gap-4 justify-center items-center text-xs font-bold text-slate-300">
             <Link to="/terms" className="hover:text-[var(--b2c-azure)] transition-colors">
-              {lang === 'he' ? 'תנאי שימוש' : 'Terms of Use'}
+              {isHe ? 'תנאי שימוש' : 'Terms of Use'}
             </Link>
             <Link to="/privacy" className="hover:text-[var(--b2c-azure)] transition-colors">
-              {lang === 'he' ? 'מדיניות פרטיות' : 'Privacy Policy'}
+              {isHe ? 'מדיניות פרטיות' : 'Privacy Policy'}
             </Link>
             <Link to="/accessibility" className="hover:text-[var(--b2c-azure)] transition-colors">
-              {lang === 'he' ? 'נגישות' : 'Accessibility'}
+              {isHe ? 'נגישות' : 'Accessibility'}
             </Link>
           </div>
         </div>
       </div>
-      {statusMsg && <div className="fixed bottom-8 left-1/2 -translate-x-1/2 px-8 py-4 text-white text-sm font-black rounded-full animate-in fade-in slide-in-from-bottom-2 z-50 shadow-2xl" style={{ backgroundImage: 'var(--gradient-b2c)' }}>{String(statusMsg)}</div>}
+
+      {/* Status toast */}
+      {statusMsg && (
+        <div
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 px-8 py-4 text-white text-sm font-black rounded-full animate-in fade-in slide-in-from-bottom-2 z-50 shadow-2xl"
+          style={{ backgroundImage: 'var(--gradient-b2c)' }}
+        >
+          {String(statusMsg)}
+        </div>
+      )}
     </div>
   );
 };

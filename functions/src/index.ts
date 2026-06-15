@@ -4,7 +4,7 @@ import { GoogleGenAI, Type, Schema } from "@google/genai";
 
 // Initialize Gemini with the API key from environment
 const getAI = () => {
-    // Force redeploy comment to sync .env key
+    // Force redeploy comment to sync .env key with Firebase (updated v2)
     console.log("Initializing Gemini AI client...");
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -72,6 +72,7 @@ interface GenerateInsightsRequest {
 }
 
 export const generateInsights = onCall(
+    { timeoutSeconds: 300, memory: "512MiB" },
     async (request: CallableRequest<GenerateInsightsRequest>) => {
         const { founderAName, founderBName, allComparisonDetails, feedbackContext, lang = "en" } = request.data;
 
@@ -117,7 +118,7 @@ export const generateInsights = onCall(
     `;
 
             const response = await ai.models.generateContent({
-                model: "gemini-1.5-flash",
+                model: "gemini-2.5-flash",
                 contents: prompt,
                 config: {
                     responseMimeType: "application/json",
@@ -193,6 +194,7 @@ interface GenerateMotivationAnalysisRequest {
 }
 
 export const generateMotivationAnalysis = onCall(
+    { timeoutSeconds: 300, memory: "512MiB" },
     async (request: CallableRequest<GenerateMotivationAnalysisRequest>) => {
         const { responses, employeeName, managerName, lang = "en" } = request.data;
 
@@ -235,7 +237,7 @@ export const generateMotivationAnalysis = onCall(
             `;
 
             const response = await ai.models.generateContent({
-                model: "gemini-1.5-flash",
+                model: "gemini-2.5-flash",
                 contents: prompt,
                 config: {
                     responseMimeType: "application/json",

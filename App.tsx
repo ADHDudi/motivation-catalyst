@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useReducer, lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { QUESTIONS, TRANSLATIONS, COLORS, APP_ID, WEBHOOK_URL } from './constants';
 import WelcomeView from './views/WelcomeView';
@@ -6,8 +6,12 @@ import RoleSelectView from './views/RoleSelectView';
 import AssessmentView from './views/AssessmentView';
 import AnalysisView from './views/AnalysisView';
 import CategoryIntroCard from './components/CategoryIntroCard';
+import AppHeader from './components/AppHeader';
+import AdminFeedbackPanel from './components/AdminFeedbackPanel';
 import { Language, FormData, Answers, Results, CategoryKey, UserRole } from './types';
-import { signInWithGoogle, onAuthStateChange, signInWithEmail, signUpWithEmail, sendPasswordReset } from './authUtils';
+import { calculateScores, isLow } from './motivationCalculator';
+import { transition, initialAssessmentState } from './assessmentEngine';
+import { useAuthService } from './services/ServiceContext';
 
 const TermsView = lazy(() => import('./views/legal/TermsView'));
 const PrivacyView = lazy(() => import('./views/legal/PrivacyView'));
@@ -26,15 +30,6 @@ interface SavedProgress {
 const LS_ROLE = 'mc_role';
 const LS_LANG = 'mc_lang';
 const LS_PROGRESS = 'mc_progress';
-const LS_RESULTS = 'mc_last_results';
-
-interface SavedResults {
-  results: Results;
-  answers: Answers;
-  userRole: UserRole;
-  lang: Language;
-  savedAt: string; // ISO date string
-}
 
 const readSavedRole = (): UserRole => {
   try {
@@ -65,22 +60,21 @@ const clearSavedProgress = () => {
 };
 
 const App = () => {
+  const authService = useAuthService();
   const [lang, setLang] = useState<Language>(readSavedLang);
   const [step, setStep] = useState<Step>('welcome');
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [assessmentState, dispatchAssessment] = useReducer(transition, initialAssessmentState);
+  const [analysisAnswers, setAnalysisAnswers] = useState<Answers>({});
   const [formData, setFormData] = useState<FormData>({ employeeName: '', employeeEmail: '', managerName: '', managerEmail: '' });
   const [userRole, setUserRoleState] = useState<UserRole>(readSavedRole);
-  const [answers, setAnswers] = useState<Answers>({});
   const [results, setResults] = useState<Results | null>(null);
   const [statusMsg, setStatusMsg] = useState('');
-  const [categoryIntro, setCategoryIntro] = useState<CategoryKey | null>(null);
-  const [pendingNextIndex, setPendingNextIndex] = useState<number>(0);
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSuccess, setAuthSuccess] = useState<string | null>(null);
   const [hasSavedProgress, setHasSavedProgress] = useState<boolean>(() => readSavedProgress() !== null);
-  const [hasSavedResults, setHasSavedResults] = useState<boolean>(() => {
-    try { return !!localStorage.getItem(LS_RESULTS); } catch { return false; }
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
 
   const t = TRANSLATIONS[lang];
 
@@ -97,25 +91,45 @@ const App = () => {
   // Persist in-flight progress on every answer change (only while taking the assessment)
   useEffect(() => {
     if (step !== 'assessment') return;
+    if (assessmentState.type === 'complete') return;
+    const answers = assessmentState.answers;
     if (Object.keys(answers).length === 0) return;
+    const currentQuestionIndex = assessmentState.type === 'answering'
+      ? assessmentState.currentQuestionIndex
+      : assessmentState.pendingIndex;
     const payload: SavedProgress = { formData, userRole, lang, answers, currentQuestionIndex };
     try { localStorage.setItem(LS_PROGRESS, JSON.stringify(payload)); } catch { /* noop */ }
     setHasSavedProgress(true);
-  }, [answers, currentQuestionIndex, step, formData, userRole, lang]);
+  }, [assessmentState, step, formData, userRole, lang]);
 
-  // Sync authenticated user data into formData
+  // Sync authenticated user data into formData and advance step if returning from redirect
   useEffect(() => {
-    const unsubscribe = onAuthStateChange((user) => {
+    const unsubscribe = authService.onAuthStateChange((user) => {
       if (user) {
+        setIsAuthenticated(true);
+        setCurrentUser(user);
         setFormData(prev => ({
           ...prev,
           employeeName: user.displayName || prev.employeeName,
           employeeEmail: user.email || prev.employeeEmail,
         }));
+        // If we're on the welcome screen and auth state changes to signed-in, check for progress
+        setStep(prevStep => {
+          if (prevStep === 'welcome') {
+             // Let them stay on welcome if they have progress, so they can click "Resume"
+             // Otherwise go to role-select
+             return hasSavedProgress ? 'welcome' : 'role-select';
+          }
+          return prevStep;
+        });
+      } else {
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+        setStep('welcome'); // Force unauthenticated users to welcome screen
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [hasSavedProgress]);
 
   // --- Auth helpers ---
 
@@ -136,7 +150,7 @@ const App = () => {
     setAuthError(null);
     setAuthSuccess(null);
     try {
-      const user = await signInWithGoogle();
+      const user = await authService.signInWithGoogle();
       advanceToRoleSelect(user);
     } catch (error: any) {
       const code = error?.code || '';
@@ -154,7 +168,7 @@ const App = () => {
     setAuthError(null);
     setAuthSuccess(null);
     try {
-      const user = await signInWithEmail(email, password);
+      const user = await authService.signInWithEmail(email, password);
       advanceToRoleSelect(user);
     } catch (error: any) {
       const code = error?.code || '';
@@ -176,7 +190,7 @@ const App = () => {
     setAuthError(null);
     setAuthSuccess(null);
     try {
-      const user = await signUpWithEmail(email, password);
+      const user = await authService.signUpWithEmail(email, password);
       advanceToRoleSelect(user);
     } catch (error: any) {
       const code = error?.code || '';
@@ -198,7 +212,7 @@ const App = () => {
     setAuthError(null);
     setAuthSuccess(null);
     try {
-      await sendPasswordReset(email);
+      await authService.sendPasswordReset(email);
       setAuthSuccess(lang === 'he' ? 'קישור לאיפוס סיסמה נשלח לאימייל שלך' : 'Password reset link sent — check your inbox');
     } catch (error: any) {
       const code = error?.code || '';
@@ -243,46 +257,35 @@ const App = () => {
   // --- Logic Helpers ---
 
   const handleReset = () => {
-    setStep('welcome');
-    setAnswers({});
+    setStep(isAuthenticated ? 'role-select' : 'welcome');
     setResults(null);
-    setCurrentQuestionIndex(0);
-    setCategoryIntro(null);
-    setPendingNextIndex(0);
-    setFormData({ employeeName: '', employeeEmail: '', managerName: '', managerEmail: '' });
+    setFormData(prev => ({ ...prev, managerName: '', managerEmail: '' }));
     clearSavedProgress();
     setHasSavedProgress(false);
     // Preserve userRole and lang — those are the user's preferences, not assessment data.
   };
 
-  const handleCategoryReady = () => {
-    setCategoryIntro(null);
-    setCurrentQuestionIndex(pendingNextIndex);
-  };
-
-  const handleStart = (e: React.FormEvent) => {
-    e.preventDefault();
+const handleStart = (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
     setAuthError(null);
     setAuthSuccess(null);
-    if (!formData.employeeName) return;
+    if (!isAuthenticated && !formData.employeeName) return;
     setStep('role-select');
   };
 
   const handleRoleConfirm = () => {
-    setCurrentQuestionIndex(0);
-    setAnswers({});
-    setCategoryIntro('autonomy');
+    dispatchAssessment({ type: 'START' });
     setStep('assessment');
   };
 
   const handleResume = () => {
+    if (!isAuthenticated) return;
     const p = readSavedProgress();
     if (!p) return;
     setFormData(p.formData);
     setUserRole(p.userRole);
     setLang(p.lang);
-    setAnswers(p.answers);
-    setCurrentQuestionIndex(p.currentQuestionIndex);
+    dispatchAssessment({ type: 'RESUME', currentQuestionIndex: p.currentQuestionIndex, answers: p.answers });
     setStep('assessment');
   };
 
@@ -291,55 +294,11 @@ const App = () => {
     setHasSavedProgress(false);
   };
 
-  const handleViewLastAnalysis = () => {
-    try {
-      const raw = localStorage.getItem(LS_RESULTS);
-      if (!raw) return;
-      const saved: SavedResults = JSON.parse(raw);
-      setResults(saved.results);
-      setAnswers(saved.answers);
-      setUserRole(saved.userRole);
-      setLang(saved.lang);
-      setStep('analysis');
-    } catch {
-      // corrupted data — proceed to role-select
-      setStep('role-select');
-    }
-  };
-
-  const calculateResults = (inputAnswers: Answers | null = null) => {
-    const data = inputAnswers || answers;
-    const cats: Record<CategoryKey, number> = { autonomy: 0, competence: 0, relatedness: 0 };
-    const counts: Record<CategoryKey, number> = { autonomy: 0, competence: 0, relatedness: 0 };
-
-    QUESTIONS.forEach(q => {
-      const val = data[q.id] || 3;
-      cats[q.category] += (q.weight === 1 ? val : 6 - val);
-      counts[q.category]++;
-    });
-
-    const final: Partial<Results> = {};
-    Object.keys(COLORS).forEach(k => {
-      const key = k as CategoryKey;
-      final[key] = (cats[key] / counts[key]).toFixed(1);
-    });
-
-    const calculatedResults = final as Results;
+  const handleAssessmentComplete = (completedAnswers: Answers) => {
+    const calculatedResults = calculateScores(completedAnswers);
     setResults(calculatedResults);
+    setAnalysisAnswers(completedAnswers);
     setStep('analysis');
-
-    // Save completed results for "view last analysis" feature
-    try {
-      const toSave: SavedResults = {
-        results: calculatedResults,
-        answers: data,
-        userRole,
-        lang,
-        savedAt: new Date().toISOString(),
-      };
-      localStorage.setItem(LS_RESULTS, JSON.stringify(toSave));
-      setHasSavedResults(true);
-    } catch { /* noop */ }
 
     // Assessment complete — clear in-flight progress
     clearSavedProgress();
@@ -348,18 +307,13 @@ const App = () => {
     // Prepare full insights data for the sheet (role-aware)
     const roleKey: 'employee' | 'manager' = userRole === 'manager' ? 'manager' : 'employee';
     const insightsSummary = (['autonomy', 'competence', 'relatedness'] as CategoryKey[]).reduce((acc, cat) => {
-      const score = parseFloat(calculatedResults[cat]);
-      const insight = t.deepAnalysis[cat][roleKey][score < 3.5 ? 'low' : 'high'];
+      const score = calculatedResults[cat];
+      const insight = t.deepAnalysis[cat][roleKey][isLow(score) ? 'low' : 'high'];
       acc[cat] = { score, analysis: insight.analysis, actions: insight.actions };
       return acc;
     }, {} as any);
 
-    syncData('submission', {
-      answers: data,
-      results: calculatedResults,
-      insights: insightsSummary,
-      questionVariant: userRole === 'manager' ? 'manager' : 'employee',
-    });
+    syncData('submission', { answers: completedAnswers, results: calculatedResults, insights: insightsSummary });
   };
 
   const handleDemo = (type: 'high' | 'mid' | 'at-risk') => {
@@ -370,8 +324,7 @@ const App = () => {
       else if (type === 'at-risk') demo[q.id] = q.weight === 1 ? 1 : 5;
       else demo[q.id] = 3;
     });
-    setAnswers(demo);
-    calculateResults(demo);
+    handleAssessmentComplete(demo);
   };
 
   const copyToClipboard = (text: string) => {
@@ -388,91 +341,89 @@ const App = () => {
 
   const generateFullReportText = (variant: 'self' | 'share' = 'self') => {
     if (!results) return '';
+    let text = '';
+    if (variant === 'share') {
+      text += `${t.shareIntroLine}\n\n`;
+    }
+    text += `${t.profileTitle} - ${formData.employeeName}\n`;
+    text += `===============================\n\n`;
 
-    const isSelf = variant === 'self';
-    const isHe = lang === 'he';
-    const name = formData.employeeName || (isHe ? 'משתמש' : 'User');
+    const labels = {
+      analysis: lang === 'he' ? 'ניתוח' : 'Analysis',
+      actions: lang === 'he' ? 'פעולות מומלצות' : 'Recommended Actions',
+      aiTips: lang === 'he' ? 'טיפ AI אסטרטגי' : 'Strategic AI Tip',
+    };
 
-    // Self → personal actions the user can take (employee branch)
-    // Share → guidance for manager/team on how to work with the user (manager branch)
-    const dataKey: 'employee' | 'manager' = isSelf ? 'employee' : 'manager';
-
-    const labels = isSelf
-      ? {
-          header:   isHe ? `הפרופיל שלי — ${name}` : `My Motivation Profile — ${name}`,
-          intro:    isHe
-            ? `עשיתי אבחון מוטיבציה לפי מודל SDT. אלה התובנות שלי ומה שאני מתכנן לעשות:`
-            : `I completed an SDT motivation assessment. Here are my insights and what I plan to do:`,
-          insight:  isHe ? 'תובנה' : 'Insight',
-          actions:  isHe ? 'מה שאני יכול לעשות' : 'What I can do',
-          aiTip:    isHe ? 'טיפ AI אישי' : 'My AI tip',
-        }
-      : {
-          header:   isHe ? `הפרופיל של ${name} — איך לעבוד איתי` : `${name}'s Motivation Profile — How to work with me`,
-          intro:    isHe
-            ? `היי, עשיתי אבחון מוטיבציה לפי מודל SDT. הנה מה שיעזור לי — מה שאני מבקש מהמנהל/צוות:`
-            : `Hi, I completed an SDT motivation assessment. Here's what helps me — what I'm asking from my manager / team:`,
-          insight:  isHe ? 'ההקשר' : 'Context',
-          actions:  isHe ? 'מה שיעזור לי מהצוות / מנהל' : 'How you can support me',
-          aiTip:    isHe ? 'טיפ AI לצוות' : 'AI tip for the team',
-        };
-
-    let text = `${labels.header}\n`;
-    text += `===============================\n`;
-    text += `${labels.intro}\n\n`;
+    const roleKey: 'employee' | 'manager' = userRole === 'manager' ? 'manager' : 'employee';
 
     (['autonomy', 'competence', 'relatedness'] as CategoryKey[]).forEach(cat => {
       const score = results[cat];
-      const isLow = parseFloat(score) < 3.5;
-      const data = t.deepAnalysis[cat][dataKey][isLow ? 'low' : 'high'];
+      const data = t.deepAnalysis[cat][roleKey][isLow(score) ? 'low' : 'high'];
 
-      text += `💠 ${t.categories[cat].toUpperCase()} (${score}/5.0)\n`;
+      text += `💠 ${t.categories[cat].toUpperCase()} (${score.toFixed(1)}/5.0)\n`;
       text += `-------------------------------\n`;
-      text += `   • ${labels.insight}: ${data.analysis}\n`;
-      text += `   • ${labels.actions}: ${data.actions.join(' | ')}\n`;
+      text += `   • ${labels.analysis}: ${data.analysis}\n`;
+      text += `   • ${labels.actions}: ${data.actions.join(', ')}\n`;
       if (data.aiTips) {
-        text += `   • ${labels.aiTip}: ${data.aiTips}\n`;
+        text += `   • ${labels.aiTips}: ${data.aiTips}\n`;
       }
       text += `\n`;
     });
 
-    text += `\nGenerated via MotivationOS — https://justaiit.web.app/he#app=motivation-catalyst`;
+    const appUrl = 'https://motivation-catalyst-david.web.app';
+    const cta = lang === 'he'
+      ? `\n\n---\nגלו מה מניע אתכם בעבודה. עשו את האבחון חינם:\n${appUrl}`
+      : `\n\n---\nDiscover what drives you at work. Take the free assessment:\n${appUrl}`;
+    
+    text += cta;
     return text;
   };
 
   const handleAnswer = (questionId: number, value: number) => {
-    const newAnswers = { ...answers, [questionId]: value };
-    setAnswers(newAnswers);
-    const nextIndex = currentQuestionIndex + 1;
-    if (nextIndex < QUESTIONS.length) {
-      const currentCat = QUESTIONS[currentQuestionIndex].category;
-      const nextCat = QUESTIONS[nextIndex].category;
-      if (nextCat !== currentCat) {
-        setPendingNextIndex(nextIndex);
-        setCategoryIntro(nextCat);
-      } else {
-        setCurrentQuestionIndex(nextIndex);
-      }
-    } else {
-      calculateResults(newAnswers);
+    const event = { type: 'ANSWER_QUESTION' as const, questionId, value };
+    const nextState = transition(assessmentState, event);
+    dispatchAssessment(event);
+    if (nextState.type === 'complete') {
+      handleAssessmentComplete(nextState.answers);
     }
   };
 
   const handleBack = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(i => i - 1);
-    } else {
+    if (assessmentState.type === 'answering' && assessmentState.currentQuestionIndex === 0) {
       setStep('role-select');
+      return;
     }
+    dispatchAssessment({ type: 'BACK' });
   };
 
+  const handleRetakeReminder = () => {
+    const email = formData.employeeEmail;
+    if (!email) return;
+    const subject = encodeURIComponent(t.whatsNextRetakeSubject);
+    const body = encodeURIComponent(t.whatsNextRetakeBody);
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    syncData('interaction', { action: 'retake_reminder' });
+  };
 
   const handleSocialClick = (platform: string) => {
     syncData('interaction', { action: 'social_click', platform });
   };
 
+  const isAdmin = currentUser?.email?.toLowerCase() === 'tsur.david@gmail.com';
+
   const mainApp = (
-    <div className="min-h-screen md:py-12 md:px-6 font-sans text-slate-900 selection:bg-[#38BDF8]/30" style={{ backgroundColor: 'var(--b2c-ice)' }}>
+    <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center md:py-12 md:px-6 font-sans text-slate-900 selection:bg-[#38BDF8]/30 relative" style={{ backgroundColor: 'var(--b2c-ice)' }}>
+      {isAuthenticated && (
+        <AppHeader
+          userName={currentUser?.displayName || formData.employeeName}
+          userPhotoUrl={currentUser?.photoURL}
+          isAdmin={isAdmin}
+          onManageFeedback={() => setIsAdminPanelOpen(true)}
+          lang={lang}
+          setLang={setLang}
+        />
+      )}
+
       {step === 'welcome' && (
         <WelcomeView
           t={t}
@@ -489,10 +440,9 @@ const App = () => {
           authError={authError}
           authSuccess={authSuccess}
           hasSavedProgress={hasSavedProgress}
+          isAuthenticated={isAuthenticated}
           onResume={handleResume}
           onDiscardProgress={handleDiscardProgress}
-          hasSavedResults={hasSavedResults}
-          onViewLastAnalysis={handleViewLastAnalysis}
         />
       )}
       {step === 'role-select' && (
@@ -507,25 +457,24 @@ const App = () => {
           onBack={() => setStep('welcome')}
         />
       )}
-      {step === 'assessment' && categoryIntro && (
+      {step === 'assessment' && assessmentState.type === 'categoryIntro' && (
         <CategoryIntroCard
-          category={categoryIntro}
+          category={assessmentState.showingIntroFor}
           t={t}
           lang={lang}
-          sectionNumber={categoryIntro === 'competence' ? 2 : 3}
-          onReady={handleCategoryReady}
+          sectionNumber={assessmentState.showingIntroFor === 'competence' ? 2 : 3}
+          onReady={() => dispatchAssessment({ type: 'CATEGORY_INTRO_READY' })}
         />
       )}
-      {step === 'assessment' && !categoryIntro && (
+      {step === 'assessment' && assessmentState.type === 'answering' && (
         <AssessmentView
           t={t}
           lang={lang}
           setLang={setLang}
-          currentQuestionIndex={currentQuestionIndex}
-          answers={answers}
+          currentQuestionIndex={assessmentState.currentQuestionIndex}
+          answers={assessmentState.answers}
           onAnswer={handleAnswer}
           onBack={handleBack}
-          userRole={userRole}
         />
       )}
       {step === 'analysis' && results && (
@@ -539,11 +488,17 @@ const App = () => {
           onReset={handleReset}
           copyToClipboard={copyToClipboard}
           generateFullReportText={generateFullReportText}
+          onRetakeReminder={handleRetakeReminder}
           statusMsg={statusMsg}
           onSocialClick={handleSocialClick}
-          answers={answers}
+          answers={analysisAnswers}
         />
       )}
+
+      <AdminFeedbackPanel
+        isOpen={isAdminPanelOpen}
+        onClose={() => setIsAdminPanelOpen(false)}
+      />
     </div>
   );
 

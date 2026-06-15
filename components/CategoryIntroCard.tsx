@@ -25,7 +25,7 @@ const CategoryIntroCard: React.FC<CategoryIntroCardProps> = ({ category, t, lang
 
   return (
     <div
-      className={`w-full max-w-lg mx-auto bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[100dvh] md:h-auto text-${t.dir === 'rtl' ? 'right' : 'left'} animate-in zoom-in-95 fade-in duration-300`}
+      className={`w-full max-w-lg mx-auto md:my-auto bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[100dvh] md:h-auto text-${t.dir === 'rtl' ? 'right' : 'left'} animate-in zoom-in-95 fade-in duration-300`}
       dir={t.dir}
     >
       <div className="p-8 pt-12 bg-white">

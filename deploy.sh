@@ -50,6 +50,11 @@ rsync -av --exclude node_modules --exclude .git --exclude dist . "$DEPLOY_DIR/" 
 echo "⚙️  Building and Deploying from $DEPLOY_DIR..."
 cd "$DEPLOY_DIR"
 
+# Allow .env to be deployed by removing it from the isolated .gitignore
+if [ -f ".gitignore" ]; then
+  sed -i '' '/functions\/.env/d' .gitignore || true
+fi
+
 # Force dependency sync and local cache to avoid EPERM
 export FIREBASE_CHECK_UPDATES=false
 export XDG_CONFIG_HOME="$DEPLOY_DIR/.config"
@@ -65,13 +70,11 @@ fi
 # Inject API Key from local functions/.env file or environment variable
 if [ -n "$GEMINI_API_KEY" ]; then
   echo "GEMINI_API_KEY=$GEMINI_API_KEY" > "$DEPLOY_DIR/functions/.env"
-elif [ -f "functions/.env" ]; then
-  cat "functions/.env" > "$DEPLOY_DIR/functions/.env"
-else
-  touch "$DEPLOY_DIR/functions/.env"
+elif [ ! -f "functions/.env" ]; then
+  touch "functions/.env"
 fi
 # Check if GEMINI_API_KEY is available in functions/.env or environment
-if [ ! -f "$DEPLOY_DIR/functions/.env" ] && [ -z "$GEMINI_API_KEY" ]; then
+if [ ! -f "functions/.env" ] && [ -z "$GEMINI_API_KEY" ]; then
   echo "⚠️  WARNING: GEMINI_API_KEY not found in functions/.env or environment variables."
   echo "The deployment might fail or the function might not work correctly."
 fi
@@ -84,7 +87,7 @@ npm run build
 
 echo "⚙️  Preparing functions..."
 cd functions
-npm install --cache ../.npm-local-cache --silent
+npm install --cache ../.npm-local-cache
 echo "🛠️  Building functions..."
 npm run build
 cd ..
@@ -92,9 +95,9 @@ cd ..
 echo "🔥 Deploying to Firebase..."
 # Use local firebase if possible, otherwise rely on globally installed
 if [ -f "./node_modules/.bin/firebase" ]; then
-  ./node_modules/.bin/firebase deploy
+  ./node_modules/.bin/firebase deploy --project motivation-catalyst-david
 else
-  firebase deploy
+  firebase deploy --project motivation-catalyst-david
 fi
 
 echo "✅ Deployment complete!"

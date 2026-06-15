@@ -18,8 +18,8 @@ import { test, expect } from '@playwright/test';
 test.describe('Authentication — Welcome Screen', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
-        // Wait for the welcome screen — email input is always present
-        await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 10000 });
+        // Wait for the app to render
+        await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible({ timeout: 10000 });
     });
 
     // ─── WELCOME SCREEN RENDER ───────────────────────────────────────────────

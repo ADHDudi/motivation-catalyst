@@ -35,7 +35,7 @@ const RoleSelectView: React.FC<RoleSelectViewProps> = ({
 
   return (
     <div
-      className={`w-full max-w-lg mx-auto bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col min-h-[100dvh] md:min-h-0 text-${t.dir === 'rtl' ? 'right' : 'left'}`}
+      className={`w-full max-w-lg mx-auto bg-white/90 backdrop-blur-md rounded-[40px] shadow-2xl shadow-slate-200/50 overflow-hidden flex flex-col min-h-[100dvh] md:min-h-0 md:h-auto md:my-auto text-${t.dir === 'rtl' ? 'right' : 'left'} animate-fade-in`}
       dir={t.dir}
     >
       {/* Header */}
@@ -74,12 +74,11 @@ const RoleSelectView: React.FC<RoleSelectViewProps> = ({
               type="button"
               onClick={() => setUserRole(role.key)}
               aria-pressed={isSelected}
-              className={`w-full p-6 rounded-3xl border-2 text-start transition-all active:scale-[0.98] ${
+              className={`w-full text-start p-6 rounded-[28px] border-2 transition-all duration-200 hover:-translate-y-1 hover:shadow-md ${
                 isSelected
-                  ? 'border-[var(--b2c-azure)] shadow-lg'
-                  : 'border-slate-100 hover:border-slate-200 shadow-sm'
+                  ? 'border-[#38BDF8] bg-[#38BDF8]/5 shadow-sm'
+                  : 'border-slate-100 hover:border-slate-200 active:scale-95'
               }`}
-              style={isSelected ? { backgroundColor: 'var(--b2c-mist)' } : { backgroundColor: 'white' }}
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 min-w-0">
@@ -107,7 +106,7 @@ const RoleSelectView: React.FC<RoleSelectViewProps> = ({
         <button
           type="button"
           onClick={onConfirm}
-          className="mt-4 w-full text-white font-bold text-[15px] py-4 rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.15)] hover:shadow-lg transition-all flex items-center justify-center gap-3"
+          className="w-full text-white font-bold text-[15px] py-4 min-h-[48px] rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.15)] hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
           style={{ backgroundImage: 'var(--gradient-b2c)' }}
         >
           {t.roleSelectCta}
