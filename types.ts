@@ -38,6 +38,7 @@ export interface Question {
   id: number;
   category: CategoryKey;
   text: LocalizedText;
+  managerText?: LocalizedText;
   weight: number;
 }
 
@@ -144,10 +145,6 @@ export interface TranslationData {
   whatsNextCopyDesc: string;
   whatsNextShareTitle: string;
   whatsNextShareDesc: string;
-  whatsNextRetakeTitle: string;
-  whatsNextRetakeDesc: string;
-  whatsNextRetakeSubject: string;
-  whatsNextRetakeBody: string;
   // Phase 1: role labels on analysis screen
   roleSoloLabel: string;
   roleManagerLabel: string;

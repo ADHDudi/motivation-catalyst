@@ -4,24 +4,99 @@ export const APP_ID = 'motivation-catalyst-v1';
 export const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz_7fB9S7C_Xm7Kq1yX_REPLACE_ME/exec';
 
 export const QUESTIONS: Question[] = [
-  { id: 1, category: 'autonomy', text: { he: "אני מרגיש שיש לי אפשרות לבחור כיצד לבצע את עבודתי.", en: "I can choose how to perform my work." }, weight: 1 },
-  { id: 2, category: 'autonomy', text: { he: "אני מרגיש לחוץ לעבוד בדרכים שלא נראות לי טבעיות.", en: "I feel pressured to work in unnatural ways." }, weight: -1 },
-  { id: 3, category: 'autonomy', text: { he: "יש לי תחושת חופש ובחירה בתפקיד שלי.", en: "I feel freedom and choice in my role." }, weight: 1 },
-  { id: 10, category: 'autonomy', text: { he: "אני מרגיש שיש לי השפעה על החלטות הנוגעות לעבודתי.", en: "I have influence over work decisions." }, weight: 1 },
-  { id: 11, category: 'autonomy', text: { he: "דעתי נשמעת ונלקחת בחשבון על ידי הממונים עלי.", en: "My opinion is heard by superiors." }, weight: 1 },
-  { id: 12, category: 'autonomy', text: { he: "אני מרגיש כבול על ידי נהלים נוקשים.", en: "I feel bound by rigid procedures." }, weight: -1 },
-  { id: 4, category: 'competence', text: { he: "אני מרגיש בטוח ביכולת שלי לבצע את המשימות היטב.", en: "I am confident in my ability to perform well." }, weight: 1 },
-  { id: 5, category: 'competence', text: { he: "לעיתים קרובות אני מרגיש לא כשיר לעמוד בדרישות.", en: "I often feel inadequate to meet demands." }, weight: -1 },
-  { id: 6, category: 'competence', text: { he: "יש לי הזדמנות להשתמש בכישורים הטובים ביותר שלי.", en: "I use my best skills every day." }, weight: 1 },
-  { id: 13, category: 'competence', text: { he: "אני מרגיש שאני לומד ומתפתח מקצועית.", en: "I am learning and developing professionally." }, weight: 1 },
-  { id: 14, category: 'competence', text: { he: "אני בטוח ביכולתי למצוא פתרון לאתגרים.", en: "I am confident finding solutions to challenges." }, weight: 1 },
-  { id: 15, category: 'competence', text: { he: "לפעמים אני חושש שאין לי את הכישורים הנדרשים.", en: "Sometimes I worry I lack necessary skills." }, weight: -1 },
-  { id: 7, category: 'relatedness', text: { he: "אני מרגיש תחושת שייכות עם האנשים בעבודה.", en: "I feel a sense of belonging with colleagues." }, weight: 1 },
-  { id: 8, category: 'relatedness', text: { he: "אני מרגיש בודד או מבודד כשאני בעבודה.", en: "I feel lonely or isolated at work." }, weight: -1 },
-  { id: 9, category: 'relatedness', text: { he: "אני מרגיש שלאנשים שאני עובד איתם אכפת ממני.", en: "People I work with care about me." }, weight: 1 },
-  { id: 16, category: 'relatedness', text: { he: "אני מרגיש בנוח לשתף את חבריי לצוות בקשיים.", en: "I feel comfortable sharing difficulties." }, weight: 1 },
-  { id: 17, category: 'relatedness', text: { he: "האווירה בצוות שלי היא תומכת וחברית.", en: "The team atmosphere is supportive." }, weight: 1 },
-  { id: 18, category: 'relatedness', text: { he: "אני מרגיש לעיתים שאני 'מחוץ לעניינים' חברתית.", en: "I sometimes feel socially 'out of the loop'." }, weight: -1 },
+  // ── AUTONOMY ──────────────────────────────────────────────────────────────
+  {
+    id: 1, category: 'autonomy', weight: 1,
+    text: { he: "אני מרגיש שיש לי אפשרות לבחור כיצד לבצע את עבודתי.", en: "I can choose how to perform my work." },
+    managerText: { he: "אני נותן לחברי הצוות שלי את החופש לבחור כיצד הם מבצעים את עבודתם.", en: "I give my team members the freedom to choose how they perform their work." },
+  },
+  {
+    id: 2, category: 'autonomy', weight: -1,
+    text: { he: "אני מרגיש לחוץ לעבוד בדרכים שלא נראות לי טבעיות.", en: "I feel pressured to work in unnatural ways." },
+    managerText: { he: "אני מרגיש לחוץ לדחוף את הצוות שלי לעבוד בדרכים שלא מתאימות להם.", en: "I feel pressured to push my team to work in ways that don't suit them." },
+  },
+  {
+    id: 3, category: 'autonomy', weight: 1,
+    text: { he: "יש לי תחושת חופש ובחירה בתפקיד שלי.", en: "I feel freedom and choice in my role." },
+    managerText: { he: "חברי הצוות שלי חופשיים לקחת אחריות ולקבל החלטות בתפקידם.", en: "My team members feel free to take ownership and make decisions in their roles." },
+  },
+  {
+    id: 10, category: 'autonomy', weight: 1,
+    text: { he: "אני מרגיש שיש לי השפעה על החלטות הנוגעות לעבודתי.", en: "I have influence over work decisions." },
+    managerText: { he: "אני מערב באופן פעיל את הצוות שלי בהחלטות הנוגעות לעבודתם.", en: "I actively involve my team in decisions that affect their work." },
+  },
+  {
+    id: 11, category: 'autonomy', weight: 1,
+    text: { he: "דעתי נשמעת ונלקחת בחשבון על ידי הממונים עלי.", en: "My opinion is heard by superiors." },
+    managerText: { he: "אני דואג שקולו של כל חבר צוות נשמע ונלקח ברצינות.", en: "I make sure every team member's voice is heard and genuinely considered." },
+  },
+  {
+    id: 12, category: 'autonomy', weight: -1,
+    text: { he: "אני מרגיש כבול על ידי נהלים נוקשים.", en: "I feel bound by rigid procedures." },
+    managerText: { he: "הצוות שלי מרגיש כבול בנהלים ותהליכים שאני מאכף.", en: "My team feels constrained by the processes and procedures I enforce." },
+  },
+  // ── COMPETENCE ────────────────────────────────────────────────────────────
+  {
+    id: 4, category: 'competence', weight: 1,
+    text: { he: "אני מרגיש בטוח ביכולת שלי לבצע את המשימות היטב.", en: "I am confident in my ability to perform well." },
+    managerText: { he: "אני בטוח ביכולתי לאמן ולפתח את כישורי הצוות שלי.", en: "I am confident in my ability to coach and develop my team's skills." },
+  },
+  {
+    id: 5, category: 'competence', weight: -1,
+    text: { he: "לעיתים קרובות אני מרגיש לא כשיר לעמוד בדרישות.", en: "I often feel inadequate to meet demands." },
+    managerText: { he: "לעיתים קרובות אני חושש שהצוות שלי חסר את הכישורים או התמיכה הנדרשים.", en: "I often worry my team lacks the skills or support needed to meet expectations." },
+  },
+  {
+    id: 6, category: 'competence', weight: 1,
+    text: { he: "יש לי הזדמנות להשתמש בכישורים הטובים ביותר שלי.", en: "I use my best skills every day." },
+    managerText: { he: "אני יוצר הזדמנויות לכל חבר צוות להשתמש ביכולות החזקות שלו.", en: "I create opportunities for each team member to use their strongest abilities." },
+  },
+  {
+    id: 13, category: 'competence', weight: 1,
+    text: { he: "אני מרגיש שאני לומד ומתפתח מקצועית.", en: "I am learning and developing professionally." },
+    managerText: { he: "אני משקיע באופן פעיל בלמידה ובצמיחה המקצועית של חברי הצוות שלי.", en: "I actively invest in my team members' professional learning and growth." },
+  },
+  {
+    id: 14, category: 'competence', weight: 1,
+    text: { he: "אני בטוח ביכולתי למצוא פתרון לאתגרים.", en: "I am confident finding solutions to challenges." },
+    managerText: { he: "אני מאמן את הצוות שלי להתמודד עם אתגרים ולמצוא פתרונות בעצמם.", en: "I coach my team to tackle challenges and find their own solutions." },
+  },
+  {
+    id: 15, category: 'competence', weight: -1,
+    text: { he: "לפעמים אני חושש שאין לי את הכישורים הנדרשים.", en: "Sometimes I worry I lack necessary skills." },
+    managerText: { he: "לפעמים אני חושש שאיני מספק לצוות שלי את ההכוונה הנכונה לצמיחתם.", en: "I sometimes worry I'm not providing my team with the right guidance to grow." },
+  },
+  // ── RELATEDNESS ───────────────────────────────────────────────────────────
+  {
+    id: 7, category: 'relatedness', weight: 1,
+    text: { he: "אני מרגיש תחושת שייכות עם האנשים בעבודה.", en: "I feel a sense of belonging with colleagues." },
+    managerText: { he: "אני בונה באופן פעיל תחושת שייכות וחיבור בקרב הצוות שלי.", en: "I actively build a sense of belonging and connection among my team." },
+  },
+  {
+    id: 8, category: 'relatedness', weight: -1,
+    text: { he: "אני מרגיש בודד או מבודד כשאני בעבודה.", en: "I feel lonely or isolated at work." },
+    managerText: { he: "חלק מחברי הצוות נראים מנותקים או מבודדים מהשאר.", en: "Some team members appear disconnected or isolated from the rest of the group." },
+  },
+  {
+    id: 9, category: 'relatedness', weight: 1,
+    text: { he: "אני מרגיש שלאנשים שאני עובד איתם אכפת ממני.", en: "People I work with care about me." },
+    managerText: { he: "אני מבהיר לכל חבר צוות שאכפת לי באמת מהרווחה שלו.", en: "I make it clear to each team member that I genuinely care about their wellbeing." },
+  },
+  {
+    id: 16, category: 'relatedness', weight: 1,
+    text: { he: "אני מרגיש בנוח לשתף את חבריי לצוות בקשיים.", en: "I feel comfortable sharing difficulties." },
+    managerText: { he: "חברי הצוות שלי מרגישים בטוחים מבחינה נפשית לשתף אותי בבעיות וקשיים.", en: "My team members feel psychologically safe to share problems or struggles with me." },
+  },
+  {
+    id: 17, category: 'relatedness', weight: 1,
+    text: { he: "האווירה בצוות שלי היא תומכת וחברית.", en: "The team atmosphere is supportive." },
+    managerText: { he: "אני מטפח אווירת צוות תומכת ושיתופית באמת.", en: "I nurture a team atmosphere that is genuinely supportive and collaborative." },
+  },
+  {
+    id: 18, category: 'relatedness', weight: -1,
+    text: { he: "אני מרגיש לעיתים שאני 'מחוץ לעניינים' חברתית.", en: "I sometimes feel socially 'out of the loop'." },
+    managerText: { he: "אני שם לב כשחברי צוות נראים מחוץ לשיחות או החלטות חשובות.", en: "I notice when team members seem left out of important conversations or decisions." },
+  },
 ];
 
 export const BRAND_HEX: BrandColors = {
@@ -117,34 +192,34 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
       autonomy: {
         title: 'אוטונומיה (בחירה ושליטה)',
         employee: {
-          low: { analysis: 'נראה שאתה מרגיש "מיקרו-ניהול" או חוסר יכולת להשפיע על סדר היום שלך.', actions: ['בקש פגישת הגדרת גבולות גזרה', 'הצע שיפורים בתהליכי העבודה'], aiTips: 'נסה שיטת "ניהול יומן חוסם" (Time Blocking) כדי לייצר לעצמך מרחב עבודה עצמאי. בשיחה הבאה עם המנהל, הצע משימה אחת שאתה לוקח עליה אחריות מלאה מהתחלה ועד הסוף.' },
-          high: { analysis: 'יש לך תחושת חופש ובעלות גבוהה על המשימות שלך.', actions: ['המשך ליזום פרויקטים חדשים', 'שמש דוגמה לניהול עצמי בצוות'], aiTips: 'נצל את החופש שלך כדי לחקור כלים חדשים שיכולים לשדרג את ביצועי הצוות. זה הזמן להוביל יוזמות שמעבר להגדרת התפקיד הפורמלית.' }
+          low: { analysis: 'נראה שאתה מרגיש "מיקרו-ניהול" או חוסר יכולת להשפיע על סדר היום שלך.', actions: ['השבוע: בקש פגישת 1:1 של 30 דקות עם המנהל/ת לדיון על גבולות החלטה', 'בפגישה הבאה: הצע למנהל/ת שיפור אחד קונקרטי בתהליך עבודה'], aiTips: 'נסה שיטת "ניהול יומן חוסם" (Time Blocking) כדי לייצר לעצמך מרחב עבודה עצמאי. בשיחה הבאה עם המנהל, הצע משימה אחת שאתה לוקח עליה אחריות מלאה מהתחלה ועד הסוף.' },
+          high: { analysis: 'יש לך תחושת חופש ובעלות גבוהה על המשימות שלך.', actions: ['השבוע: הצע למנהל/ת יוזמה חדשה אחת שתרצה להוביל', 'בפגישת הצוות הבאה: שתף שיטה אחת לניהול עצמי שעובדת לך'], aiTips: 'נצל את החופש שלך כדי לחקור כלים חדשים שיכולים לשדרג את ביצועי הצוות. זה הזמן להוביל יוזמות שמעבר להגדרת התפקיד הפורמלית.' }
         },
         manager: {
-          low: { analysis: 'העובד מרגיש כבול. חוסר אוטונומיה מוביל לשחיקה מהירה.', actions: ['הגדר את ה"מה" ושחרר את ה"איך"', 'שתף את העובד בקבלת החלטות'], aiTips: 'השבוע, בחר משימה אחת שאתה בדרך כלל בודק לעומק - והסתפק בקביעת התוצאה המצופה בלבד. תן לעובד לבחור את הדרך. בסוף השבוע, שאל אותו "מה למדת מהבחירה שלך?" במקום לבדוק את הביצוע.' },
-          high: { analysis: 'העובד מרגיש אמון מלא. זהו מנוע צמיחה חזק.', actions: ['האצל סמכויות מורכבות יותר', 'הימנע ממעורבות יתר במשימות שגורות'], aiTips: 'הזמן הוא להעביר לעובד אחריות על תחום שלם, לא רק על משימות. הצע לו להוביל יוזמה חוצת-צוותים שדורשת מהמנהל "להזיז את הכיסא" - ולקדם אותו לתפקיד של שותף-בקבלת-החלטות.' }
+          low: { analysis: 'העובד מרגיש כבול. חוסר אוטונומיה מוביל לשחיקה מהירה.', actions: ['השבוע: בחר משימה אחת לעובד והגדר רק את התוצאה — תן לו לבחור את הדרך', 'בפגישה הבאה: שאל את העובד "איזו החלטה הייתי רוצה שתקבל לבד?"'], aiTips: 'השבוע, בחר משימה אחת שאתה בדרך כלל בודק לעומק - והסתפק בקביעת התוצאה המצופה בלבד. תן לעובד לבחור את הדרך. בסוף השבוע, שאל אותו "מה למדת מהבחירה שלך?" במקום לבדוק את הביצוע.' },
+          high: { analysis: 'העובד מרגיש אמון מלא. זהו מנוע צמיחה חזק.', actions: ['השבוע: האצל לעובד סמכות אחת חדשה ומורכבת יותר', 'עד סוף השבוע: זהה משימה שגרתית אחת שתפסיק לבדוק עם העובד'], aiTips: 'הזמן הוא להעביר לעובד אחריות על תחום שלם, לא רק על משימות. הצע לו להוביל יוזמה חוצת-צוותים שדורשת מהמנהל "להזיז את הכיסא" - ולקדם אותו לתפקיד של שותף-בקבלת-החלטות.' }
         }
       },
       competence: {
         title: 'מסוגלות (יכולת והישגים)',
         employee: {
-          low: { analysis: 'ייתכן שאתה מרגיש שהאתגרים גדולים מהכלים שיש לך כרגע.', actions: ['זהה צורך בהכשרה ובקש אותה', 'חגוג הצלחות קטנות ביום-יום'], aiTips: 'פרק משימות גדולות למשימות קטנות של 15 דקות. כל וי (V) קטן כזה בונה את תחושת המסוגלות שלך מחדש. חפש "למידת מיקרו" (Micro-learning) של 10 דקות ביום בנושא שמעניין אותך.' },
-          high: { analysis: 'אתה מרגיש מקצועי, חד ובעל יכולת לתרום לצוות.', actions: ['חפש אתגרים חדשים שמותחים אותך', 'שמש כמנטור לעובדים אחרים'], aiTips: 'זה הזמן המושלם לבקש פרויקט "מתיחה" (Stretch Assignment) שיחשוף אותך לתחומים חדשים בארגון. היכולת שלך ללמד אחרים היא הדרך הטובה ביותר לשכלל את המומחיות שלך.' }
+          low: { analysis: 'ייתכן שאתה מרגיש שהאתגרים גדולים מהכלים שיש לך כרגע.', actions: ['בפגישה הבאה: בקש מהמנהל/ת הכשרה ספציפית אחת בנושא שמאתגר אותך', 'היום: רשום לעצמך 3 הצלחות קטנות מהשבוע האחרון'], aiTips: 'פרק משימות גדולות למשימות קטנות של 15 דקות. כל וי (V) קטן כזה בונה את תחושת המסוגלות שלך מחדש. חפש "למידת מיקרו" (Micro-learning) של 10 דקות ביום בנושא שמעניין אותך.' },
+          high: { analysis: 'אתה מרגיש מקצועי, חד ובעל יכולת לתרום לצוות.', actions: ['השבוע: בקש מהמנהל/ת פרויקט מתיחה (Stretch) אחד מחוץ לאזור הנוחות', 'הצע לעמית/ה חדש/ה לצוות להיות לו/ה מנטור לחודש הקרוב'], aiTips: 'זה הזמן המושלם לבקש פרויקט "מתיחה" (Stretch Assignment) שיחשוף אותך לתחומים חדשים בארגון. היכולת שלך ללמד אחרים היא הדרך הטובה ביותר לשכלל את המומחיות שלך.' }
         },
         manager: {
-          low: { analysis: 'העובד חווה תסכול או חשש מחוסר הצלחה.', actions: ['פרק משימות ליעדים קטנים וברי השגה', 'ספק משוב בונה ומיידי'], aiTips: 'השבוע, קבע פגישה של 20 דקות שבה לא מדברים על משימות, אלא רק על מיומנויות: "מה היית רוצה להיות טוב בו יותר?" ובנה איתו תוכנית למידה מיקרו של 15 דקות ביום. השקעה ביכולות = מנוע ביצועים לטווח ארוך.' },
-          high: { analysis: 'העובד בטוח ביכולותיו ומספק תוצאות איכותיות.', actions: ['בדוק אפשרות לקידום או הרחבת אחריות', 'שבח את המיומנות הספציפית שלו'], aiTips: 'הצע לעובד "פרויקט מתיחה" שמוציא אותו מאזור הנוחות - אבל בתחום שהוא בטוח בו. הצמיחה האמיתית מגיעה כשעובד מצוין מתבקש ללמד אחרים. הפוך אותו למנטור של עמית חדש.' }
+          low: { analysis: 'העובד חווה תסכול או חשש מחוסר הצלחה.', actions: ['השבוע: שב עם העובד ופרקו יחד משימה גדולה אחת ליעדים שבועיים', 'בפגישה הבאה: תן לעובד משוב ספציפי וחיובי על פעולה אחת מהשבוע'], aiTips: 'השבוע, קבע פגישה של 20 דקות שבה לא מדברים על משימות, אלא רק על מיומנויות: "מה היית רוצה להיות טוב בו יותר?" ובנה איתו תוכנית למידה מיקרו של 15 דקות ביום. השקעה ביכולות = מנוע ביצועים לטווח ארוך.' },
+          high: { analysis: 'העובד בטוח ביכולותיו ומספק תוצאות איכותיות.', actions: ['השבוע: דבר עם HR או עם המנהל/ת שלך על מסלול קידום לעובד', 'בפגישה הבאה: שבח את העובד על מיומנות מקצועית ספציפית אחת'], aiTips: 'הצע לעובד "פרויקט מתיחה" שמוציא אותו מאזור הנוחות - אבל בתחום שהוא בטוח בו. הצמיחה האמיתית מגיעה כשעובד מצוין מתבקש ללמד אחרים. הפוך אותו למנטור של עמית חדש.' }
         }
       },
       relatedness: {
         title: 'שייכות (חיבור ומשמעות)',
         employee: {
-          low: { analysis: 'אתה עשוי להרגיש מנותק חברתית או שהעבודה שלך לא מקבלת הערכה.', actions: ['יזום אינטראקציות חברתיות לא פורמליות', 'מצא שותף להתייעצות קבועה'], aiTips: 'קבע "קפה וירטואלי" או פיזי של 10 דקות עם קולגה שלא דיברת איתו מזמן. השיתוף בקשיים קטנים יכול לייצר חיבור מהיר ולהפחית את תחושת הבידוד.' },
-          high: { analysis: 'אתה מרגיש חלק בלתי נפרד מהצוות וזוכה לתמיכה.', actions: ['חזק את הקשרים הקיימים', 'הייה הגורם המקשר לאחרים שמרגישים מחוץ לעניינים'], aiTips: 'השתמש בחיבור החזק שלך כדי לעזור לעובדים חדשים להיקלט. תחושת המשמעות שלך תגדל ככל שתהיה "הדבק" ששומר על הצוות מאוחד.' }
+          low: { analysis: 'אתה עשוי להרגיש מנותק חברתית או שהעבודה שלך לא מקבלת הערכה.', actions: ['השבוע: קבע קפה של 15 דקות עם חבר/ה לצוות שלא דיברת איתו/ה מזמן', 'עד סוף השבוע: בקש מעמית/ה אחד/ת להיות שותף/ה קבוע/ה להתייעצות'], aiTips: 'קבע "קפה וירטואלי" או פיזי של 10 דקות עם קולגה שלא דיברת איתו מזמן. השיתוף בקשיים קטנים יכול לייצר חיבור מהיר ולהפחית את תחושת הבידוד.' },
+          high: { analysis: 'אתה מרגיש חלק בלתי נפרד מהצוות וזוכה לתמיכה.', actions: ['השבוע: שלח הודעת הערכה לחבר/ה לצוות על משהו ספציפי שעשה/תה', 'בפגישת הצוות הבאה: זהה עמית/ה שנראה/ית מחוץ לעניינים וצרף/י אותו/ה'], aiTips: 'השתמש בחיבור החזק שלך כדי לעזור לעובדים חדשים להיקלט. תחושת המשמעות שלך תגדל ככל שתהיה "הדבק" ששומר על הצוות מאוחד.' }
         },
         manager: {
-          low: { analysis: 'העובד מרגיש מבודד. חוסר שייכות פוגע במחויבות.', actions: ['קבע פגישות 1:1 אישיות (לא רק על משימות)', 'שלב אותו בצוותי חשיבה משותפים'], aiTips: 'השבוע, פתח את ה-1:1 עם שאלה אישית: "מה תפס אותך השבוע מחוץ לעבודה?" - והקשב באמת. בנוסף, צור הזדמנות אחת לשיתוף פעולה לא-משימתי, כמו "ליצור יחד מצגת לצוות" - חיבור נוצר ביצירה משותפת, לא ביעדים.' },
-          high: { analysis: 'העובד מחובר היטב לתרבות הארגונית ולצוות.', actions: ['המשך לטפח סביבה בטוחה ותומכת', 'הבע הערכה פומבית על תרומתו לצוות'], aiTips: 'השתמש בעובד המחובר כ"שגריר תרבות" - שלח אותו לקדם את הקליטה של עובדים חדשים. הבע הערכה ספציפית (לא כללית) פעם בשבועיים בפורום צוותי, ותציין מה בדיוק תרם הוא לסביבה החיובית.' }
+          low: { analysis: 'העובד מרגיש מבודד. חוסר שייכות פוגע במחויבות.', actions: ['השבוע: קבע 1:1 של 20 דקות עם העובד — בלי לדבר על משימות', 'עד סוף השבוע: צרף את העובד לצוות חשיבה משותף אחד'], aiTips: 'השבוע, פתח את ה-1:1 עם שאלה אישית: "מה תפס אותך השבוע מחוץ לעבודה?" - והקשב באמת. בנוסף, צור הזדמנות אחת לשיתוף פעולה לא-משימתי, כמו "ליצור יחד מצגת לצוות" - חיבור נוצר ביצירה משותפת, לא ביעדים.' },
+          high: { analysis: 'העובד מחובר היטב לתרבות הארגונית ולצוות.', actions: ['השבוע: שאל את הצוות בפגישה "מה אנחנו יכולים לעשות כדי שירגישו בטוחים יותר?"', 'בפגישת הצוות הבאה: הבע הערכה פומבית וספציפית לעובד על תרומה לצוות'], aiTips: 'השתמש בעובד המחובר כ"שגריר תרבות" - שלח אותו לקדם את הקליטה של עובדים חדשים. הבע הערכה ספציפית (לא כללית) פעם בשבועיים בפורום צוותי, ותציין מה בדיוק תרם הוא לסביבה החיובית.' }
         }
       }
     },
@@ -184,10 +259,6 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
     whatsNextCopyDesc: 'העתק את הדוח המלא והדבק לאן שנוח לך - יומן, פנקס, מסמך.',
     whatsNextShareTitle: 'שתף עם מנהל/צוות',
     whatsNextShareDesc: 'העתק עם פתיח מוכן לשליחה לאדם שחשוב לך לעדכן.',
-    whatsNextRetakeTitle: 'תזכורת לחזרה',
-    whatsNextRetakeDesc: 'שלח לעצמך מייל עם תזכורת לבצע את האבחון שוב בעוד 3 חודשים.',
-    whatsNextRetakeSubject: 'תזכורת: לבצע אבחון מוטיבציה שוב',
-    whatsNextRetakeBody: 'היי, ביצעת אבחון מוטיבציה לפני 3 חודשים. זה זמן טוב לבדוק איפה אתה עומד עכשיו. https://motivation-catalyst-david.web.app',
     // --- Phase 1: share ---
     shareIntroLine: 'היי, ביצעתי אבחון מוטיבציה לפי מודל SDT. הנה התובנות שעלו:',
     // --- Phase 1: rating labels (mobile pills) ---
@@ -268,34 +339,34 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
       autonomy: {
         title: 'Autonomy',
         employee: {
-          low: { analysis: 'It seems you feel micromanaged or lack the ability to influence your own schedule and workflows.', actions: ['Request a boundary-setting meeting', 'Suggest improvements to existing work processes'], aiTips: 'Try using "Time Blocking" to create independent workspace for yourself. In your next meeting with your manager, propose one task you can take full end-to-end responsibility for.' },
-          high: { analysis: 'You have a strong sense of freedom and high ownership over your tasks and projects.', actions: ['Continue initiating new projects', 'Serve as a role model for self-management in the team'], aiTips: 'Leverage your freedom to research new tools that can upgrade team performance. This is the time to lead initiatives that go beyond your formal job description.' }
+          low: { analysis: 'It seems you feel micromanaged or lack the ability to influence your own schedule and workflows.', actions: ['This week: request a 30-min 1:1 with your manager to discuss decision boundaries', 'In your next 1:1: propose one concrete process improvement to your manager'], aiTips: 'Try using "Time Blocking" to create independent workspace for yourself. In your next meeting with your manager, propose one task you can take full end-to-end responsibility for.' },
+          high: { analysis: 'You have a strong sense of freedom and high ownership over your tasks and projects.', actions: ['This week: pitch one new initiative to your manager that you want to lead', 'In your next standup: share one self-management tactic that works for you'], aiTips: 'Leverage your freedom to research new tools that can upgrade team performance. This is the time to lead initiatives that go beyond your formal job description.' }
         },
         manager: {
-          low: { analysis: 'Employee feels restricted. A lack of autonomy leads to rapid burnout.', actions: ["Define the 'what' and release the 'how'", "Involve the employee in decision-making processes"], aiTips: 'This week, pick one task you normally review in detail and only set the expected outcome. Let the employee choose the approach. At week\'s end, ask "What did you learn from your choice?" instead of checking execution — autonomy is built through trust experiments.' },
-          high: { analysis: 'Employee feels fully trusted. This is a powerful growth engine.', actions: ['Delegate more complex authorities', 'Avoid over-involvement in routine tasks'], aiTips: 'Time to hand over ownership of an entire area, not just tasks. Offer them a cross-team initiative that requires you to step back — promote them to a "decision partner" role so their autonomy compounds into real influence.' }
+          low: { analysis: 'Employee feels restricted. A lack of autonomy leads to rapid burnout.', actions: ["This week: pick one task and define only the outcome — let your employee choose the 'how'", "In your next 1:1: ask your employee which decision they wish you would let them own"], aiTips: 'This week, pick one task you normally review in detail and only set the expected outcome. Let the employee choose the approach. At week\'s end, ask "What did you learn from your choice?" instead of checking execution — autonomy is built through trust experiments.' },
+          high: { analysis: 'Employee feels fully trusted. This is a powerful growth engine.', actions: ['This week: delegate one more complex authority to your employee', 'By end of week: identify one routine task you will stop reviewing with them'], aiTips: 'Time to hand over ownership of an entire area, not just tasks. Offer them a cross-team initiative that requires you to step back — promote them to a "decision partner" role so their autonomy compounds into real influence.' }
         }
       },
       competence: {
         title: 'Competence',
         employee: {
-          low: { analysis: 'You might feel that the current challenges are greater than the tools or training you have at your disposal.', actions: ['Identify specific training needs and request them', 'Celebrate small daily successes to build momentum'], aiTips: 'Break large tasks into 15-minute micro-tasks. Each small checkmark builds your sense of competence. Look for 10-minute "Micro-learning" daily on a topic that interests you.' },
-          high: { analysis: 'You feel professional, sharp, and highly capable of delivering quality results for the team.', actions: ["Seek new 'stretch' challenges that push your limits", "Serve as a mentor for other team members"], aiTips: 'This is the perfect time to request a "Stretch Assignment" that exposes you to new areas of the organization. Your ability to teach others is the best way to further refine your own expertise.' }
+          low: { analysis: 'You might feel that the current challenges are greater than the tools or training you have at your disposal.', actions: ['In your next 1:1: ask your manager for one specific training in a skill that challenges you', 'Today: write down 3 small wins from this week for yourself'], aiTips: 'Break large tasks into 15-minute micro-tasks. Each small checkmark builds your sense of competence. Look for 10-minute "Micro-learning" daily on a topic that interests you.' },
+          high: { analysis: 'You feel professional, sharp, and highly capable of delivering quality results for the team.', actions: ["This week: ask your manager for one stretch assignment outside your comfort zone", "Offer to mentor a newer teammate for the next month"], aiTips: 'This is the perfect time to request a "Stretch Assignment" that exposes you to new areas of the organization. Your ability to teach others is the best way to further refine your own expertise.' }
         },
         manager: {
-          low: { analysis: 'Employee is experiencing frustration or fear of failure.', actions: ['Break tasks into small, achievable goals', 'Provide constructive and immediate feedback'], aiTips: 'This week, schedule a 20-minute meeting with no task agenda — just skills: "What would you like to be better at?" Then co-build a 15-minute-a-day micro-learning plan. Investing in capability is the longest-leverage move you can make on motivation.' },
-          high: { analysis: 'Employee is confident in their abilities and delivers high-quality results.', actions: ['Explore promotion or expanded responsibility', 'Praise their specific professional skills'], aiTips: 'Offer a stretch project just outside their comfort zone — but in a domain they trust themselves in. Real growth happens when a strong performer is asked to teach others. Pair them with a newer colleague as a mentor this quarter.' }
+          low: { analysis: 'Employee is experiencing frustration or fear of failure.', actions: ['This week: sit with your employee and break one big task into weekly milestones together', 'In your next 1:1: give them specific positive feedback on one action from this week'], aiTips: 'This week, schedule a 20-minute meeting with no task agenda — just skills: "What would you like to be better at?" Then co-build a 15-minute-a-day micro-learning plan. Investing in capability is the longest-leverage move you can make on motivation.' },
+          high: { analysis: 'Employee is confident in their abilities and delivers high-quality results.', actions: ['This week: talk to HR or your own manager about a promotion path for your employee', 'In your next 1:1: praise them for one specific professional skill they demonstrated'], aiTips: 'Offer a stretch project just outside their comfort zone — but in a domain they trust themselves in. Real growth happens when a strong performer is asked to teach others. Pair them with a newer colleague as a mentor this quarter.' }
         }
       },
       relatedness: {
         title: 'Relatedness',
         employee: {
-          low: { analysis: 'You may feel socially disconnected or that your contributions are not fully recognized by your peers.', actions: ['Initiate informal social interactions', 'Find a partner for regular professional consultation'], aiTips: 'Schedule a 10-minute "virtual or physical coffee" with a colleague you haven\'t spoken to in a while. Sharing small difficulties can create quick connections and reduce isolation.' },
-          high: { analysis: 'You feel like an integral part of the team and receive genuine support from your colleagues.', actions: ['Strengthen existing connections', 'Be a bridge for others who might feel excluded'], aiTips: 'Use your strong connections to help new hires integrate. Your sense of meaning will grow as you become the "glue" that keeps the team united.' }
+          low: { analysis: 'You may feel socially disconnected or that your contributions are not fully recognized by your peers.', actions: ["This week: schedule a 15-min coffee with a teammate you haven't talked to in a while", 'By end of week: ask one peer to be your regular thinking partner'], aiTips: 'Schedule a 10-minute "virtual or physical coffee" with a colleague you haven\'t spoken to in a while. Sharing small difficulties can create quick connections and reduce isolation.' },
+          high: { analysis: 'You feel like an integral part of the team and receive genuine support from your colleagues.', actions: ['Today: send one teammate a message of appreciation for something specific they did', 'In your next team meeting: spot a quiet peer and pull them into the conversation'], aiTips: 'Use your strong connections to help new hires integrate. Your sense of meaning will grow as you become the "glue" that keeps the team united.' }
         },
         manager: {
-          low: { analysis: 'Employee feels isolated. Lack of belonging harms commitment.', actions: ['Schedule personal 1:1 meetings (not just task-focused)', 'Include them in collaborative thinking groups'], aiTips: 'This week, open your 1:1 with a personal question — "What grabbed your attention outside of work this week?" — and listen for real. Then create one non-task collaboration like co-building a slide for the team. Connection grows through shared creation, not shared deadlines.' },
-          high: { analysis: 'Employee is well-connected to the organizational culture and the team.', actions: ['Continue fostering a safe and supportive environment', 'Express public appreciation for their team contribution'], aiTips: 'Deploy this employee as a "culture ambassador" — have them own the onboarding of a new hire. Give specific (not generic) public appreciation every two weeks in a team forum, naming exactly what they contributed to the team\'s atmosphere.' }
+          low: { analysis: 'Employee feels isolated. Lack of belonging harms commitment.', actions: ['This week: schedule a 20-min 1:1 with your employee with no task agenda', 'By end of week: include them in one cross-functional thinking group'], aiTips: 'This week, open your 1:1 with a personal question — "What grabbed your attention outside of work this week?" — and listen for real. Then create one non-task collaboration like co-building a slide for the team. Connection grows through shared creation, not shared deadlines.' },
+          high: { analysis: 'Employee is well-connected to the organizational culture and the team.', actions: ['This week: ask your team in a meeting "what would make you feel safer here?"', 'In your next team meeting: give specific public appreciation for their contribution'], aiTips: 'Deploy this employee as a "culture ambassador" — have them own the onboarding of a new hire. Give specific (not generic) public appreciation every two weeks in a team forum, naming exactly what they contributed to the team\'s atmosphere.' }
         }
       }
     },
@@ -335,10 +406,6 @@ export const TRANSLATIONS: Record<'he' | 'en', TranslationData> = {
     whatsNextCopyDesc: 'Copy the full report and paste it wherever works for you — journal, notes, doc.',
     whatsNextShareTitle: 'Share with your manager / team',
     whatsNextShareDesc: 'Copy with a ready-made intro line to send to someone who should know.',
-    whatsNextRetakeTitle: 'Retake reminder',
-    whatsNextRetakeDesc: 'Email yourself a reminder to retake this assessment in 3 months.',
-    whatsNextRetakeSubject: 'Reminder: retake your motivation assessment',
-    whatsNextRetakeBody: 'Hi, you took a motivation assessment 3 months ago. Time to check in on how you\'re doing now. https://motivation-catalyst-david.web.app',
     // --- Phase 1: share ---
     shareIntroLine: 'Hi, I just took a Self-Determination Theory motivation assessment. Here\'s what came up:',
     // --- Phase 1: rating labels (mobile pills) ---
