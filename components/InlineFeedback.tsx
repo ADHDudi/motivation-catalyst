@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Zap, Send, Gift, Sparkles } from 'lucide-react';
-import { saveFeedback } from '../firestoreUtils';
+import { useFeedbackRepo } from '../services/ServiceContext';
 import { Results } from '../types';
 import { getPriorityCategory } from '../motivationCalculator';
 
@@ -21,6 +21,7 @@ const InlineFeedback: React.FC<InlineFeedbackProps> = ({
   userEmail,
   userName
 }) => {
+  const feedbackRepo = useFeedbackRepo();
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState('');
   const [status, setStatus] = useState<'idle' | 'commenting' | 'submitting' | 'rewarded'>('idle');
@@ -44,7 +45,7 @@ const InlineFeedback: React.FC<InlineFeedbackProps> = ({
     if (rating === 0) return;
     setStatus('submitting');
     try {
-      await saveFeedback({
+      await feedbackRepo.saveFeedback({
         rating,
         comment,
         source,

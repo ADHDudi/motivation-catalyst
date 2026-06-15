@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { X, ClipboardList, Clock, Zap } from 'lucide-react';
-import { listFeedbacks, updateFeedbackRead } from '../firestoreUtils';
+import { useFeedbackRepo } from '../services/ServiceContext';
 import { UserFeedback } from '../types';
 
 interface AdminFeedbackPanelProps {
@@ -11,6 +11,7 @@ interface AdminFeedbackPanelProps {
 type TabType = 'all' | 'unread' | 'read';
 
 const AdminFeedbackPanel: React.FC<AdminFeedbackPanelProps> = ({ isOpen, onClose }) => {
+  const feedbackRepo = useFeedbackRepo();
   const [feedbacks, setFeedbacks] = useState<UserFeedback[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +21,7 @@ const AdminFeedbackPanel: React.FC<AdminFeedbackPanelProps> = ({ isOpen, onClose
     setIsLoading(true);
     setError(null);
     try {
-      const data = await listFeedbacks();
+      const data = await feedbackRepo.listFeedbacks();
       setFeedbacks(data);
     } catch (err) {
       console.error(err);
@@ -38,7 +39,7 @@ const AdminFeedbackPanel: React.FC<AdminFeedbackPanelProps> = ({ isOpen, onClose
 
   const handleToggleRead = async (id: string, currentRead: boolean) => {
     try {
-      await updateFeedbackRead(id, !currentRead);
+      await feedbackRepo.updateFeedbackRead(id, !currentRead);
       setFeedbacks(prev => prev.map(f => f.id === id ? { ...f, read: !currentRead } : f));
     } catch (err) {
       console.error(err);

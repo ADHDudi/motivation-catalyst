@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { generateMotivationAnalysis } from '../services/geminiService';
+import { useAnalysisService } from '../services/ServiceContext';
 import { MotivationAnalysisResult, Answers, FormData } from '../types';
 import { QUESTIONS } from '../constants';
 import {
@@ -122,22 +122,31 @@ const CategoryTabContent: React.FC<CategoryTabContentProps> = ({
   const color = COLORS[categoryKey].hex;
   const displayTip = aiTip || data.aiTips;
   const isDynamic = !!aiTip;
+  const [isExpanded, setIsExpanded] = useState(() => window.innerWidth >= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) setIsExpanded(true);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-5">
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4 md:space-y-5">
       {/* Score hero */}
       <div className="flex items-center gap-4 mb-2">
         <div
-          className="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg"
+          className="w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-white font-black text-lg md:text-xl shadow-lg shrink-0"
           style={{ backgroundColor: color }}
         >
           {score.toFixed(1)}
         </div>
         <div className="flex-1">
-          <h3 className="font-black text-lg" style={{ color: 'var(--b2c-deep)' }}>
+          <h3 className="font-black text-base md:text-lg" style={{ color: 'var(--b2c-deep)' }}>
             {t.categories[categoryKey]}
           </h3>
-          <p className="text-xs font-bold text-slate-400 mt-0.5">
+          <p className="text-[11px] md:text-xs font-bold text-slate-400 mt-0.5">
             {isLow(score)
               ? (lang === 'he' ? 'דורש תשומת לב' : 'Needs attention')
               : (lang === 'he' ? 'חזק' : 'Strong')}
@@ -145,27 +154,9 @@ const CategoryTabContent: React.FC<CategoryTabContentProps> = ({
         </div>
       </div>
 
-      {/* Static analysis */}
-      <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100">
-        <div className="text-[10px] uppercase tracking-widest font-black opacity-50 mb-2">
-          {lang === 'he' ? 'ניתוח' : 'Analysis'}
-        </div>
-        <p className="text-sm font-medium text-slate-700 leading-relaxed mb-4">{data.analysis}</p>
-        <ul className="space-y-2">
-          {data.actions.map((action, idx) => (
-            <li key={idx} className="flex gap-2 text-xs font-medium text-slate-600">
-              {isLow(score)
-                ? <AlertCircle size={14} className="shrink-0 text-amber-500" />
-                : <CheckCircle2 size={14} className="shrink-0 text-emerald-500" />}
-              {action}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* AI insight (merged) */}
+      {/* AI insight (merged) - Moved UP on mobile to show actionable tip immediately */}
       <div
-        className="p-5 rounded-2xl border relative overflow-hidden"
+        className="p-4 md:p-5 rounded-2xl border relative overflow-hidden shadow-sm"
         style={{
           backgroundColor: 'var(--b2c-mist)',
           borderColor: 'rgba(31,122,255,0.12)',
@@ -173,7 +164,7 @@ const CategoryTabContent: React.FC<CategoryTabContentProps> = ({
       >
         <div className="flex items-center gap-2 mb-3">
           <Sparkles size={16} style={{ color: 'var(--b2c-azure)' }} />
-          <span className="font-black text-xs uppercase tracking-wider" style={{ color: 'var(--b2c-deep)' }}>
+          <span className="font-black text-[11px] md:text-xs uppercase tracking-wider" style={{ color: 'var(--b2c-deep)' }}>
             {lang === 'he' ? 'טיפ AI' : 'AI Tip'}
           </span>
           {isLoadingAI && (
@@ -189,16 +180,6 @@ const CategoryTabContent: React.FC<CategoryTabContentProps> = ({
               {lang === 'he' ? 'מותאם' : 'Personalized'}
             </span>
           )}
-          {!isLoadingAI && aiError && (
-            <span
-              className="text-[10px] px-2 py-0.5 rounded-full font-black flex items-center gap-1"
-              style={{ backgroundColor: 'rgba(31,122,255,0.06)', color: 'var(--b2c-azure)', marginInlineStart: 'auto' }}
-              title={aiError}
-            >
-              <AlertCircle size={10} />
-              {lang === 'he' ? 'סטטי' : 'Static'}
-            </span>
-          )}
         </div>
 
         {isLoadingAI && !displayTip ? (
@@ -209,6 +190,38 @@ const CategoryTabContent: React.FC<CategoryTabContentProps> = ({
 
         {/* ADHD tip — collapsed toggle */}
         {adhdTip && <AdhdTipToggle tip={adhdTip} lang={lang} />}
+      </div>
+
+      {/* Static analysis - Collapsible on Mobile */}
+      <div className="bg-slate-50/80 rounded-2xl border border-slate-100 overflow-hidden">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full flex items-center justify-between p-4 md:pointer-events-none"
+        >
+          <div className="text-[10px] uppercase tracking-widest font-black opacity-60" style={{ color: 'var(--b2c-deep)' }}>
+            {lang === 'he' ? 'ניתוח ופעולות' : 'Analysis & Actions'}
+          </div>
+          <ChevronDown 
+            size={16} 
+            className={`md:hidden text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} 
+          />
+        </button>
+        
+        {isExpanded && (
+          <div className="px-4 pb-4 md:px-5 md:pb-5 animate-in slide-in-from-top-2 fade-in duration-200 border-t border-slate-100 md:border-none md:pt-0">
+            <p className="text-[13px] md:text-sm font-medium text-slate-600 leading-relaxed mb-4">{data.analysis}</p>
+            <ul className="space-y-2">
+              {data.actions.map((action, idx) => (
+                <li key={idx} className="flex gap-2.5 text-[13px] md:text-xs font-bold text-slate-600 leading-snug">
+                  {isLow(score)
+                    ? <AlertCircle size={14} className="shrink-0 text-amber-500 mt-0.5" />
+                    : <CheckCircle2 size={14} className="shrink-0 text-emerald-500 mt-0.5" />}
+                  {action}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -255,6 +268,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
   t, lang, setLang, userRole, formData, results, onReset,
   copyToClipboard, generateFullReportText, onRetakeReminder, statusMsg, answers
 }) => {
+  const analysisService = useAnalysisService();
   /* ── AI state ── */
   const [aiInsights, setAiInsights] = useState<MotivationAnalysisResult | null>(null);
   const [lastAiLang, setLastAiLang] = useState<Language | null>(null);
@@ -337,7 +351,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         );
 
         const analysis = await Promise.race([
-          generateMotivationAnalysis(
+          analysisService.generateMotivationAnalysis(
             responses,
             formData.employeeName,
             formData.managerName,
@@ -388,15 +402,16 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
 
   return (
     <div
-      className={`w-full max-w-4xl mx-auto md:my-auto bg-white/95 backdrop-blur-xl md:rounded-[60px] shadow-2xl shadow-slate-200/50 overflow-hidden text-${t.dir === 'rtl' ? 'right' : 'left'} pb-12 animate-fade-in`}
+      className={`w-full max-w-6xl mx-auto md:my-auto bg-white/95 backdrop-blur-xl md:rounded-[60px] shadow-2xl shadow-slate-200/50 overflow-hidden text-${t.dir === 'rtl' ? 'right' : 'left'} flex flex-col md:flex-row md:min-h-[85vh] animate-fade-in`}
       dir={t.dir}
     >
-      <div className="p-6 md:p-12 pt-12 md:pt-16">
+      {/* ── LEFT PANE (Hero & Chart) ── */}
+      <div className="md:w-5/12 p-6 md:p-12 pt-12 md:pt-16 flex flex-col relative z-10 md:bg-slate-50/50 border-b md:border-b-0 md:border-e border-slate-100">
         {/* ── Header ── */}
         <div className="flex justify-between items-center mb-8">
           <button
             onClick={() => setLang(lang === 'he' ? 'en' : 'he')}
-            className="bg-slate-50 p-3 rounded-2xl text-[10px] font-black transition-all active:scale-90"
+            className="bg-slate-50 hover:bg-slate-100 p-3 rounded-2xl text-[10px] font-black transition-all active:scale-90"
             style={{ color: 'var(--b2c-azure)' }}
             aria-label="Toggle language"
           >
@@ -409,17 +424,23 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         <h2 className="text-3xl md:text-4xl font-black text-center mb-1" style={{ color: 'var(--b2c-deep)' }}>
           {t.profileTitle}
         </h2>
-        <p className="text-center text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">
+        <p className="text-center text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">
           {roleLabel}
         </p>
 
         {/* ── Polar Chart (Hero) ── */}
-        <ResultPolarChart scores={results} t={t} />
+        <div className="mt-2 md:mt-auto md:mb-auto">
+          <ResultPolarChart scores={results} t={t} />
+        </div>
+      </div>
 
+      {/* ── RIGHT PANE (Tabs & Content) ── */}
+      <div className="md:w-7/12 flex-1 p-6 md:p-12 md:pt-16 overflow-y-auto flex flex-col relative z-10">
+        
         {/* ══════════ TAB BAR ══════════ */}
         <div
           ref={tabBarRef}
-          className="mt-8 relative"
+          className="relative shrink-0"
         >
           {/* Tab buttons */}
           <div
@@ -483,7 +504,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         {/* ══════════ TAB CONTENT ══════════ */}
         <div
           ref={tabContentRef}
-          className="mt-6 min-h-[300px]"
+          className="mt-6 flex-1 min-h-[300px]"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
@@ -506,7 +527,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
 
           {/* Actions Tab */}
           {activeTab === 'actions' && (
-            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-8">
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-8 pb-8">
               {/* Copy report button */}
               <button
                 onClick={() => copyToClipboard(generateFullReportText('self'))}
@@ -573,7 +594,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         </div>
 
         {/* ── Footer ── */}
-        <div className="mt-16 pt-8 border-t-4 border-dashed border-slate-50 flex flex-col items-center gap-6">
+        <div className="mt-8 md:mt-auto pt-8 border-t-4 border-dashed border-slate-50 flex flex-col items-center gap-6 pb-6 md:pb-0">
           {/* Powered by JustAIIt */}
           <div className="flex flex-col items-center gap-2">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
