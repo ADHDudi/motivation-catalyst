@@ -120,7 +120,10 @@ const CategoryTabContent: React.FC<CategoryTabContentProps> = ({
 }) => {
   const data = t.deepAnalysis[categoryKey][roleKey][isLow(score) ? 'low' : 'high'];
   const color = COLORS[categoryKey].hex;
-  const displayTip = aiTip || data.aiTips;
+  
+  // Only show static fallback if we are NOT loading AI (meaning it failed or timed out)
+  const displayTip = aiTip || (!isLoadingAI ? data.aiTips : null);
+  
   const isDynamic = !!aiTip;
   const [isExpanded, setIsExpanded] = useState(() => window.innerWidth >= 768);
 
