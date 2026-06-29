@@ -405,7 +405,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
 
   return (
     <div
-      className={`w-full max-w-6xl mx-auto md:my-auto bg-white/95 backdrop-blur-xl md:rounded-[60px] shadow-2xl shadow-slate-200/50 overflow-hidden text-${t.dir === 'rtl' ? 'right' : 'left'} flex flex-col md:flex-row min-h-[100dvh] md:min-h-0 md:h-[85vh] animate-fade-in`}
+      className={`w-full max-w-6xl mx-auto md:my-auto bg-white/95 backdrop-blur-xl md:rounded-[60px] shadow-2xl shadow-slate-200/50 overflow-hidden text-${t.dir === 'rtl' ? 'right' : 'left'} flex flex-col md:flex-row min-h-[100dvh] md:min-h-[600px] md:h-auto md:max-h-[90vh] animate-fade-in`}
       dir={t.dir}
     >
       {/* ── LEFT PANE (Hero & Chart) ── */}
