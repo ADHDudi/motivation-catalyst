@@ -4,10 +4,12 @@ How the engineering skills should consume this repo's domain documentation when 
 
 ## Before exploring, read these
 
-- **`CONTEXT.md`** at the repo root.
-- **`docs/adr/`** — read ADRs that touch the area you're about to work in.
+- **`CONTEXT.md`** at the repo root — domain language and bounded context glossary.
+- **`docs/adr/`** — ADRs that touch the area you're about to work in.
 
-If any of these files don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The producer skill (`/grill-with-docs`) creates them lazily when terms or decisions actually get resolved.
+For multi-context repos (identified by a `CONTEXT-MAP.md` at the root), read each `CONTEXT.md` relevant to the topic, and also check `src/<context>/docs/adr/` for context-scoped decisions.
+
+If any of these files don't exist, **proceed silently**. Don't flag their absence or suggest creating them — `/grill-with-docs` creates them lazily when terms or decisions actually get resolved.
 
 ## File structure
 

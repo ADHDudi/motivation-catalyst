@@ -180,6 +180,8 @@ const App = () => {
         setAuthError(lang === 'he' ? 'כתובת אימייל לא תקינה' : 'Invalid email address');
       } else if (code === 'auth/network-request-failed') {
         setAuthError(lang === 'he' ? 'בעיית חיבור לרשת. בדוק את החיבור שלך' : 'Network error. Check your connection');
+      } else if (code === 'auth/operation-not-allowed') {
+        setAuthError(lang === 'he' ? 'שיטת התחברות זו אינה מופעלת במסד הנתונים' : 'This sign-in method is disabled in the project settings');
       } else {
         setAuthError(lang === 'he' ? 'שגיאת התחברות. נסה שוב' : 'Sign in failed. Please try again');
       }
@@ -202,6 +204,8 @@ const App = () => {
         setAuthError(lang === 'he' ? 'כתובת אימייל לא תקינה' : 'Invalid email address');
       } else if (code === 'auth/network-request-failed') {
         setAuthError(lang === 'he' ? 'בעיית חיבור לרשת. בדוק את החיבור שלך' : 'Network error. Check your connection');
+      } else if (code === 'auth/operation-not-allowed') {
+        setAuthError(lang === 'he' ? 'שיטת התחברות זו אינה מופעלת במסד הנתונים' : 'This sign-in method is disabled in the project settings');
       } else {
         setAuthError(lang === 'he' ? 'הרשמה נכשלה. נסה שוב' : 'Sign up failed. Please try again');
       }
