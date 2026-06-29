@@ -165,6 +165,19 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
         await expect(page.locator('div[class*="fixed"]')).toBeVisible({ timeout: 3000 });
     });
 
+    test('AC-08.5 | Analysis — Reminder option is not present', async ({ page }) => {
+        await goToAnalysisViaDemo(page);
+        await completeAssessment(page);
+
+        // Click Actions tab first
+        await page.getByRole('tab', { name: /פעולות|Actions/i }).click();
+
+        // Check that 'שים לי תזכורת' or BellRing icon is NOT visible
+        // The word "תזכורת" or "Reminder" is used for the reminder option
+        await expect(page.getByText(/תזכורת|Reminder/i)).not.toBeVisible();
+    });
+
+
     test('AC-09 | Analysis — Start Over returns to welcome screen', async ({ page }) => {
         await goToAnalysisViaDemo(page);
         await completeAssessment(page);

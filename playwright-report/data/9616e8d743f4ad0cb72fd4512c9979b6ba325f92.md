@@ -1,0 +1,77 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - button "Toggle language" [ref=e7] [cursor=pointer]: EN
+      - link "MotivationOS Workplace Insights" [ref=e8] [cursor=pointer]:
+        - /url: /
+        - img [ref=e10]
+        - generic [ref=e16]:
+          - generic [ref=e17]: MotivationOS
+          - generic [ref=e18]: Workplace Insights
+    - heading "פרופיל מוטיבציה אישי" [level=2] [ref=e19]
+    - paragraph [ref=e20]: תורם/ת יחיד/ה
+    - img [ref=e24]:
+      - generic [ref=e53]:
+        - text: אוטונומיהAutonomy
+        - generic [ref=e54]: "3.0"
+      - generic [ref=e56]:
+        - text: מסוגלותCompetence
+        - generic [ref=e57]: "3.0"
+      - generic [ref=e59]:
+        - text: שייכותRelatedness
+        - generic [ref=e60]: "3.0"
+      - text: פרופיל מוטיבציה אישי
+  - generic [ref=e64]:
+    - tablist [ref=e66]:
+      - tab "אוטונומיה" [selected] [ref=e67] [cursor=pointer]:
+        - img [ref=e68]
+        - generic [ref=e72]: אוטונומיה
+      - tab "מסוגלות" [ref=e73] [cursor=pointer]:
+        - img [ref=e74]
+        - generic [ref=e77]: מסוגלות
+      - tab "שייכות" [ref=e78] [cursor=pointer]:
+        - img [ref=e79]
+        - generic [ref=e84]: שייכות
+      - tab "פעולות" [ref=e85] [cursor=pointer]:
+        - img [ref=e86]
+        - generic [ref=e91]: פעולות
+    - generic [ref=e93]:
+      - generic [ref=e94]:
+        - generic [ref=e95]: "3.0"
+        - generic [ref=e96]:
+          - heading "אוטונומיה" [level=3] [ref=e97]
+          - paragraph [ref=e98]: דורש תשומת לב
+      - generic [ref=e100]:
+        - img [ref=e101]
+        - generic [ref=e106]: טיפ AI
+        - generic [ref=e107]: מייצר...
+      - generic [ref=e112]:
+        - button "ניתוח ופעולות":
+          - generic: ניתוח ופעולות
+        - generic [ref=e113]:
+          - paragraph [ref=e114]: נראה שאתה מרגיש "מיקרו-ניהול" או חוסר יכולת להשפיע על סדר היום שלך.
+          - list [ref=e115]:
+            - listitem [ref=e116]:
+              - img [ref=e117]
+              - text: "השבוע: בקש פגישת 1:1 של 30 דקות עם המנהל/ת לדיון על גבולות החלטה"
+            - listitem [ref=e121]:
+              - img [ref=e122]
+              - text: "בפגישה הבאה: הצע למנהל/ת שיפור אחד קונקרטי בתהליך עבודה"
+    - generic [ref=e126]:
+      - generic [ref=e127]:
+        - generic [ref=e128]: מונע על ידי
+        - link "Just AI It" [ref=e129] [cursor=pointer]:
+          - /url: https://justaiit.web.app/
+          - img "Just AI It" [ref=e130]
+      - button "התחל שאלון מחדש" [ref=e131] [cursor=pointer]
+      - generic [ref=e132]:
+        - link "תנאי שימוש" [ref=e133] [cursor=pointer]:
+          - /url: /terms
+        - link "מדיניות פרטיות" [ref=e134] [cursor=pointer]:
+          - /url: /privacy
+        - link "נגישות" [ref=e135] [cursor=pointer]:
+          - /url: /accessibility
+```

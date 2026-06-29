@@ -400,15 +400,6 @@ const handleStart = (e?: React.FormEvent | React.MouseEvent) => {
     dispatchAssessment({ type: 'BACK' });
   };
 
-  const handleRetakeReminder = () => {
-    const email = formData.employeeEmail;
-    if (!email) return;
-    const subject = encodeURIComponent(t.whatsNextRetakeSubject);
-    const body = encodeURIComponent(t.whatsNextRetakeBody);
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-    syncData('interaction', { action: 'retake_reminder' });
-  };
-
   const handleSocialClick = (platform: string) => {
     syncData('interaction', { action: 'social_click', platform });
   };
@@ -492,7 +483,6 @@ const handleStart = (e?: React.FormEvent | React.MouseEvent) => {
           onReset={handleReset}
           copyToClipboard={copyToClipboard}
           generateFullReportText={generateFullReportText}
-          onRetakeReminder={handleRetakeReminder}
           statusMsg={statusMsg}
           onSocialClick={handleSocialClick}
           answers={analysisAnswers}
