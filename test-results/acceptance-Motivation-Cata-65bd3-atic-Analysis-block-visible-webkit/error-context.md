@@ -1,0 +1,66 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e8]:
+        - img [ref=e10]
+        - button "EN" [ref=e16] [cursor=pointer]
+      - heading "MotivationOS" [level=1] [ref=e17]
+      - paragraph [ref=e19]: Workplace Insights
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - generic [ref=e22]:
+            - img [ref=e23]
+            - heading "מרגישים תקועים?" [level=3] [ref=e25]
+          - paragraph [ref=e26]: חוסר מוטיבציה, תחושה של דריכה במקום ושחיקה בעבודה הן לא גזירת גורל. לפעמים פשוט חסר לנו המרכיב הנכון ב"כימיה" המקצועית שלנו.
+        - generic [ref=e27]:
+          - generic [ref=e28]:
+            - img [ref=e29]
+            - 'heading "הפתרון: מדע המוטיבציה" [level=3] [ref=e32]'
+          - paragraph [ref=e33]: מודל ה-SDT הוא שיטה מוכחת מחקרית המבוססת על עשורים של מחקר פסיכולוגי. המודל נחשב ל"תקן הזהב" במדעי ההתנהגות ומזהה את הצרכים הבסיסיים שחייבים להתקיים כדי שתרגישו חיוניות ומשמעות בעבודה.
+        - generic [ref=e34]:
+          - heading "למה כדאי לכם לבצע את האבחון?" [level=3] [ref=e35]:
+            - img [ref=e36]
+            - text: למה כדאי לכם לבצע את האבחון?
+          - list [ref=e40]:
+            - listitem [ref=e41]:
+              - img [ref=e42]
+              - text: מבוסס על מעל 40 שנות מחקר אמפירי הנתמך במאות מחקרים אקדמיים.
+            - listitem [ref=e44]:
+              - img [ref=e45]
+              - text: בשימוש על ידי חברות Fortune 500 וארגונים גלובליים למיטוב מחוברות.
+            - listitem [ref=e47]:
+              - img [ref=e48]
+              - text: בהירות לגבי המרכיבים המדויקים שחסרים לכם למוטיבציה שיא.
+            - listitem [ref=e50]:
+              - img [ref=e51]
+              - text: טיפים פרקטיים המתרגמים תיאוריה פסיכולוגית לצעדים בני-יישום.
+            - listitem [ref=e53]:
+              - img [ref=e54]
+              - text: כלי מדויק ומקצועי לשיתוף הצרכים שלכם עם המנהל/ת.
+    - generic [ref=e56]:
+      - generic [ref=e57]:
+        - button "Google Icon התחבר עם גוגל" [ref=e58] [cursor=pointer]:
+          - img "Google Icon" [ref=e59]
+          - text: התחבר עם גוגל
+        - generic [ref=e62]: או באימייל
+        - generic [ref=e64]:
+          - textbox "כתובת אימייל" [ref=e65]: demo@example.com
+          - textbox "סיסמה" [ref=e66]
+        - button "שכחת סיסמה?" [ref=e68] [cursor=pointer]
+        - button "התחבר" [ref=e69] [cursor=pointer]
+        - generic [ref=e70]:
+          - text: אין לך חשבון?
+          - button "הרשם עכשיו" [ref=e71] [cursor=pointer]
+      - generic [ref=e72]:
+        - link "תנאי שימוש" [ref=e73]:
+          - /url: /terms
+        - link "מדיניות פרטיות" [ref=e74]:
+          - /url: /privacy
+        - link "נגישות" [ref=e75]:
+          - /url: /accessibility
+  - iframe [ref=e76]:
+    
+```

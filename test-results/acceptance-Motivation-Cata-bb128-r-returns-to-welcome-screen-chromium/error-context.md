@@ -1,0 +1,80 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - button "Toggle language" [ref=e7] [cursor=pointer]: EN
+      - link "MotivationOS Workplace Insights" [ref=e8] [cursor=pointer]:
+        - /url: /
+        - img [ref=e10]
+        - generic [ref=e16]:
+          - generic [ref=e17]: MotivationOS
+          - generic [ref=e18]: Workplace Insights
+    - heading "פרופיל מוטיבציה אישי" [level=2] [ref=e19]
+    - paragraph [ref=e20]: תורם/ת יחיד/ה
+    - img [ref=e24]:
+      - generic [ref=e52]:
+        - generic [ref=e53]: אוטונומיה
+        - generic [ref=e54]: Autonomy
+        - generic [ref=e57]: "3.0"
+      - generic [ref=e58]:
+        - generic [ref=e59]: מסוגלות
+        - generic [ref=e60]: Competence
+        - generic [ref=e63]: "3.0"
+      - generic [ref=e64]:
+        - generic [ref=e65]: שייכות
+        - generic [ref=e66]: Relatedness
+        - generic [ref=e69]: "3.0"
+      - generic [ref=e72]: פרופיל מוטיבציה אישי
+  - generic [ref=e73]:
+    - tablist [ref=e75]:
+      - tab "אוטונומיה" [selected] [ref=e76] [cursor=pointer]:
+        - img [ref=e77]
+        - generic [ref=e81]: אוטונומיה
+      - tab "מסוגלות" [ref=e82] [cursor=pointer]:
+        - img [ref=e83]
+        - generic [ref=e86]: מסוגלות
+      - tab "שייכות" [ref=e87] [cursor=pointer]:
+        - img [ref=e88]
+        - generic [ref=e91]: שייכות
+      - tab "פעולות" [ref=e92] [cursor=pointer]:
+        - img [ref=e93]
+        - generic [ref=e98]: פעולות
+    - generic [ref=e100]:
+      - generic [ref=e101]:
+        - generic [ref=e102]: "3.0"
+        - generic [ref=e103]:
+          - heading "אוטונומיה" [level=3] [ref=e104]
+          - paragraph [ref=e105]: דורש תשומת לב
+      - generic [ref=e107]:
+        - img [ref=e108]
+        - generic [ref=e111]: טיפ AI
+        - generic [ref=e112]: מייצר...
+      - generic [ref=e117]:
+        - button "ניתוח ופעולות":
+          - generic: ניתוח ופעולות
+        - generic [ref=e118]:
+          - paragraph [ref=e119]: נראה שאתה מרגיש "מיקרו-ניהול" או חוסר יכולת להשפיע על סדר היום שלך.
+          - list [ref=e120]:
+            - listitem [ref=e121]:
+              - img [ref=e122]
+              - text: "השבוע: בקש פגישת 1:1 של 30 דקות עם המנהל/ת לדיון על גבולות החלטה"
+            - listitem [ref=e124]:
+              - img [ref=e125]
+              - text: "בפגישה הבאה: הצע למנהל/ת שיפור אחד קונקרטי בתהליך עבודה"
+    - generic [ref=e127]:
+      - generic [ref=e128]:
+        - generic [ref=e129]: מונע על ידי
+        - link "Just AI It" [ref=e130] [cursor=pointer]:
+          - /url: https://justaiit.web.app/
+          - img "Just AI It" [ref=e131]
+      - button "התחל שאלון מחדש" [ref=e132] [cursor=pointer]
+      - generic [ref=e133]:
+        - link "תנאי שימוש" [ref=e134] [cursor=pointer]:
+          - /url: /terms
+        - link "מדיניות פרטיות" [ref=e135] [cursor=pointer]:
+          - /url: /privacy
+        - link "נגישות" [ref=e136] [cursor=pointer]:
+          - /url: /accessibility
+```
