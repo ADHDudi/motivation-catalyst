@@ -40,10 +40,10 @@ test.describe('Authentication — Welcome Screen', () => {
         await page.locator('input[type="password"]').fill('Password123');
         await page.locator('button[type="submit"]').click();
 
-        // On localhost Firebase is not initialized — auth fails and error banner appears
+        // Firebase rejects the unknown credentials and an error banner appears
         // The user stays on the welcome screen (no crash)
         await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible({ timeout: 5000 });
-        await expect(page.locator('[role="alert"]')).toContainText(/שגיאת|Sign in failed|Invalid|Too many|Network/i);
+        await expect(page.locator('[role="alert"]')).toContainText(/שגיאת|שגויים|Sign in failed|Invalid|Too many|Network/i);
     });
 
     test('UC-AUTH-02 | Sign In — email field updates form data', async ({ page }) => {
@@ -77,8 +77,8 @@ test.describe('Authentication — Welcome Screen', () => {
         await page.locator('input[type="password"]').fill('wrong-password');
         await page.locator('button[type="submit"]').click();
 
-        // Error banner must appear (Firebase not initialized on localhost = auth failure)
-        await expect(page.locator('[role="alert"]')).toContainText(/שגיאת|Sign in failed|Invalid|Too many|Network/i);
+        // Error banner must appear (Firebase rejects the wrong password)
+        await expect(page.locator('[role="alert"]')).toContainText(/שגיאת|שגויים|Sign in failed|Invalid|Too many|Network/i);
         // Must NOT advance to assessment
         await expect(page.getByRole('heading', { name: 'MotivationOS' })).toBeVisible();
     });

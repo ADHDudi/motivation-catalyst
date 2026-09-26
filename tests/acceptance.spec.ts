@@ -51,14 +51,17 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
                 body: JSON.stringify({
                     data: {
                         autonomy: {
+                            analysis: "ניתוח AI מדומה לאוטונומיה",
                             tip: "טיפ AI מדומה לאוטונומיה",
                             adhd_tip: "טיפ קשב מדומה לאוטונומיה"
                         },
                         competence: {
+                            analysis: "ניתוח AI מדומה למסוגלות",
                             tip: "טיפ AI מדומה למסוגלות",
                             adhd_tip: "טיפ קשב מדומה למסוגלות"
                         },
                         relatedness: {
+                            analysis: "ניתוח AI מדומה לשייכות",
                             tip: "טיפ AI מדומה לשייכות",
                             adhd_tip: "טיפ קשב מדומה לשייכות"
                         }
@@ -123,7 +126,7 @@ test.describe('Motivation Catalyst — Acceptance Tests', () => {
         // Wait for mocked AI tip to load so the DOM is stable
         await expect(page.getByText('טיפ AI מדומה', { exact: false }).first()).toBeVisible({ timeout: 10000 });
 
-        await expect(page.getByText('ניתוח', { exact: true }).or(page.getByText('Analysis', { exact: true })).first()).toBeVisible({ timeout: 10000 });
+        await expect(page.getByRole('button', { name: /ניתוח ופעולות|Analysis & Actions/ }).first()).toBeVisible({ timeout: 10000 });
     });
 
     test('AC-06 | Analysis — AI Tip block visible', async ({ page }) => {

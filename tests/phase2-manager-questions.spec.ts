@@ -5,13 +5,13 @@ import { test, expect } from '@playwright/test';
  *
  * Phase 2 introduced role-branching: when userRole === 'manager', AssessmentView
  * renders q.managerText[lang] instead of q.text[lang], and AnalysisView shows
- * "Manager Recommendations" (t.managerRecs) instead of "Personal Insights" (t.userInsights).
+ * the "Manager" role label (t.roleManagerLabel) instead of "Solo Contributor" (t.roleSoloLabel).
  *
  * Demo mode always uses the 'solo' role (bypasses role-select), so manager-path
  * tests that require the actual assessment screen need real auth and are marked fixme.
  *
  * Reachable via demo (no auth required):
- *   P2-01 | Solo demo reaches analysis with solo-role heading
+ *   P2-01 | Solo demo reaches analysis with solo-role label
  *   P2-02 | App loads with updated constants (managerText compiled)
  *
  * Requires real auth (fixme):
@@ -22,7 +22,7 @@ test.describe('Phase 2 — Manager Question Branching', () => {
 
   // ─── SOLO PATH (reachable via demo) ─────────────────────────────────────────
 
-  test('P2-01 | Solo demo — analysis shows solo-role heading, not manager heading', async ({ page }) => {
+  test('P2-01 | Solo demo — analysis shows solo-role label, not manager label', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 10000 });
 
@@ -34,11 +34,11 @@ test.describe('Phase 2 — Manager Question Branching', () => {
     // Wait for analysis screen
     await expect(page.getByRole('heading', { name: /פרופיל מוטיבציה/i })).toBeVisible({ timeout: 10000 });
 
-    // Solo role: "Personal Insights" heading must be visible
-    await expect(page.getByRole('heading', { name: /תובנות לצמיחה/i })).toBeVisible({ timeout: 5000 });
+    // Solo role: the role label under the profile title shows the solo contributor
+    await expect(page.getByText('תורם/ת יחיד/ה', { exact: true })).toBeVisible({ timeout: 5000 });
 
-    // Manager heading must NOT appear (demo always uses solo role)
-    await expect(page.getByRole('heading', { name: /המלצות לניהול/i })).not.toBeVisible();
+    // Manager label must NOT appear (demo always uses solo role)
+    await expect(page.getByText('מנהל/ת', { exact: true })).not.toBeVisible();
   });
 
   test('P2-02 | App loads with updated constants (managerText compiled)', async ({ page }) => {
