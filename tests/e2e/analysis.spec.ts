@@ -98,6 +98,26 @@ test.describe('Analysis screen (mocked AI)', () => {
         expect(writes[0].collection).toBe('feedback');
         expect(writes[0].doc).toMatchObject({ rating: 4, comment: 'Test feedback from automation' });
     });
+
+    test('FB-02 | Feedback — shows sending state, then the reward even when Firestore is unreachable', async ({ page }) => {
+        // Real SDK with the network blocked: add() never gets a server ack, so the
+        // component's save timeout (8s) has to move it on to the reward.
+        await page.route('**/firestore.googleapis.com/**', route => route.abort());
+        await page.getByRole('tab', { name: /פעולות|Actions/i }).click();
+
+        const heading = page.getByRole('heading', { name: /איך החוויה שלך עד כה\?|How is your experience so far\?/ });
+        await heading.scrollIntoViewIfNeeded();
+        await page.getByRole('button', { name: 'Rate 4 stars' }).click();
+        const commentBox = page.getByPlaceholder(/ספר\/י לנו עוד|Tell us more/);
+        await commentBox.fill('Offline feedback from automation');
+        await page.getByRole('button', { name: /שלח וגלה את הבונוס|Submit & Unlock Bonus/ }).click();
+
+        // The comment box and button stay put while the save is pending
+        await expect(page.getByText(/שולח\.\.\.|Sending\.\.\./)).toBeVisible();
+        await expect(commentBox).toBeVisible();
+
+        await expect(page.getByRole('heading', { name: /תודה על הפידבק!|Thanks for your feedback!/ })).toBeVisible({ timeout: 12000 });
+    });
 });
 
 test.describe('Analysis screen (real AI backend)', () => {
