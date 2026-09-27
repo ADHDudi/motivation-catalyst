@@ -1,14 +1,17 @@
 import { onCall, CallableRequest, HttpsError } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
+import { defineSecret } from "firebase-functions/params";
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 
-// Initialize Gemini with the API key from environment
+// Gemini API key, stored in Cloud Secret Manager
+const geminiApiKey = defineSecret("GEMINI_KEY");
+
+// Initialize Gemini with the API key from Secret Manager
 const getAI = () => {
-    // Force redeploy comment to sync .env key with Firebase (updated v2)
     console.log("Initializing Gemini AI client...");
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = geminiApiKey.value();
     if (!apiKey) {
-        throw new Error("GEMINI_API_KEY environment variable is not set");
+        throw new Error("GEMINI_KEY secret is not set");
     }
     return new GoogleGenAI({ apiKey });
 };
@@ -72,7 +75,7 @@ interface GenerateInsightsRequest {
 }
 
 export const generateInsights = onCall(
-    { timeoutSeconds: 300, memory: "512MiB" },
+    { timeoutSeconds: 300, memory: "512MiB", secrets: [geminiApiKey] },
     async (request: CallableRequest<GenerateInsightsRequest>) => {
         const { founderAName, founderBName, allComparisonDetails, feedbackContext, lang = "en" } = request.data;
 
@@ -194,7 +197,7 @@ interface GenerateMotivationAnalysisRequest {
 }
 
 export const generateMotivationAnalysis = onCall(
-    { timeoutSeconds: 300, memory: "512MiB" },
+    { timeoutSeconds: 300, memory: "512MiB", secrets: [geminiApiKey] },
     async (request: CallableRequest<GenerateMotivationAnalysisRequest>) => {
         const { responses, employeeName, managerName, lang = "en" } = request.data;
 
