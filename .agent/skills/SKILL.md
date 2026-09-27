@@ -42,9 +42,9 @@ GEMINI_API_KEY=your_api_key_here
 | `npm run dev`      | Start local dev server at **http://localhost:5173** |
 | `npm run build`    | Build for production (outputs to `dist/`)       |
 | `npm run deploy`   | Run `deploy.sh` → builds + deploys to Firebase  |
-| `npm run test`     | Run Playwright tests against **Firebase live**  |
-| `npm run test:local`| Run Playwright tests against **localhost:5173** |
-| `npm run test:live`| Run Playwright tests against **Firebase live**  |
+| `npm run test`     | Run unit tests, then the E2E suite              |
+| `npm run test:unit`| Run Vitest unit tests (`tests/unit/`)           |
+| `npm run test:e2e` | Run Playwright E2E tests (`tests/e2e/`); asks local or production. Skip the prompt with `-- local` or `-- prod` |
 | `npm run report`   | Open Playwright HTML report                     |
 
 ## Deployment Notes
@@ -79,4 +79,4 @@ GEMINI_API_KEY=your_api_key_here
 | `views/AssessmentView.tsx`    | Question flow component                      |
 | `views/WelcomeView.tsx`       | Welcome / registration screen                |
 | `types.ts`                    | Shared TypeScript interfaces                 |
-| `tests/acceptance.spec.ts`    | Main Playwright acceptance tests             |
+| `tests/e2e/`                  | Playwright E2E suite (auth, analysis, layout) |
