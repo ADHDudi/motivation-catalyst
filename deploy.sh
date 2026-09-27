@@ -70,16 +70,13 @@ rm -f "$DEPLOY_DIR/functions/.env"
 echo "📥 Installing frontend dependencies..."
 npm install --cache .npm-local-cache --silent
 
-echo "🛠️  Building frontend..."
-npm run build
-
 echo "⚙️  Preparing functions..."
 cd functions
 npm install --cache ../.npm-local-cache
-echo "🛠️  Building functions..."
-npm run build
 cd ..
 
+# The frontend and functions are built by the predeploy hooks in firebase.json,
+# so every `firebase deploy` (from here or by hand) ships a fresh build.
 echo "🔥 Deploying to Firebase..."
 # Use local firebase if possible, otherwise rely on globally installed
 if [ -f "./node_modules/.bin/firebase" ]; then
