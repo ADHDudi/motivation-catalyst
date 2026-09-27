@@ -366,16 +366,15 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         if (lastFetchedSignature.current === requestSignature) {
           setAiInsights(analysis);
           setLastAiLang(lang);
+          setIsLoadingAI(false);
         }
       } catch (err) {
         if (lastFetchedSignature.current === requestSignature) {
           console.error('Error generating AI analysis:', err);
           setAiError(err instanceof Error ? err.message : String(err));
-          lastFetchedSignature.current = null;
-        }
-      } finally {
-        if (lastFetchedSignature.current === requestSignature) {
           setIsLoadingAI(false);
+          // Allow a later retry of the same request
+          lastFetchedSignature.current = null;
         }
       }
     };

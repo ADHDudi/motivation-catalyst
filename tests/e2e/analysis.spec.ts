@@ -100,6 +100,24 @@ test.describe('Analysis screen (mocked AI)', () => {
     });
 });
 
+test.describe('Analysis screen (AI backend fails)', () => {
+    test('AC-14 | AI error falls back to the static tip and the spinner stops', async ({ page }) => {
+        await page.route('**/generateMotivationAnalysis', route =>
+            route.fulfill({
+                status: 500,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: { message: 'e2e forced failure', status: 'INTERNAL' } }),
+            }),
+        );
+        await openDemoAnalysis(page);
+
+        await expect(page.getByText('מייצר...', { exact: true })).toBeHidden({ timeout: 10000 });
+        // Static autonomy tip for a low score (demo "mid" profile)
+        await expect(page.getByText(/Time Blocking/)).toBeVisible();
+        await expect(page.getByText('מותאם', { exact: true })).not.toBeVisible();
+    });
+});
+
 test.describe('Analysis screen (real AI backend)', () => {
     // Calls the deployed Cloud Function (and Gemini) — run it once, not per browser.
     test.skip(({ browserName }) => browserName !== 'chromium', 'Real backend call runs in Chromium only');

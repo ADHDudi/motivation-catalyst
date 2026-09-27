@@ -37,3 +37,6 @@ functions/.secret.local
 test-results/
 playwright-report/
 blob-report/
+
+# Firebase CLI deploy cache
+.firebase/
