@@ -1,6 +1,6 @@
 import { test, expect, Page, APIRequestContext } from '@playwright/test';
-import { VIEWS } from './support/views';
-import { brandToken } from './support/brandTokens';
+import { VIEWS } from './helpers';
+import { brandToken } from '../support/brandTokens';
 
 const headHref = (page: Page, selector: string) =>
   page.locator(`head ${selector}`).getAttribute('href');
