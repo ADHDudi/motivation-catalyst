@@ -2,7 +2,7 @@ import React, { useId } from 'react';
 
 // MotivationOS app glyph — a charged battery with a lightning bolt.
 // Colors follow the B2C palette: --b2c-azure (#1F7AFF) → --b2c-sky (#38BDF8).
-// Keep in sync with public/favicon.svg and public/icons/app-icon.svg.
+// Same drawing as assets/icon/icon-mark.svg, the master for the favicon and home-screen icons.
 // Pass `label` when the icon stands alone; omit it when text next to it names the app.
 const AppIcon: React.FC<{ size: number; label?: string }> = ({ size, label }) => {
   const id = useId();
