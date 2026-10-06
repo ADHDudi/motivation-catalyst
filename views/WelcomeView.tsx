@@ -107,7 +107,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
         
         <div className="flex justify-between items-center mb-8 md:mb-12 relative z-10">
           <div className="hidden md:flex w-16 h-16 bg-white rounded-2xl items-center justify-center shadow-lg shadow-[#1F7AFF]/10 border-2 border-[#1F7AFF]/10">
-            <AppIcon size={48} />
+            <AppIcon size={48} label="MotivationOS" />
           </div>
           <button
             onClick={() => setLang(lang === 'he' ? 'en' : 'he')}
@@ -119,7 +119,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
 
         <div className="md:hidden relative inline-block mb-6 z-10">
           <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto shadow-xl shadow-[#1F7AFF]/10 border-4 border-[#1F7AFF]/10">
-            <AppIcon size={56} />
+            <AppIcon size={56} label="MotivationOS" />
           </div>
         </div>
 

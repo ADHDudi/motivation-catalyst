@@ -3,13 +3,16 @@ import React, { useId } from 'react';
 // MotivationOS app glyph — a charged battery with a lightning bolt.
 // Colors follow the B2C palette: --b2c-azure (#1F7AFF) → --b2c-sky (#38BDF8).
 // Keep in sync with public/favicon.svg and public/icons/app-icon.svg.
-const AppIcon: React.FC<{ size: number }> = ({ size }) => {
+// Pass `label` when the icon stands alone; omit it when text next to it names the app.
+const AppIcon: React.FC<{ size: number; label?: string }> = ({ size, label }) => {
   const id = useId();
   const stroke = `${id}-stroke`;
   const fill = `${id}-fill`;
 
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" data-testid="app-icon"
+      {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}
+    >
       <defs>
         <linearGradient id={stroke} x1="24" y1="4" x2="24" y2="45" gradientUnits="userSpaceOnUse">
           <stop offset="0" stopColor="#1F7AFF" />
