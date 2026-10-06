@@ -9,10 +9,9 @@
     "preview": "vite preview",
     "icons": "node scripts/generate-icons.mjs",
     "deploy": "./deploy.sh",
-    "test": "playwright test",
+    "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "vitest run",
-    "test:local": "BASE_URL=http://localhost:5173 playwright test",
-    "test:live": "BASE_URL=https://motivation-catalyst-david.web.app playwright test",
+    "test:e2e": "node scripts/test-e2e.mjs",
     "report": "playwright show-report"
   },
   "dependencies": {

@@ -12,7 +12,11 @@ export interface FeedbackData {
   rating: number; // 1 for thumbs down, 5 for thumbs up
   comment: string;
   timestamp: any; // Firestore timestamp
-  results: Results;
+  results: Results | null;
+  source?: string;
+  userId?: string | null;
+  userEmail?: string | null;
+  userName?: string | null;
   isRead?: boolean; // Ensure old code matches db update
 }
 

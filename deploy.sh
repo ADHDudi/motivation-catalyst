@@ -50,11 +50,6 @@ rsync -av --exclude node_modules --exclude .git --exclude dist . "$DEPLOY_DIR/" 
 echo "⚙️  Building and Deploying from $DEPLOY_DIR..."
 cd "$DEPLOY_DIR"
 
-# Allow .env to be deployed by removing it from the isolated .gitignore
-if [ -f ".gitignore" ]; then
-  sed -i '' '/functions\/.env/d' .gitignore || true
-fi
-
 # Force dependency sync and local cache to avoid EPERM
 export FIREBASE_CHECK_UPDATES=false
 export XDG_CONFIG_HOME="$DEPLOY_DIR/.config"
@@ -67,31 +62,21 @@ if [ -f "$HOME/.config/configstore/firebase-tools.json" ]; then
   cp "$HOME/.config/configstore/firebase-tools.json" "$XDG_CONFIG_HOME/configstore/"
 fi
 
-# Inject API Key from local functions/.env file or environment variable
-if [ -n "$GEMINI_API_KEY" ]; then
-  echo "GEMINI_API_KEY=$GEMINI_API_KEY" > "$DEPLOY_DIR/functions/.env"
-elif [ ! -f "functions/.env" ]; then
-  touch "functions/.env"
-fi
-# Check if GEMINI_API_KEY is available in functions/.env or environment
-if [ ! -f "functions/.env" ] && [ -z "$GEMINI_API_KEY" ]; then
-  echo "⚠️  WARNING: GEMINI_API_KEY not found in functions/.env or environment variables."
-  echo "The deployment might fail or the function might not work correctly."
-fi
+# The Gemini API key lives in Cloud Secret Manager (firebase functions:secrets:set GEMINI_KEY).
+# Drop any stale functions/.env left in the reused deploy dir so the key is never
+# deployed as a plain-text env var again.
+rm -f "$DEPLOY_DIR/functions/.env"
 
 echo "📥 Installing frontend dependencies..."
 npm install --cache .npm-local-cache --silent
 
-echo "🛠️  Building frontend..."
-npm run build
-
 echo "⚙️  Preparing functions..."
 cd functions
 npm install --cache ../.npm-local-cache
-echo "🛠️  Building functions..."
-npm run build
 cd ..
 
+# The frontend and functions are built by the predeploy hooks in firebase.json,
+# so every `firebase deploy` (from here or by hand) ships a fresh build.
 echo "🔥 Deploying to Firebase..."
 # Use local firebase if possible, otherwise rely on globally installed
 if [ -f "./node_modules/.bin/firebase" ]; then

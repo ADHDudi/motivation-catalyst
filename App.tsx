@@ -180,6 +180,8 @@ const App = () => {
         setAuthError(lang === 'he' ? 'כתובת אימייל לא תקינה' : 'Invalid email address');
       } else if (code === 'auth/network-request-failed') {
         setAuthError(lang === 'he' ? 'בעיית חיבור לרשת. בדוק את החיבור שלך' : 'Network error. Check your connection');
+      } else if (code === 'auth/operation-not-allowed') {
+        setAuthError(lang === 'he' ? 'שיטת התחברות זו אינה מופעלת במסד הנתונים' : 'This sign-in method is disabled in the project settings');
       } else {
         setAuthError(lang === 'he' ? 'שגיאת התחברות. נסה שוב' : 'Sign in failed. Please try again');
       }
@@ -202,6 +204,8 @@ const App = () => {
         setAuthError(lang === 'he' ? 'כתובת אימייל לא תקינה' : 'Invalid email address');
       } else if (code === 'auth/network-request-failed') {
         setAuthError(lang === 'he' ? 'בעיית חיבור לרשת. בדוק את החיבור שלך' : 'Network error. Check your connection');
+      } else if (code === 'auth/operation-not-allowed') {
+        setAuthError(lang === 'he' ? 'שיטת התחברות זו אינה מופעלת במסד הנתונים' : 'This sign-in method is disabled in the project settings');
       } else {
         setAuthError(lang === 'he' ? 'הרשמה נכשלה. נסה שוב' : 'Sign up failed. Please try again');
       }
@@ -396,15 +400,6 @@ const handleStart = (e?: React.FormEvent | React.MouseEvent) => {
     dispatchAssessment({ type: 'BACK' });
   };
 
-  const handleRetakeReminder = () => {
-    const email = formData.employeeEmail;
-    if (!email) return;
-    const subject = encodeURIComponent(t.whatsNextRetakeSubject);
-    const body = encodeURIComponent(t.whatsNextRetakeBody);
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-    syncData('interaction', { action: 'retake_reminder' });
-  };
-
   const handleSocialClick = (platform: string) => {
     syncData('interaction', { action: 'social_click', platform });
   };
@@ -488,7 +483,6 @@ const handleStart = (e?: React.FormEvent | React.MouseEvent) => {
           onReset={handleReset}
           copyToClipboard={copyToClipboard}
           generateFullReportText={generateFullReportText}
-          onRetakeReminder={handleRetakeReminder}
           statusMsg={statusMsg}
           onSocialClick={handleSocialClick}
           answers={analysisAnswers}

@@ -28,7 +28,6 @@ interface AnalysisViewProps {
   onReset: () => void;
   copyToClipboard: (text: string) => void;
   generateFullReportText: (variant?: 'self' | 'share') => string;
-  onRetakeReminder: () => void;
   statusMsg: string;
   onSocialClick?: (platform: string) => void;
   answers: Answers;
@@ -120,7 +119,10 @@ const CategoryTabContent: React.FC<CategoryTabContentProps> = ({
 }) => {
   const data = t.deepAnalysis[categoryKey][roleKey][isLow(score) ? 'low' : 'high'];
   const color = COLORS[categoryKey].hex;
-  const displayTip = aiTip || data.aiTips;
+  
+  // Only show static fallback if we are NOT loading AI (meaning it failed or timed out)
+  const displayTip = aiTip || (!isLoadingAI ? data.aiTips : null);
+  
   const isDynamic = !!aiTip;
   const [isExpanded, setIsExpanded] = useState(() => window.innerWidth >= 768);
 
@@ -266,7 +268,7 @@ const WhatsNextCard: React.FC<WhatsNextCardProps> = ({ title, desc, icon: Icon, 
 
 const AnalysisView: React.FC<AnalysisViewProps> = ({
   t, lang, setLang, userRole, formData, results, onReset,
-  copyToClipboard, generateFullReportText, onRetakeReminder, statusMsg, answers
+  copyToClipboard, generateFullReportText, statusMsg, answers
 }) => {
   const analysisService = useAnalysisService();
   /* ── AI state ── */
@@ -364,16 +366,15 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         if (lastFetchedSignature.current === requestSignature) {
           setAiInsights(analysis);
           setLastAiLang(lang);
+          setIsLoadingAI(false);
         }
       } catch (err) {
         if (lastFetchedSignature.current === requestSignature) {
           console.error('Error generating AI analysis:', err);
           setAiError(err instanceof Error ? err.message : String(err));
-          lastFetchedSignature.current = null;
-        }
-      } finally {
-        if (lastFetchedSignature.current === requestSignature) {
           setIsLoadingAI(false);
+          // Allow a later retry of the same request
+          lastFetchedSignature.current = null;
         }
       }
     };
@@ -402,7 +403,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
 
   return (
     <div
-      className={`w-full max-w-6xl mx-auto md:my-auto bg-white/95 backdrop-blur-xl md:rounded-[60px] shadow-2xl shadow-slate-200/50 overflow-hidden text-${t.dir === 'rtl' ? 'right' : 'left'} flex flex-col md:flex-row md:min-h-[85vh] animate-fade-in`}
+      className={`w-full max-w-6xl mx-auto md:my-auto bg-white/95 backdrop-blur-xl md:rounded-[60px] shadow-2xl shadow-slate-200/50 overflow-hidden text-${t.dir === 'rtl' ? 'right' : 'left'} flex flex-col md:flex-row min-h-[100dvh] md:min-h-[600px] md:h-auto md:max-h-[90vh] animate-fade-in`}
       dir={t.dir}
     >
       {/* ── LEFT PANE (Hero & Chart) ── */}
@@ -567,14 +568,6 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
                     icon={Share2}
                     accent="var(--b2c-azure)"
                     onClick={() => copyToClipboard(generateFullReportText('share'))}
-                    dir={t.dir}
-                  />
-                  <WhatsNextCard
-                    title={t.whatsNextRetakeTitle}
-                    desc={t.whatsNextRetakeDesc}
-                    icon={BellRing}
-                    accent="#90BC6E"
-                    onClick={onRetakeReminder}
                     dir={t.dir}
                   />
                 </div>

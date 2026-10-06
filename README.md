@@ -168,21 +168,30 @@ Firebase credentials are provided via `firebaseConfig.ts` for localhost. In prod
 * Firebase-based authentication (Google OAuth + email/password)
 * AI-generated personalized insights via Gemini
 * Responsive layout (mobile / tablet / desktop)
-* E2E test suite: 93 tests across 3 browsers
+* E2E test suite (Playwright) across Chromium, Firefox and WebKit, plus Vitest unit tests
 
 ---
 
 ## Testing
 
 ```bash
-# Run all tests (defaults to localhost:5173)
+# Run unit tests, then the E2E suite
 npm test
 
-# Run against production
-npm run test:live
+# Run only the E2E suite — asks whether to test local or production
+npm run test:e2e
 
-# View last test report
+# Skip the question, and pass extra options to Playwright
+npm run test:e2e -- local --project=chromium
+npm run test:e2e -- prod
+
+# Run only the unit tests
+npm run test:unit
+
+# View last E2E test report
 npm run report
 ```
 
-Tests cover: welcome screen, authentication flows (sign in, sign up, forgot password, Google), assessment journey, analysis view, language toggling, feedback form, and demo mode.
+E2E tests live in `tests/e2e/` and unit tests in `tests/unit/`. The E2E suite mocks the AI Cloud Function and replaces Firestore writes with an in-page fake, so it never writes to the real database. One test (AC-13) calls the real AI backend, and it runs in Chromium only.
+
+Tests cover: welcome screen, authentication flows (sign in, sign up, forgot password, Google), analysis view, language toggling, feedback form, responsive layout, and demo mode. The assessment questions themselves need a signed-in user, so those tests are marked `fixme` for now.

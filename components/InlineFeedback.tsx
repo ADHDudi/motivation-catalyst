@@ -4,6 +4,8 @@ import { useFeedbackRepo } from '../services/ServiceContext';
 import { Results } from '../types';
 import { getPriorityCategory } from '../motivationCalculator';
 
+const SAVE_TIMEOUT_MS = 8000;
+
 interface InlineFeedbackProps {
   source: string;
   lang: 'en' | 'he';
@@ -44,8 +46,14 @@ const InlineFeedback: React.FC<InlineFeedbackProps> = ({
   const handleSubmit = async () => {
     if (rating === 0) return;
     setStatus('submitting');
+    let timer: ReturnType<typeof setTimeout> | undefined;
     try {
-      await feedbackRepo.saveFeedback({
+      // Firestore's add() waits for a server ack and never settles while offline,
+      // so don't let a stuck save hold back the reward.
+      const timeout = new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error('Saving feedback timed out')), SAVE_TIMEOUT_MS);
+      });
+      await Promise.race([feedbackRepo.saveFeedback({
         rating,
         comment,
         source,
@@ -54,10 +62,11 @@ const InlineFeedback: React.FC<InlineFeedbackProps> = ({
         userName: userName || null,
         results: results || null,
         timestamp: null
-      });
+      }), timeout]);
     } catch (error) {
       console.error('Failed to save feedback:', error);
     } finally {
+      clearTimeout(timer);
       setStatus('rewarded');
     }
   };
@@ -108,7 +117,7 @@ const InlineFeedback: React.FC<InlineFeedbackProps> = ({
             </div>
           </div>
 
-          {status === 'commenting' && (
+          {(status === 'commenting' || status === 'submitting') && (
             <div className="animate-in slide-in-from-top-4 fade-in duration-300 pt-2 border-t border-slate-200/60 mt-4">
               <textarea
                 className="w-full p-4 rounded-2xl bg-white border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#38BDF8]/50 focus:border-transparent min-h-[80px] transition-all resize-none mb-3"

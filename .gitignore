@@ -31,3 +31,12 @@ functions/.env
 # Local env (API keys — never commit)
 .env
 .env.local
+functions/.secret.local
+
+# Playwright output
+test-results/
+playwright-report/
+blob-report/
+
+# Firebase CLI deploy cache
+.firebase/
