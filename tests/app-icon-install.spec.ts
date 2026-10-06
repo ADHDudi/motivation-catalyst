@@ -1,13 +1,6 @@
 import { test, expect, Page, APIRequestContext } from '@playwright/test';
-import fs from 'fs';
-
-const tokens = fs.readFileSync(new URL('../src/styles/colors_and_type.css', import.meta.url), 'utf8');
-const token = (name: string) => tokens.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6})`))![1].toUpperCase();
-
-const VIEWS = [
-  { name: 'Mobile view', use: { viewport: { width: 375, height: 667 }, hasTouch: true, isMobile: true } },
-  { name: 'Desktop view', use: { viewport: { width: 1280, height: 800 } } },
-];
+import { VIEWS } from './support/views';
+import { brandToken } from './support/brandTokens';
 
 const headHref = (page: Page, selector: string) =>
   page.locator(`head ${selector}`).getAttribute('href');
@@ -98,8 +91,8 @@ for (const view of VIEWS) {
 
       expect(contentType).toContain('application/manifest+json');
       expect(json).toMatchObject({ name: expect.stringContaining('MotivationOS'), short_name: 'MotivationOS', start_url: '/', display: 'standalone' });
-      expect(json.theme_color.toUpperCase()).toBe(token('b2c-azure'));
-      expect((await page.locator('head meta[name="theme-color"]').getAttribute('content'))!.toUpperCase()).toBe(token('b2c-azure'));
+      expect(json.theme_color.toUpperCase()).toBe(brandToken('b2c-azure'));
+      expect((await page.locator('head meta[name="theme-color"]').getAttribute('content'))!.toUpperCase()).toBe(brandToken('b2c-azure'));
     });
 
     test('lists 192 and 512 px standard icons with rounded, transparent corners', async ({ page, request }) => {

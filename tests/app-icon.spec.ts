@@ -1,9 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-
-const VIEWS = [
-  { name: 'Mobile view', use: { viewport: { width: 375, height: 667 }, hasTouch: true } },
-  { name: 'Desktop view', use: { viewport: { width: 1280, height: 800 } } },
-];
+import { VIEWS } from './support/views';
 
 const appIcon = (page: Page) => page.getByRole('img', { name: 'MotivationOS' });
 
