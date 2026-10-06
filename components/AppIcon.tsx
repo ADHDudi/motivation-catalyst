@@ -26,7 +26,7 @@ const AppIcon: React.FC<{ size: number; label?: string }> = ({ size, label }) =>
       <rect x="18.5" y="4" width="11" height="5" rx="2" fill={`url(#${stroke})`} />
       <rect x="11.25" y="8.75" width="25.5" height="35" rx="6" stroke={`url(#${stroke})`} strokeWidth="2.5" />
       <rect x="15" y="12.5" width="18" height="27.5" rx="3" fill={`url(#${fill})`} fillOpacity="0.9" />
-      <path d="M26.6 16 L18.4 28.4 H23.4 L21.4 36.5 L29.6 24.1 H24.6 Z" fill="white" fillOpacity="0.95" strokeLinejoin="round" />
+      <path d="M26.6 16 L18.4 28.4 H23.4 L21.4 36.5 L29.6 24.1 H24.6 Z" fill="#FFFFFF" fillOpacity="0.95" />
     </svg>
   );
 };

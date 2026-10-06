@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
   <!-- MotivationOS mark: charged battery. Master source for every icon file; run `npm run icons` after editing. -->
-  <!-- Colors: --b2c-azure #1F7AFF → --b2c-sky #38BDF8. -->
+  <!-- Colors: b2c-azure #1F7AFF to b2c-sky #38BDF8 (src/styles/colors_and_type.css). -->
   <defs>
     <linearGradient id="mark-stroke" x1="24" y1="4" x2="24" y2="45" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#1F7AFF"/>

@@ -6,8 +6,17 @@ import path from 'path';
 import { render, cleanup } from '@testing-library/react';
 import AppIcon from '../../components/AppIcon';
 
+const master = fs.readFileSync(path.resolve(__dirname, '../../assets/icon/icon-mark.svg'), 'utf8');
 const tokens = fs.readFileSync(path.resolve(__dirname, '../../src/styles/colors_and_type.css'), 'utf8');
 const token = (name: string) => tokens.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6})`))![1].toUpperCase();
+
+// Every drawn/gradient element as "tag attr=value …", ignoring ids and which id a url() points at.
+const drawing = (svg: Element) =>
+  [...svg.querySelectorAll('*')].filter(el => !['svg', 'defs', 'g'].includes(el.tagName)).map(el =>
+    [el.tagName, ...[...el.attributes]
+      .filter(a => a.name !== 'id')
+      .map(a => `${a.name}=${a.value.replace(/url\(#.*-(\w+)\)/, 'url(#$1)')}`)
+      .sort()].join(' '));
 
 afterEach(cleanup);
 
@@ -38,4 +47,13 @@ describe('AppIcon', () => {
       }
     }
   });
+
+  it('draws the same mark as the master icon (assets/icon/icon-mark.svg)', () => {
+    const masterSvg = new DOMParser().parseFromString(master, 'image/svg+xml').documentElement;
+    const { getByTestId } = render(<AppIcon size={48} />);
+
+    expect(getByTestId('app-icon').getAttribute('viewBox')).toBe(masterSvg.getAttribute('viewBox'));
+    expect(drawing(getByTestId('app-icon'))).toEqual(drawing(masterSvg));
+  });
 });
+
