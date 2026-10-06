@@ -1,16 +1,7 @@
 import React from 'react';
 import { AlertCircle, ShieldCheck, Target, Zap, ArrowRight, RotateCcw, X } from 'lucide-react';
-
-const MotivationOSHeroIcon: React.FC = () => (
-  <svg width="48" height="48" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="5" y="30" width="8" height="10" rx="2.5" fill="#38BDF8" fillOpacity="0.6" />
-    <rect x="17" y="20" width="8" height="20" rx="2.5" fill="#38BDF8" fillOpacity="0.8" />
-    <rect x="29" y="10" width="8" height="30" rx="2.5" fill="#1F7AFF" />
-    <path d="M33 6 L38 11 L35.5 11 L35.5 10 L30.5 10 L30.5 11 L28 11 Z" fill="#1F7AFF" />
-    <path d="M9 29 Q23 15 33 8" stroke="#3CDCF0" strokeWidth="1.5" fill="none" strokeDasharray="2,2" />
-  </svg>
-);
 import { Link } from 'react-router-dom';
+import AppIcon from '../components/AppIcon';
 import { TranslationData, FormData, Language } from '../types';
 
 interface WelcomeViewProps {
@@ -115,8 +106,8 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
         <div className="absolute bottom-0 right-0 w-64 h-64 bg-[#3CDCF0]/10 rounded-full blur-3xl mix-blend-multiply" />
         
         <div className="flex justify-between items-center mb-8 md:mb-12 relative z-10">
-          <div className="hidden md:flex w-16 h-16 bg-white rounded-2xl items-center justify-center shadow-lg border-2 border-[#324FA2]/5">
-            <MotivationOSHeroIcon />
+          <div className="hidden md:flex w-16 h-16 bg-white rounded-2xl items-center justify-center shadow-lg shadow-[#1F7AFF]/10 border-2 border-[#1F7AFF]/10">
+            <AppIcon size={48} label="MotivationOS" />
           </div>
           <button
             onClick={() => setLang(lang === 'he' ? 'en' : 'he')}
@@ -127,8 +118,8 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({
         </div>
 
         <div className="md:hidden relative inline-block mb-6 z-10">
-          <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto shadow-xl border-4 border-[#324FA2]/5">
-            <MotivationOSHeroIcon />
+          <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto shadow-xl shadow-[#1F7AFF]/10 border-4 border-[#1F7AFF]/10">
+            <AppIcon size={56} label="MotivationOS" />
           </div>
         </div>
 

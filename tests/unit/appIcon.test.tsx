@@ -1,0 +1,58 @@
+// @vitest-environment jsdom
+import { describe, it, expect, afterEach } from 'vitest';
+import React from 'react';
+import fs from 'fs';
+import path from 'path';
+import { render, cleanup } from '@testing-library/react';
+import AppIcon from '../../components/AppIcon';
+import { brandToken } from '../support/brandTokens';
+
+const master = fs.readFileSync(path.resolve(__dirname, '../../assets/icon/icon-mark.svg'), 'utf8');
+
+// Every drawn/gradient element as "tag attr=value …", ignoring ids and which id a url() points at.
+const drawing = (svg: Element) =>
+  [...svg.querySelectorAll('*')].filter(el => !['svg', 'defs', 'g'].includes(el.tagName)).map(el =>
+    [el.tagName, ...[...el.attributes]
+      .filter(a => a.name !== 'id')
+      .map(a => `${a.name}=${a.value.replace(/url\(#.*-(\w+)\)/, 'url(#$1)')}`)
+      .sort()].join(' '));
+
+afterEach(cleanup);
+
+describe('AppIcon', () => {
+  it('is drawn in the app base colors (--b2c-azure → --b2c-sky)', () => {
+    const { getByTestId } = render(<AppIcon size={48} />);
+
+    const stops = [...getByTestId('app-icon').querySelectorAll('stop')].map(s => s.getAttribute('stop-color')!.toUpperCase());
+
+    expect(new Set(stops)).toEqual(new Set([brandToken('b2c-azure'), brandToken('b2c-sky')]));
+  });
+
+  it('keeps each copy self-contained when several are on one page', () => {
+    // The welcome screen renders a mobile and a desktop copy; one is display:none.
+    // A gradient shared by id would leave the visible copy unpainted.
+    const { getAllByTestId } = render(<><AppIcon size={48} /><AppIcon size={56} /></>);
+
+    for (const svg of getAllByTestId('app-icon')) {
+      const refs = [...svg.querySelectorAll('[fill], [stroke]')]
+        .flatMap(el => [el.getAttribute('fill'), el.getAttribute('stroke')])
+        .filter((v): v is string => !!v && v.startsWith('url('))
+        .map(v => v.slice(5, -1));
+
+      expect(refs.length).toBeGreaterThan(0);
+      for (const id of refs) {
+        expect(document.querySelectorAll(`[id="${id}"]`)).toHaveLength(1);
+        expect(svg.querySelector(`[id="${id}"]`)).not.toBeNull();
+      }
+    }
+  });
+
+  it('draws the same mark as the master icon (assets/icon/icon-mark.svg)', () => {
+    const masterSvg = new DOMParser().parseFromString(master, 'image/svg+xml').documentElement;
+    const { getByTestId } = render(<AppIcon size={48} />);
+
+    expect(getByTestId('app-icon').getAttribute('viewBox')).toBe(masterSvg.getAttribute('viewBox'));
+    expect(drawing(getByTestId('app-icon'))).toEqual(drawing(masterSvg));
+  });
+});
+
