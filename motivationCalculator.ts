@@ -29,3 +29,14 @@ export function getPriorityCategory(scores: Results): CategoryKey {
     scores[key] < scores[lowest] ? key : lowest
   );
 }
+
+const TODAY_PREFIX = /^(today|היום):/i;
+
+export function sortActionsTodayFirst(actions: string[]): string[] {
+  return [...actions].sort((a, b) => {
+    const aIsToday = TODAY_PREFIX.test(a);
+    const bIsToday = TODAY_PREFIX.test(b);
+    if (aIsToday === bIsToday) return 0;
+    return aIsToday ? -1 : 1;
+  });
+}

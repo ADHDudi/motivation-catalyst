@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import ResultPolarChart from '../components/ResultPolarChart';
 import { TranslationData, Results, Language, CategoryKey, UserRole } from '../types';
 import { COLORS } from '../constants';
-import { isLow, getPriorityCategory } from '../motivationCalculator';
+import { isLow, getPriorityCategory, sortActionsTodayFirst } from '../motivationCalculator';
 import InlineFeedback from '../components/InlineFeedback';
 
 /* ───────── props ───────── */
@@ -213,7 +213,7 @@ const CategoryTabContent: React.FC<CategoryTabContentProps> = ({
           <div className="px-4 pb-4 md:px-5 md:pb-5 animate-in slide-in-from-top-2 fade-in duration-200 border-t border-slate-100 md:border-none md:pt-0">
             <p className="text-[13px] md:text-sm font-medium text-slate-600 leading-relaxed mb-4">{data.analysis}</p>
             <ul className="space-y-2">
-              {data.actions.map((action, idx) => (
+              {sortActionsTodayFirst(data.actions).map((action, idx) => (
                 <li key={idx} className="flex gap-2.5 text-[13px] md:text-xs font-bold text-slate-600 leading-snug">
                   {isLow(score)
                     ? <AlertCircle size={14} className="shrink-0 text-amber-500 mt-0.5" />
